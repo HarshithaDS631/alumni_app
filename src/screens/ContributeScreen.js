@@ -117,7 +117,7 @@ const ContributeScreen = ({ navigation }) => {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Register as a mentee</Text>
         <Text style={styles.cardDesc}>
-          This is an initiative by RVCE and is managed by the Alumni team of RVCE. The goal is to encourage alumni to seek out mentors amongst themselves for their overall development in a professional and personal sense.
+          This is an initiative by RVITM and is managed by the Alumni team of RVITM. The goal is to encourage alumni to seek out mentors amongst themselves for their overall development in a professional and personal sense.
         </Text>
         <TouchableOpacity style={styles.registerBtn} onPress={() => setShowMenteeForm(true)}>
           <Text style={styles.registerBtnText}>Register</Text>
@@ -182,7 +182,7 @@ const ContributeScreen = ({ navigation }) => {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Register as a mentor</Text>
         <Text style={styles.cardDesc}>
-          {"A Great mentor inspires every achiever. Keeping this in mind, RVCE has come up with this new initiative where a mentor can provide support, advice, and feedback by reaching out to mentees themselves and leveraging each other's personal and professional experience. The alumni team of RVCE manages this initiative."}
+          {"A Great mentor inspires every achiever. Keeping this in mind, RVITM has come up with this new initiative where a mentor can provide support, advice, and feedback by reaching out to mentees themselves and leveraging each other's personal and professional experience. The alumni team of RVITM manages this initiative."}
         </Text>
         <TouchableOpacity style={styles.registerBtn} onPress={() => setShowMentorForm(true)}>
           <Text style={styles.registerBtnText}>Register</Text>

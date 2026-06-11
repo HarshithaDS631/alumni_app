@@ -10,7 +10,7 @@ const runTests = async () => {
         // 1. Auth Test (Login)
         console.log('\n--- 1. Testing Authentication ---');
         const loginRes = await axios.post(`${BASE_URL}/auth/login`, {
-            email: 'alumni@rvce.edu.in',
+            email: 'alumni@rvitm.edu.in',
             password: 'Password123'
         });
         token = loginRes.data.token;
@@ -20,7 +20,7 @@ const runTests = async () => {
         console.log('\n--- 2. Testing Profile Update ---');
         const profileRes = await axios.put(`${BASE_URL}/auth/profile`, {
             location: 'Bangalore, India (Verified)',
-            company: 'RVCE Research (Verified)'
+            company: 'RVITM Research (Verified)'
         }, {
             headers: { Authorization: `Bearer ${token}` }
         });

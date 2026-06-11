@@ -45,7 +45,7 @@ const AdminDashboardScreen = ({ navigation }) => {
           </TouchableOpacity>
           <View>
             <Text style={styles.headerTitle}>Admin Console</Text>
-            <Text style={styles.headerSub}>RVCE Institution Portal</Text>
+            <Text style={styles.headerSub}>RVITM Institution Portal</Text>
           </View>
         </View>
         <TouchableOpacity style={styles.settingsBtn} onPress={() => Alert.alert('Admin Settings', 'Configuration panel.')}>

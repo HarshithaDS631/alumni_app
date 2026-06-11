@@ -8,7 +8,7 @@ const slides = [
   {
     id: '1',
     title: 'Stay Connected',
-    highlight: 'RVEI Community',
+    highlight: 'RVITM Community',
     subtitle: 'Reconnect with your classmates, batchmates, and professors globally.',
     icon: 'people-outline',
   },

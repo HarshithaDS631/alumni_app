@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const ADMIN_EMAIL = 'admin@rvce.edu.in';
+const ADMIN_EMAIL = 'admin@rvitm.edu.in';
 const ADMIN_PASSWORD = 'admin123';
 
 const AdminLoginScreen = ({ navigation }) => {

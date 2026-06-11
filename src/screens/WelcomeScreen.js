@@ -14,7 +14,7 @@ const WelcomeScreen = ({ navigation }) => {
       <View style={styles.content}>
         {/* Large Logo */}
         <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>RVEI</Text>
+          <Text style={styles.logoText}>RVITM</Text>
         </View>
         
         <Text style={styles.title}>Welcome to System</Text>

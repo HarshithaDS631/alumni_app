@@ -58,11 +58,13 @@ const JobsScreen = ({ navigation, route }) => {
   ]);
 
   useEffect(() => {
-    if (route.params?.openEditor) {
+    if (route?.params?.openEditor) {
       setShowEditor(true);
-      navigation.setParams({ openEditor: undefined });
+      if (navigation && navigation.setParams) {
+        navigation.setParams({ openEditor: undefined });
+      }
     }
-  }, [route.params?.openEditor, navigation]);
+  }, [route?.params?.openEditor, navigation]);
 
   const handleDeleteJob = (id) => {
     setJobList(prev => prev.filter(job => job.id !== id));

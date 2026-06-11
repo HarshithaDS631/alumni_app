@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Tex
 import { Ionicons } from '@expo/vector-icons';
 
 const institutions = [
-  { id: 'RVCE', name: 'RVCE', fullName: 'RV College of Engineering', icon: 'school' },
+  { id: 'RVITM', name: 'RVITM', fullName: 'RV College of Engineering', icon: 'school' },
   { id: 'RVITM', name: 'RVITM', fullName: 'RV Inst of Tech & Management', icon: 'code-working' },
   { id: 'RVPU', name: 'RVPU', fullName: 'RV Pre-University College', icon: 'book' },
   { id: 'RVIT', name: 'RVIT', fullName: 'RV Institute of Technology', icon: 'desktop' },
@@ -12,7 +12,7 @@ const institutions = [
   { id: 'RVJC', name: 'RVJC', fullName: 'RV Junior College', icon: 'medal' },
   { id: 'RVAC', name: 'RVAC', fullName: 'RV Aster College', icon: 'color-palette' },
   { id: 'RVTC', name: 'RV Teachers College', fullName: 'RV Teachers Training College', icon: 'people' },
-  { id: 'OTHER', name: 'Other', fullName: 'Other RVEI Institution', icon: 'grid' },
+  { id: 'OTHER', name: 'Other', fullName: 'Other RVITM Institution', icon: 'grid' },
 ];
 
 const SelectInstitutionScreen = ({ navigation }) => {
@@ -29,7 +29,7 @@ const SelectInstitutionScreen = ({ navigation }) => {
       <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>RVEI</Text>
+          <Text style={styles.logoText}>RVITM</Text>
         </View>
         <Text style={styles.title}>RV Educational</Text>
         <Text style={styles.title}>Institutions</Text>

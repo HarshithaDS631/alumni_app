@@ -24,7 +24,7 @@ app.use('/api/mentorship', mentorshipRoutes);
 app.use('/api/events', eventRoutes);
 
 app.get('/', (req, res) => {
-    res.send('RVCE Alumni API is running...');
+    res.send('RVITM Alumni API is running...');
 });
 
 // Error Handler

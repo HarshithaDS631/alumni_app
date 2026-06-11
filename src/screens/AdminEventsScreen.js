@@ -22,7 +22,7 @@ const AdminEventsScreen = ({ navigation }) => {
       id: 'e1',
       title: 'Alumni Gala Night 2026',
       date: 'Dec 18, 2026',
-      location: 'RVCE Campus Auditorium, Bengaluru',
+      location: 'RVITM Campus Auditorium, Bengaluru',
       description: 'Join us for an unforgettable evening celebrating the achievements of our alumni community. Network with fellow graduates, enjoy cultural performances, and participate in the annual awards ceremony.',
       views: 342,
       likes: 87,
@@ -39,7 +39,7 @@ const AdminEventsScreen = ({ navigation }) => {
       title: 'Startup Panel Discussion',
       date: 'Jan 15, 2027',
       location: 'Virtual / Zoom',
-      description: 'Hear from RVCE alumni who have founded successful startups. Topics include fundraising, scaling, and building a team. Open Q&A session at the end.',
+      description: 'Hear from RVITM alumni who have founded successful startups. Topics include fundraising, scaling, and building a team. Open Q&A session at the end.',
       views: 218,
       likes: 56,
       liked: true,
@@ -53,7 +53,7 @@ const AdminEventsScreen = ({ navigation }) => {
       id: 'e3',
       title: 'Career Mentorship Workshop',
       date: 'Feb 8, 2027',
-      location: 'RVCE Seminar Hall B',
+      location: 'RVITM Seminar Hall B',
       description: 'A hands-on workshop where senior alumni mentor current students and recent graduates on career planning, resume building, and interview preparation.',
       views: 156,
       likes: 43,
@@ -242,7 +242,7 @@ const AdminEventsScreen = ({ navigation }) => {
           </View>
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Location</Text>
-            <TextInput style={styles.textInput} placeholder="e.g. RVCE Campus, Bengaluru" placeholderTextColor="#94A3B8" value={eventLocation} onChangeText={setEventLocation} />
+            <TextInput style={styles.textInput} placeholder="e.g. RVITM Campus, Bengaluru" placeholderTextColor="#94A3B8" value={eventLocation} onChangeText={setEventLocation} />
           </View>
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Description</Text>

@@ -15,10 +15,10 @@ const SplashScreen = ({ navigation }) => {
         <View style={styles.logoContainer}>
           {/* Logo Placeholder */}
           <View style={styles.logo}>
-            <Text style={styles.logoText}>RVEI</Text>
+            <Text style={styles.logoText}>RVITM</Text>
           </View>
         </View>
-        <Text style={styles.title}>RVEI</Text>
+        <Text style={styles.title}>RVITM</Text>
         <Text style={styles.subtitle}>Alumni Portal</Text>
         
         <View style={styles.loaderContainer}>

@@ -11,9 +11,9 @@ const AdminProfileScreen = ({ navigation }) => {
   const [listModalType, setListModalType] = useState(null);
 
   const [profileData, setProfileData] = useState({
-    name: 'RVCE Admin',
-    username: '@rvce_admin',
-    bio: 'Official Admin • RVCE Alumni Network • Managing institutional connections & opportunities.',
+    name: 'RVITM Admin',
+    username: '@rvitm_admin',
+    bio: 'Official Admin • RVITM Alumni Network • Managing institutional connections & opportunities.',
     branch: 'Administration',
     batch: '2024',
     posts: 48,
@@ -31,8 +31,8 @@ const AdminProfileScreen = ({ navigation }) => {
   ];
 
   const mockReshares = [
-    { id: 'r1', user: 'Priya Sharma', content: 'RVCE ranked among top 50 engineering colleges in India! Proud to be an alumnus 🎓', date: '2 days ago' },
-    { id: 'r2', user: 'Rahul Verma', content: 'Great placement season results for RVCE 2026 batch!', date: '5 days ago' },
+    { id: 'r1', user: 'Priya Sharma', content: 'RVITM ranked among top 50 engineering colleges in India! Proud to be an alumnus 🎓', date: '2 days ago' },
+    { id: 'r2', user: 'Rahul Verma', content: 'Great placement season results for RVITM 2026 batch!', date: '5 days ago' },
   ];
 
   const mockSaved = [

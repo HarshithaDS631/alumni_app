@@ -2,7 +2,7 @@ const axios = require('axios');
 
 async function smokeTest() {
     try {
-        console.log('--- RVCE Alumni Platform Smoke Test ---');
+        console.log('--- RVITM Alumni Platform Smoke Test ---');
         
         // 1. Check if API is running
         const homeRes = await axios.get('http://localhost:5000/');

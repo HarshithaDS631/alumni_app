@@ -26,9 +26,9 @@ const FRIENDS_DATA = [
 ];
 
 const COMMUNITIES_DATA = [
-  { id: '1', name: 'RVCE Tech Community', members: '1.2K', icon: 'code-slash-outline', joined: true },
+  { id: '1', name: 'RVITM Tech Community', members: '1.2K', icon: 'code-slash-outline', joined: true },
   { id: '2', name: 'Alumni Entrepreneurs Club', members: '856', icon: 'rocket-outline', joined: false },
-  { id: '3', name: 'RVCE Placement Network', members: '2.1K', icon: 'briefcase-outline', joined: true },
+  { id: '3', name: 'RVITM Placement Network', members: '2.1K', icon: 'briefcase-outline', joined: true },
   { id: '4', name: 'Sports Alumni Association', members: '432', icon: 'football-outline', joined: false },
 ];
 

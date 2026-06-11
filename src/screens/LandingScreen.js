@@ -10,7 +10,7 @@ const LandingScreen = ({ navigation }) => {
         <View style={styles.header}>
           <Text style={styles.badge}>Welcome back</Text>
           <Text style={styles.title}>
-            RVCE <Text style={styles.highlight}>Alumni</Text>
+            RVITM <Text style={styles.highlight}>Alumni</Text>
           </Text>
           <Text style={styles.subtitle}>
             Connect, Collaborate, and Grow Together with the exclusive global network of R.V. College of Engineering alumni.

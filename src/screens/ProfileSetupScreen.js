@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Scro
 import { Ionicons } from '@expo/vector-icons';
 
 const institutions = [
-  { id: 'RVCE', name: 'RVCE', fullName: 'RV College of Engineering' },
+  { id: 'RVITM', name: 'RVITM', fullName: 'RV College of Engineering' },
   { id: 'RVITM', name: 'RVITM', fullName: 'RV Inst of Tech & Management' },
   { id: 'RVPU', name: 'RVPU', fullName: 'RV Pre-University College' },
   { id: 'RVIT', name: 'RVIT', fullName: 'RV Institute of Technology' },
@@ -12,7 +12,7 @@ const institutions = [
   { id: 'RVJC', name: 'RVJC', fullName: 'RV Junior College' },
   { id: 'RVAC', name: 'RVAC', fullName: 'RV Aster College' },
   { id: 'RVTC', name: 'RV Teachers Training College' },
-  { id: 'OTHER', name: 'Other', fullName: 'Other RVEI Institution' },
+  { id: 'OTHER', name: 'Other', fullName: 'Other RVITM Institution' },
 ];
 
 const locations = [

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, FlatList, TextInput, TouchableOpa
 import { Ionicons } from '@expo/vector-icons';
 
 const ChatScreen = ({ route, navigation }) => {
-  const { user } = route.params || {};
+  const { user } = route?.params || {};
   
   // Default fallback if someone opens this without a user
   const chatUser = user || { name: 'Unknown User', role: 'Alumni', initials: '?' };

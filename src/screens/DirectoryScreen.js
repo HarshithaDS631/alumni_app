@@ -342,7 +342,7 @@ const DirectoryScreen = ({ navigation }) => {
                   <Text style={styles.wizardLabel}>Community Name</Text>
                   <TextInput
                     style={styles.wizardInput}
-                    placeholder="e.g. RVCE CSE 2023 Alumni"
+                    placeholder="e.g. RVITM CSE 2023 Alumni"
                     placeholderTextColor="#94A3B8"
                     value={communityName}
                     onChangeText={setCommunityName}

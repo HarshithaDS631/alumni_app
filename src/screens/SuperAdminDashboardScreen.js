@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SuperAdminDashboardScreen = ({ navigation }) => {
   const [institutions, setInstitutions] = useState([
-    { name: 'RV College of Engineering (RVCE)', admins: 5, status: 'Active', badgeColor: '#10B981' },
+    { name: 'RV College of Engineering (RVITM)', admins: 5, status: 'Active', badgeColor: '#10B981' },
     { name: 'RV Inst of Tech & Management (RVITM)', admins: 3, status: 'Active', badgeColor: '#10B981' },
     { name: 'RV PU College (RVPU)', admins: 2, status: 'Pending Audit', badgeColor: '#F59E0B' },
     { name: 'RV International School (RVIS)', admins: 2, status: 'Active', badgeColor: '#10B981' },
@@ -13,7 +13,7 @@ const SuperAdminDashboardScreen = ({ navigation }) => {
   const handleAddNew = () => {
     Alert.alert(
       'Register Institution',
-      'Enter new RVEI institution details to configure global control settings.',
+      'Enter new RVITM institution details to configure global control settings.',
       [
         { text: 'Add Mock (RVIM)', onPress: () => {
           setInstitutions(prev => [
@@ -41,7 +41,7 @@ const SuperAdminDashboardScreen = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>RVEI Global Control</Text>
+          <Text style={styles.headerTitle}>RVITM Global Control</Text>
         </View>
         <TouchableOpacity style={styles.profileBtn} onPress={() => Alert.alert('Super Admin Profile', 'Global Governance SuperUser account.')}>
           <View style={styles.avatar}>
@@ -106,7 +106,7 @@ const SuperAdminDashboardScreen = ({ navigation }) => {
         ))}
 
         {/* Global Control Actions */}
-        <Text style={styles.sectionTitle}>Global Actions (RVEI Level)</Text>
+        <Text style={styles.sectionTitle}>Global Actions (RVITM Level)</Text>
         
         <TouchableOpacity style={styles.actionRow} onPress={() => handleGlobalControl('Global Announcement')} activeOpacity={0.7}>
           <View style={[styles.actionIconBox, { backgroundColor: '#FEE2E2' }]}>
@@ -124,7 +124,7 @@ const SuperAdminDashboardScreen = ({ navigation }) => {
           <Ionicons name="chevron-forward" size={16} color="#CBD5E1" style={styles.chevronRight} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionRow} onPress={() => handleGlobalControl('RVEI Global Insights')} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.actionRow} onPress={() => handleGlobalControl('RVITM Global Insights')} activeOpacity={0.7}>
           <View style={[styles.actionIconBox, { backgroundColor: '#DCFCE7' }]}>
             <Ionicons name="analytics" size={20} color="#16A34A" />
           </View>
