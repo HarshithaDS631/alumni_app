@@ -1,0 +1,40 @@
+graph TD
+    %% RVEI Alumni Portal - MOBILE APP ONLY FLOW
+    Start((App Launch)) --> Splash[Splash Screen]
+    Splash --> SelectInst[Select Institution]
+    
+    SelectInst --> |Choose RVCE/RVITM/etc| Onboarding[Onboarding Slides]
+    Onboarding --> |Swipe/Next| Login[OTP Login / Signup]
+    
+    Login --> |Send OTP| OTP[OTP Verification]
+    OTP --> |Verify| ProfileSetup[Profile Setup Wizard]
+    
+    ProfileSetup --> |Save Details| RoleSelection[Choose Role]
+    
+    RoleSelection --> |Alumni| Dashboard[Premium Dashboard]
+    
+    %% Note: User-level roles (legacy) removed for Alumni-only focus
+    
+    Dashboard --> GridMenu[6-Grid Action Menu]
+    Dashboard --> BottomNav[7-Item Bottom Navigation]
+    
+    GridMenu --> Feed[Feed]
+    GridMenu --> Network[Network / Directory]
+    GridMenu --> Jobs[Job Board]
+    GridMenu --> Events[Events & Reunions]
+    GridMenu --> Messages[Messages]
+    GridMenu --> MyProfile[Profile]
+
+    BottomNav --> Home[Home]
+    BottomNav --> Net[Network]
+    BottomNav --> JB[Jobs]
+    BottomNav --> EV[Events]
+    BottomNav --> MSG[Messages]
+    BottomNav --> NOTIF[Notifications]
+    BottomNav --> PRF[Profile]
+
+    %% Feature Flows
+    Network --> SearchAlumni[Search & Filter Alumni]
+    Jobs --> PostJob[Post / View Job Referrals]
+    Events --> ViewEvents[RSVP to Upcoming Events]
+    Messages --> Chat[Interactive Messaging]

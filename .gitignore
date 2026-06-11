@@ -1,0 +1,40 @@
+# Dependency directories
+node_modules/
+**/node_modules/
+
+# Environment variables & secrets
+.env
+.env.*
+**/.env
+**/.env.*
+*.pem
+*.key
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+
+# Expo / React Native
+.expo/
+**/web-build/
+**/expo-env.d.ts
+**/.metro-health-check*
+/mobile-app/ios/
+/mobile-app/android/
+
+# Build & compiled outputs
+dist/
+**/dist/
+.vite/
+**/.vite/
+*.tsbuildinfo
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS-generated files
+.DS_Store
+Thumbs.db
