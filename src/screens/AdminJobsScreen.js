@@ -27,6 +27,7 @@ const DUMMY_JOBS = [
     location: 'Bengaluru',
     views: 124,
     applied: 38,
+    shared: 14,
     description:
       'We are looking for a Senior Software Engineer to join our payments platform team. You will design, develop, and maintain scalable backend services that power millions of transactions daily. Strong experience in distributed systems, microservices architecture, and cloud technologies is required. You will collaborate with cross-functional teams to deliver high-quality solutions.',
   },
@@ -39,6 +40,7 @@ const DUMMY_JOBS = [
     location: 'Remote',
     views: 89,
     applied: 22,
+    shared: 8,
     description:
       'Amazon is hiring a Backend Developer to work on our cloud infrastructure services. You will build and optimize APIs, work with large-scale databases, and contribute to the architecture of highly available systems. Experience with AWS services, Java or Python, and RESTful API design is essential. Join us to solve complex engineering challenges at scale.',
   },
@@ -51,8 +53,9 @@ const DUMMY_JOBS = [
     location: 'Hyderabad',
     views: 156,
     applied: 45,
+    shared: 25,
     description:
-      'Google is seeking a Frontend Engineer to build next-generation web applications. You will work with React, TypeScript, and modern web technologies to create performant and accessible user interfaces. Collaboration with UX designers and backend engineers is key. A passion for clean code, testing, and continuous improvement is a must.',
+      'Google is seeking a Frontend Engineer to build next-generation web applications. You will work with React, TypeScript, and modern web technologies to create performant and accessible user interfaces. Collaboration with UX designers and backend engineering is key. A passion for clean code, testing, and continuous improvement is a must.',
   },
 ];
 
@@ -123,6 +126,7 @@ export default function AdminJobsScreen({ navigation }) {
       location: formLocation.trim() || 'Not specified',
       views: 0,
       applied: 0,
+      shared: 0,
       description: formDescription.trim() || 'No description provided.',
     };
     setJobs([newJob, ...jobs]);
@@ -236,6 +240,10 @@ export default function AdminJobsScreen({ navigation }) {
           <View style={styles.statCard}>
             <Text style={styles.statEmoji}>📄</Text>
             <Text style={styles.statValue}>{selectedJob.applied} Applied</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statEmoji}>🔗</Text>
+            <Text style={styles.statValue}>{selectedJob.shared || 0} Shared</Text>
           </View>
         </View>
       </ScrollView>
@@ -543,6 +551,10 @@ export default function AdminJobsScreen({ navigation }) {
             <Ionicons name="document-text-outline" size={16} color="#64748B" />
             <Text style={styles.jobStatText}>{item.applied} Applied</Text>
           </View>
+          <View style={styles.jobStatItem}>
+            <Ionicons name="share-social-outline" size={16} color="#64748B" />
+            <Text style={styles.jobStatText}>{item.shared || 0} Shared</Text>
+          </View>
         </View>
         <View style={styles.viewMoreBtn}>
           <Text style={styles.viewMoreText}>View More</Text>
@@ -577,7 +589,16 @@ export default function AdminJobsScreen({ navigation }) {
 
   const renderMainList = () => (
     <View style={styles.mainListContainer}>
-      <Text style={styles.sectionTitle}>Job Postings</Text>
+      <View style={styles.sectionTitleContainer}>
+        <Text style={styles.sectionTitle}>Job Postings</Text>
+        <TouchableOpacity
+          style={styles.addJobHeaderBtn}
+          activeOpacity={0.7}
+          onPress={() => setShowEditor(true)}
+        >
+          <Ionicons name="add-circle" size={26} color="#003366" />
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={filteredJobs}
         keyExtractor={(item) => item.id}
@@ -1125,13 +1146,21 @@ const styles = StyleSheet.create({
   mainListContainer: {
     flex: 1,
   },
+  sectionTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '800',
     color: '#002144',
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 12,
+  },
+  addJobHeaderBtn: {
+    padding: 4,
   },
   jobList: {
     paddingHorizontal: 16,
