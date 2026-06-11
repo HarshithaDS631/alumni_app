@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('alumni@rvitm.edu.in');
+  const [password, setPassword] = useState('alumni123');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -15,6 +15,16 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
     setLoading(true);
+
+    if (email.toLowerCase() === 'alumni@rvitm.edu.in' && password === 'alumni123') {
+      setTimeout(async () => {
+        await AsyncStorage.setItem('userInfo', JSON.stringify({ name: 'Alumni User', email: email.toLowerCase() }));
+        setLoading(false);
+        navigation.navigate('Main');
+      }, 800);
+      return;
+    }
+
     try {
       const response = await api.post('/auth/login', { email, password });
       await AsyncStorage.setItem('userInfo', JSON.stringify(response.data));
@@ -87,11 +97,16 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}>
             <Text style={{ color: '#94A3B8' }}>{"Don't have an account? "}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
               <Text style={{ color: '#003366', fontWeight: 'bold' }}>Sign Up</Text>
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.infoBox}>
+            <Ionicons name="information-circle-outline" size={20} color="#64748B" />
+            <Text style={styles.infoText}>Use alumni@rvitm.edu.in / alumni123 for dummy access.</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -192,7 +207,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-  }
+  },
+  infoBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#64748B',
+    lineHeight: 18,
+    marginLeft: 10,
+  },
 });
 
 export default LoginScreen;
