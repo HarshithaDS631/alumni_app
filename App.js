@@ -36,6 +36,7 @@ import AdminJobsScreen from './src/screens/AdminJobsScreen';
 import AdminEventsScreen from './src/screens/AdminEventsScreen';
 import AdminPanelScreen from './src/screens/AdminPanelScreen';
 import AdminProfileScreen from './src/screens/AdminProfileScreen';
+import AdminPlacementDetailsScreen from './src/screens/AdminPlacementDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -197,6 +198,7 @@ export default function App() {
         <Stack.Screen name="PostCreation" component={PostCreationScreen} options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="AdminProfile" component={AdminProfileScreen} />
+        <Stack.Screen name="AdminPlacementDetails" component={AdminPlacementDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

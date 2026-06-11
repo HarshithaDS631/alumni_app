@@ -102,10 +102,6 @@ export default function AdminPanelScreen({ navigation }) {
   const [newCompInd, setNewCompInd] = useState('');
   const [newCompCount, setNewCompCount] = useState('');
 
-  // Placement Tool Alumni Modal
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [showCompanyAlumni, setShowCompanyAlumni] = useState(false);
-
   // Email Stats States
   const [emailTab, setEmailTab] = useState('invitation'); // 'invitation' | 'custom'
   const [startDate, setStartDate] = useState('11/06/2026');
@@ -468,19 +464,7 @@ export default function AdminPanelScreen({ navigation }) {
   );
 
   const handleCompanyClick = (companyItem) => {
-    setSelectedCompany(companyItem);
-    setShowCompanyAlumni(true);
-  };
-
-  const getAlumniForCompany = (companyName) => {
-    if (!companyName) return [];
-    const keyword = companyName.split(' ')[0].toLowerCase();
-    const matched = alumniMaster.filter(a => a.title.toLowerCase().includes(keyword));
-    if (matched.length > 0) return matched;
-    return [
-      { id: 'd1', name: 'Alumni 1', title: `Software Engineer at ${companyName}`, location: 'Bengaluru' },
-      { id: 'd2', name: 'Alumni 2', title: `Product Manager at ${companyName}`, location: 'Hyderabad' }
-    ];
+    navigation.navigate('AdminPlacementDetails', { companyName: companyItem.company });
   };
 
   // 5. PLACEMENT TOOL
@@ -529,36 +513,6 @@ export default function AdminPanelScreen({ navigation }) {
           </TouchableOpacity>
         )}
       />
-
-      {/* Alumni for Company Modal */}
-      <Modal visible={showCompanyAlumni} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.dropdownModalContent, { padding: 0, paddingBottom: 20, maxHeight: '80%', width: '90%' }]}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }}>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: '#0F172A' }}>{selectedCompany?.company} Alumni</Text>
-              <TouchableOpacity onPress={() => setShowCompanyAlumni(false)}>
-                <Ionicons name="close" size={24} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
-            <FlatList
-              data={getAlumniForCompany(selectedCompany?.company)}
-              keyExtractor={item => item.id}
-              contentContainerStyle={{ padding: 16 }}
-              renderItem={({ item }) => (
-                <View style={[styles.alumniRowCard, { elevation: 0, shadowOpacity: 0, borderWidth: 1, borderColor: '#E2E8F0' }]}>
-                  <View style={styles.rowAvatar}><Ionicons name="person" size={20} color="#64748B" /></View>
-                  <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text style={styles.alumniRowName}>{item.name}</Text>
-                    <Text style={styles.alumniRowTitle}>{item.title}</Text>
-                    <Text style={styles.alumniRowLocation}>{item.location}</Text>
-                  </View>
-                </View>
-              )}
-              ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20, color: '#64748B' }}>No alumni found for this company.</Text>}
-            />
-          </View>
-        </View>
-      </Modal>
 
       <Modal visible={showAddPlacement} transparent animationType="fade">
         <View style={styles.modalOverlay}>
