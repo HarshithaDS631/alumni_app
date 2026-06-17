@@ -1631,12 +1631,14 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
     );
   }, [searchQuery]);
 
+  const isMainScreen = activeModule === null || activeModule === 'dashboard_home';
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
-      {activeModule ? (
+      {!isMainScreen ? (
         <View style={styles.headerAdminStyle}>
           <TouchableOpacity onPress={handleGoBack} style={styles.headerIconBtnAdminStyle}>
             <Ionicons name="arrow-back" size={24} color="#002144" />
@@ -1674,16 +1676,23 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
             <Text style={styles.headerAvatarTextAdminStyle}>SA</Text>
           </TouchableOpacity>
 
-          <View style={styles.searchBarAdminStyle}>
-            <Ionicons name="search-outline" size={18} color="#94A3B8" style={{ marginRight: 6 }} />
-            <TextInput
-              style={styles.searchInputAdminStyle}
-              placeholder="Search Panel..."
-              placeholderTextColor="#94A3B8"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
+          {activeModule === 'dashboard_home' ? (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, fontWeight: '800', color: '#002144' }}>Super Admin Dashboard</Text>
+              <Text style={{ fontSize: 11, color: '#64748B', fontWeight: '500' }}>System Status Overview</Text>
+            </View>
+          ) : (
+            <View style={styles.searchBarAdminStyle}>
+              <Ionicons name="search-outline" size={18} color="#94A3B8" style={{ marginRight: 6 }} />
+              <TextInput
+                style={styles.searchInputAdminStyle}
+                placeholder="Search Panel..."
+                placeholderTextColor="#94A3B8"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            </View>
+          )}
 
           <View style={styles.headerIconsAdminStyle}>
             <TouchableOpacity
