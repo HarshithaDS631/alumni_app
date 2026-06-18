@@ -191,6 +191,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState({});
   const [followedUsers, setFollowedUsers] = useState({});
   const [showInstDropdown, setShowInstDropdown] = useState(false);
+  const [broadcastText, setBroadcastText] = useState('');
 
   // Post Actions
   const togglePostLike = (postId) => {
@@ -225,6 +226,20 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
     } catch (_error) {
       Alert.alert('Error', 'Could not share this post');
     }
+  };
+
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return { score: 0, text: 'None', color: '#94A3B8' };
+    let score = 0;
+    if (pwd.length >= 6) score++;
+    if (pwd.length >= 8) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+
+    if (score <= 2) return { score, text: 'Weak', color: '#EF4444' };
+    if (score <= 4) return { score, text: 'Medium', color: '#F59E0B' };
+    return { score, text: 'Strong', color: '#10B981' };
   };
 
   // Institution Dropdown Component
@@ -295,11 +310,18 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
       <View key={post.id} style={styles.postCard}>
         {/* Post header */}
         <View style={styles.postHeader}>
-          <View style={styles.postUserAvatar}>
-            <Text style={styles.postAvatarText}>{post.avatar}</Text>
+          <View style={[styles.postUserAvatar, post.isAnnouncement && { backgroundColor: '#FEF3C7', borderColor: '#F59E0B' }]}>
+            <Text style={[styles.postAvatarText, post.isAnnouncement && { color: '#D97706' }]}>{post.avatar}</Text>
           </View>
           <View style={styles.postUserInfo}>
-            <Text style={styles.postUserName}>{post.user}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <Text style={styles.postUserName}>{post.user}</Text>
+              {post.isAnnouncement && (
+                <View style={styles.announcementBadge}>
+                  <Text style={styles.announcementBadgeText}>ANNOUNCEMENT</Text>
+                </View>
+              )}
+            </View>
             <Text style={styles.postUserRole}>{post.role}</Text>
           </View>
           <TouchableOpacity 
@@ -358,6 +380,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   // Search, tabs and toggles
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('1'); // Generic state for inner module tabs
+  const [uploadedRoster, setUploadedRoster] = useState(null);
   const [visiblePasswords, setVisiblePasswords] = useState({}); // adminId -> bool
   const [alumniDetailModal, setAlumniDetailModal] = useState(null); // alumnus request detail
 
@@ -387,6 +410,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   // Logs/Stats Date State
   const [statsStartDate, setStatsStartDate] = useState('15/06/2026');
   const [statsEndDate, setStatsEndDate] = useState('17/06/2026');
+  const [expandedChart, setExpandedChart] = useState(null);
 
   // Helper filter function
   const filterByInstitution = (data, field = 'institution') => {
@@ -677,6 +701,49 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
             })()}
           </>
         )}
+
+        {/* Broadcast Widget */}
+        <View style={styles.broadcastCard}>
+          <Text style={styles.broadcastCardTitle}>Broadcast Announcement</Text>
+          <View style={styles.broadcastInputRow}>
+            <TextInput
+              style={styles.broadcastInput}
+              placeholder={selectedInstitution === 'All' ? "Announce to all institutions..." : `Announce to ${selectedInstitution}...`}
+              placeholderTextColor="#94A3B8"
+              value={broadcastText}
+              onChangeText={setBroadcastText}
+              multiline
+            />
+            <TouchableOpacity 
+              style={styles.broadcastSendBtn} 
+              activeOpacity={0.7}
+              onPress={() => {
+                if (!broadcastText.trim()) {
+                  Alert.alert('Error', 'Announcement text cannot be empty.');
+                  return;
+                }
+                const newAnn = {
+                  id: `ann_${Date.now()}`,
+                  user: 'Super Admin',
+                  role: 'Global System Administrator',
+                  avatar: 'SA',
+                  content: broadcastText.trim(),
+                  image: null,
+                  likes: 0,
+                  commentsCount: 0,
+                  time: 'Just now',
+                  institution: selectedInstitution === 'All' ? 'All' : selectedInstitution,
+                  isAnnouncement: true,
+                };
+                setPostsList(prev => [newAnn, ...prev]);
+                setBroadcastText('');
+                Alert.alert('Published', 'Your broadcast has been pinned to the top of the feed.');
+              }}
+            >
+              <Ionicons name="send" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* News Feed / Posts list */}
         <Text style={styles.sectionHeaderTitle}>Alumni News Feed</Text>
@@ -1086,14 +1153,37 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
                 <Text style={styles.formLabel}>Initial Login Password</Text>
                 <View style={styles.passwordInputWrap}>
-                  <TextInput style={{ flex: 1 }} value={adminFormPassword} onChangeText={setAdminFormPassword} placeholder="Enter Password" secureTextEntry={false} />
+                  <TextInput style={{ flex: 1, color: '#0F172A', paddingVertical: 8 }} value={adminFormPassword} onChangeText={setAdminFormPassword} placeholder="Enter Password" secureTextEntry={false} />
                   <TouchableOpacity
                     style={styles.btnGenerate}
-                    onPress={() => setAdminFormPassword(Math.random().toString(36).substring(2, 10))}
+                    onPress={() => {
+                      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+                      let pass = '';
+                      for (let i = 0; i < 10; i++) {
+                        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+                      }
+                      setAdminFormPassword(pass);
+                    }}
                   >
                     <Text style={styles.btnGenerateText}>Generate</Text>
                   </TouchableOpacity>
                 </View>
+
+                {/* Password Strength Indicator */}
+                {adminFormPassword.length > 0 && (() => {
+                  const strength = getPasswordStrength(adminFormPassword);
+                  return (
+                    <View style={{ marginTop: 8, marginBottom: 12 }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 11, color: '#64748B', fontWeight: '600' }}>Password Strength:</Text>
+                        <Text style={{ fontSize: 11, color: strength.color, fontWeight: '700' }}>{strength.text}</Text>
+                      </View>
+                      <View style={styles.strengthBarBg}>
+                        <View style={[styles.strengthBarFill, { width: `${(strength.score / 5) * 100}%`, backgroundColor: strength.color }]} />
+                      </View>
+                    </View>
+                  );
+                })()}
 
                 <TouchableOpacity style={[styles.btnPrimary, { marginTop: 24 }]} onPress={handleCreateAdmin}>
                   <Text style={styles.btnPrimaryText}>Create Admin Account</Text>
@@ -1333,6 +1423,34 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
           </View>
 
           <Text style={styles.sectionHeaderTitle}>Branding (Theme Colors)</Text>
+
+          <Text style={styles.formLabel}>Quick Palette Presets</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, marginBottom: 12, paddingBottom: 4 }}>
+            {[
+              { name: 'Ocean Blue', primary: '#003366', secondary: '#00A99C' },
+              { name: 'Emerald', primary: '#059669', secondary: '#10B981' },
+              { name: 'Sunset', primary: '#EA580C', secondary: '#F59E0B' },
+              { name: 'Amethyst', primary: '#7C3AED', secondary: '#A78BFA' },
+              { name: 'Slate Dark', primary: '#1E293B', secondary: '#64748B' },
+            ].map((preset) => (
+              <TouchableOpacity
+                key={preset.name}
+                style={styles.presetColorChip}
+                activeOpacity={0.7}
+                onPress={() => {
+                  updateField('primaryColor', preset.primary);
+                  updateField('secondaryColor', preset.secondary);
+                }}
+              >
+                <View style={{ flexDirection: 'row', gap: 4, marginRight: 6 }}>
+                  <View style={[styles.presetSwatchMini, { backgroundColor: preset.primary }]} />
+                  <View style={[styles.presetSwatchMini, { backgroundColor: preset.secondary }]} />
+                </View>
+                <Text style={styles.presetColorChipText}>{preset.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
           <View style={styles.rowGrid}>
             <View style={{ flex: 1, marginRight: 8 }}>
               <Text style={styles.formLabel}>Primary Theme Color</Text>
@@ -1410,10 +1528,19 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
     };
 
     const handleUploadSimulate = () => {
-      Alert.alert('File Picker', 'Select a CSV or Excel roster sheet containing your alumni list.');
+      setUploadedRoster([
+        { id: '1', name: 'Rohan Deshmukh', email: 'rohan.d@example.com', course: 'BE, CSE', batch: '2024' },
+        { id: '2', name: 'Neha Patil', email: 'neha.p@example.com', course: 'BE, ISE', batch: '2023' },
+        { id: '3', name: 'Aditya Hegde', email: 'aditya.h@example.com', course: 'MBA', batch: '2022' },
+      ]);
+      Alert.alert('Roster Loaded', 'Mock spreadsheet roster loaded! You can now edit cells directly before importing.');
     };
 
     const handleImportSimulate = () => {
+      if (!uploadedRoster || uploadedRoster.length === 0) {
+        Alert.alert('No Data', 'Please load or add data to the spreadsheet first.');
+        return;
+      }
       setIsProcessing(true);
       setProgressVal(0);
       const interval = setInterval(() => {
@@ -1424,16 +1551,20 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
             const inst = selectedInstitution === 'All' ? 'RVCE' : selectedInstitution;
             const newImport = {
               id: Date.now().toString(),
-              fileName: `imported_roster_${inst.toLowerCase()}.csv`,
+              fileName: `ingested_sheet_${inst.toLowerCase()}.csv`,
               institution: inst,
-              records: 120,
-              successful: 118,
-              failed: 2,
+              records: uploadedRoster.length,
+              successful: uploadedRoster.filter(r => r.name && r.email).length,
+              failed: uploadedRoster.filter(r => !r.name || !r.email).length,
               date: '17/06/2026',
               status: 'Completed',
             };
             setImports((prevList) => [newImport, ...prevList]);
-            Alert.alert('Import Success', '118 alumni profiles imported and connected successfully.');
+            setUploadedRoster(null);
+            Alert.alert(
+              'Import Complete',
+              `${newImport.successful} alumni profiles successfully imported to ${inst}.`
+            );
             return 100;
           }
           return prev + 25;
@@ -1459,6 +1590,84 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               <Text style={styles.uploadTitle}>Choose file to import</Text>
               <Text style={styles.uploadSubtitle}>Supports CSV, XLS or XLSX roster templates</Text>
             </TouchableOpacity>
+
+            {uploadedRoster && (
+              <View style={styles.sheetContainer}>
+                <Text style={styles.sheetTitle}>Spreadsheet Editor Preview</Text>
+                
+                {/* Headers */}
+                <View style={styles.sheetHeaderRow}>
+                  <Text style={[styles.sheetHeaderCell, { flex: 2 }]}>Name</Text>
+                  <Text style={[styles.sheetHeaderCell, { flex: 3 }]}>Email</Text>
+                  <Text style={[styles.sheetHeaderCell, { flex: 2 }]}>Course</Text>
+                  <Text style={[styles.sheetHeaderCell, { flex: 1.5 }]}>Batch</Text>
+                  <Text style={[styles.sheetHeaderCell, { flex: 1 }]}></Text>
+                </View>
+
+                {/* Rows */}
+                {uploadedRoster.map((row) => (
+                  <View key={row.id} style={styles.sheetRow}>
+                    <TextInput
+                      style={[styles.sheetCellInput, { flex: 2 }]}
+                      value={row.name}
+                      onChangeText={(txt) => {
+                        setUploadedRoster(prev => prev.map(r => r.id === row.id ? { ...r, name: txt } : r));
+                      }}
+                    />
+                    <TextInput
+                      style={[styles.sheetCellInput, { flex: 3 }]}
+                      value={row.email}
+                      onChangeText={(txt) => {
+                        setUploadedRoster(prev => prev.map(r => r.id === row.id ? { ...r, email: txt } : r));
+                      }}
+                    />
+                    <TextInput
+                      style={[styles.sheetCellInput, { flex: 2 }]}
+                      value={row.course}
+                      onChangeText={(txt) => {
+                        setUploadedRoster(prev => prev.map(r => r.id === row.id ? { ...r, course: txt } : r));
+                      }}
+                    />
+                    <TextInput
+                      style={[styles.sheetCellInput, { flex: 1.5 }]}
+                      value={row.batch}
+                      onChangeText={(txt) => {
+                        setUploadedRoster(prev => prev.map(r => r.id === row.id ? { ...r, batch: txt } : r));
+                      }}
+                    />
+                    <TouchableOpacity
+                      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                      onPress={() => {
+                        setUploadedRoster(prev => prev.filter(r => r.id !== row.id));
+                      }}
+                    >
+                      <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+
+                {/* Spreadsheet controls */}
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+                  <TouchableOpacity 
+                    style={styles.sheetAddBtn}
+                    onPress={() => {
+                      const newId = String(Date.now());
+                      setUploadedRoster(prev => [...prev, { id: newId, name: '', email: '', course: '', batch: '' }]);
+                    }}
+                  >
+                    <Ionicons name="add" size={16} color="#003366" />
+                    <Text style={styles.sheetAddBtnText}>Add Row</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={styles.sheetClearBtn}
+                    onPress={() => setUploadedRoster(null)}
+                  >
+                    <Text style={styles.sheetClearBtnText}>Discard</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
 
             <View style={styles.mappingList}>
               <Text style={styles.mappingLabel}> Roster Column Mapping Preview:</Text>
@@ -1648,9 +1857,18 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
         <ScrollView contentContainerStyle={styles.listPadding} showsVerticalScrollIndicator={false}>
           {/* Card 1: Database Signups */}
-          <View style={styles.statCard}>
+          <TouchableOpacity 
+            style={styles.statCard} 
+            activeOpacity={0.9} 
+            onPress={() => setExpandedChart(expandedChart === 'signups' ? null : 'signups')}
+          >
             <View style={styles.statCardHeader}>
               <Text style={styles.statCardHeading}>Database Signups</Text>
+              <Ionicons 
+                name={expandedChart === 'signups' ? 'chevron-up-circle' : 'chevron-down-circle'} 
+                size={20} 
+                color="#0D9488" 
+              />
             </View>
             <View style={styles.statNumbersRow}>
               <View>
@@ -1678,12 +1896,47 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
                 <Text style={styles.chartBarValue}>60%</Text>
               </View>
             </View>
-          </View>
+            {expandedChart === 'signups' ? (
+              <View style={styles.chartDetailsContainer}>
+                <Text style={styles.chartDetailsTitle}>Institution Breakdown</Text>
+                <View style={styles.chartDetailsTable}>
+                  <View style={styles.chartDetailsHeaderRow}>
+                    <Text style={[styles.chartDetailsHeaderCell, { flex: 2 }]}>Institute</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.5 }]}>Signups</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.5 }]}>Updates</Text>
+                  </View>
+                  {[
+                    { inst: 'RVCE', val1: 12, val2: 20 },
+                    { inst: 'RVITM', val1: 8, val2: 12 },
+                    { inst: 'RVPU', val1: 3, val2: 5 },
+                    { inst: 'RVIS', val1: 1, val2: 2 },
+                  ].map((row, idx) => (
+                    <View key={idx} style={styles.chartDetailsRow}>
+                      <Text style={[styles.chartDetailsCellLabel, { flex: 2 }]}>{row.inst}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.5 }]}>{row.val1}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.5 }]}>{row.val2}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.chartDetailsHelpText}>Tap card to expand institution breakdown</Text>
+            )}
+          </TouchableOpacity>
 
           {/* Card 2: Engagement / News Feed Visitors */}
-          <View style={styles.statCard}>
+          <TouchableOpacity 
+            style={styles.statCard} 
+            activeOpacity={0.9} 
+            onPress={() => setExpandedChart(expandedChart === 'engagement' ? null : 'engagement')}
+          >
             <View style={styles.statCardHeader}>
               <Text style={styles.statCardHeading}>Engagement / News Feed Visitors</Text>
+              <Ionicons 
+                name={expandedChart === 'engagement' ? 'chevron-up-circle' : 'chevron-down-circle'} 
+                size={20} 
+                color="#0D9488" 
+              />
             </View>
             <View style={styles.statNumbersRow}>
               <View>
@@ -1711,12 +1964,47 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
                 <Text style={styles.chartBarValue}>97.6%</Text>
               </View>
             </View>
-          </View>
+            {expandedChart === 'engagement' ? (
+              <View style={styles.chartDetailsContainer}>
+                <Text style={styles.chartDetailsTitle}>Institution Breakdown</Text>
+                <View style={styles.chartDetailsTable}>
+                  <View style={styles.chartDetailsHeaderRow}>
+                    <Text style={[styles.chartDetailsHeaderCell, { flex: 2 }]}>Institute</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.5 }]}>Feed</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.5 }]}>Jobs</Text>
+                  </View>
+                  {[
+                    { inst: 'RVCE', val1: 120, val2: 5000 },
+                    { inst: 'RVITM', val1: 60, val2: 2500 },
+                    { inst: 'RVPU', val1: 15, val2: 400 },
+                    { inst: 'RVIS', val1: 5, val2: 181 },
+                  ].map((row, idx) => (
+                    <View key={idx} style={styles.chartDetailsRow}>
+                      <Text style={[styles.chartDetailsCellLabel, { flex: 2 }]}>{row.inst}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.5 }]}>{row.val1}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.5 }]}>{row.val2}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.chartDetailsHelpText}>Tap card to expand institution breakdown</Text>
+            )}
+          </TouchableOpacity>
 
           {/* Card 3: Overall Users */}
-          <View style={styles.statCard}>
+          <TouchableOpacity 
+            style={styles.statCard} 
+            activeOpacity={0.9} 
+            onPress={() => setExpandedChart(expandedChart === 'users' ? null : 'users')}
+          >
             <View style={styles.statCardHeader}>
               <Text style={styles.statCardHeading}>Overall Users</Text>
+              <Ionicons 
+                name={expandedChart === 'users' ? 'chevron-up-circle' : 'chevron-down-circle'} 
+                size={20} 
+                color="#0D9488" 
+              />
             </View>
             <View style={styles.statNumbersRowMulti}>
               <View style={styles.numItem}>
@@ -1748,12 +2036,49 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
                 <Text style={styles.chartBarValue}>71%</Text>
               </View>
             </View>
-          </View>
+            {expandedChart === 'users' ? (
+              <View style={styles.chartDetailsContainer}>
+                <Text style={styles.chartDetailsTitle}>Institution Breakdown</Text>
+                <View style={styles.chartDetailsTable}>
+                  <View style={styles.chartDetailsHeaderRow}>
+                    <Text style={[styles.chartDetailsHeaderCell, { flex: 1.5 }]}>Institute</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Reg</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Unreg</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Contact</Text>
+                  </View>
+                  {[
+                    { inst: 'RVCE', val1: 5000, val2: 12000, val3: 10000 },
+                    { inst: 'RVITM', val1: 2500, val2: 6000, val3: 5500 },
+                    { inst: 'RVPU', val1: 1500, val2: 4000, val3: 4200 },
+                    { inst: 'RVIS', val1: 755, val2: 1448, val3: 1056 },
+                  ].map((row, idx) => (
+                    <View key={idx} style={styles.chartDetailsRow}>
+                      <Text style={[styles.chartDetailsCellLabel, { flex: 1.5 }]}>{row.inst}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val1}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val2}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val3}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.chartDetailsHelpText}>Tap card to expand institution breakdown</Text>
+            )}
+          </TouchableOpacity>
 
           {/* Card 4: Jobs */}
-          <View style={styles.statCard}>
+          <TouchableOpacity 
+            style={styles.statCard} 
+            activeOpacity={0.9} 
+            onPress={() => setExpandedChart(expandedChart === 'jobs' ? null : 'jobs')}
+          >
             <View style={styles.statCardHeader}>
               <Text style={styles.statCardHeading}>Jobs</Text>
+              <Ionicons 
+                name={expandedChart === 'jobs' ? 'chevron-up-circle' : 'chevron-down-circle'} 
+                size={20} 
+                color="#0D9488" 
+              />
             </View>
             <View style={styles.statNumbersRowMulti}>
               <View style={styles.numItem}>
@@ -1782,12 +2107,49 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
                 <Text style={styles.chartBarValue}>50%</Text>
               </View>
             </View>
-          </View>
+            {expandedChart === 'jobs' ? (
+              <View style={styles.chartDetailsContainer}>
+                <Text style={styles.chartDetailsTitle}>Institution Breakdown</Text>
+                <View style={styles.chartDetailsTable}>
+                  <View style={styles.chartDetailsHeaderRow}>
+                    <Text style={[styles.chartDetailsHeaderCell, { flex: 1.5 }]}>Institute</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Posts</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Apps</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Applied</Text>
+                  </View>
+                  {[
+                    { inst: 'RVCE', val1: 0, val2: 1, val3: 1 },
+                    { inst: 'RVITM', val1: 0, val2: 1, val3: 0 },
+                    { inst: 'RVPU', val1: 0, val2: 0, val3: 0 },
+                    { inst: 'RVIS', val1: 0, val2: 0, val3: 0 },
+                  ].map((row, idx) => (
+                    <View key={idx} style={styles.chartDetailsRow}>
+                      <Text style={[styles.chartDetailsCellLabel, { flex: 1.5 }]}>{row.inst}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val1}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val2}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val3}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.chartDetailsHelpText}>Tap card to expand institution breakdown</Text>
+            )}
+          </TouchableOpacity>
 
           {/* Card 5: Emails */}
-          <View style={styles.statCard}>
+          <TouchableOpacity 
+            style={styles.statCard} 
+            activeOpacity={0.9} 
+            onPress={() => setExpandedChart(expandedChart === 'emails' ? null : 'emails')}
+          >
             <View style={styles.statCardHeader}>
               <Text style={styles.statCardHeading}>Emails</Text>
+              <Ionicons 
+                name={expandedChart === 'emails' ? 'chevron-up-circle' : 'chevron-down-circle'} 
+                size={20} 
+                color="#0D9488" 
+              />
             </View>
             <View style={{ paddingBottom: 10 }}>
               <Text style={[styles.statHugeText, { fontSize: 18 }]}>23118</Text>
@@ -1813,7 +2175,35 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
                 <Text style={styles.chartBarValue}>3.7%</Text>
               </View>
             </View>
-          </View>
+            {expandedChart === 'emails' ? (
+              <View style={styles.chartDetailsContainer}>
+                <Text style={styles.chartDetailsTitle}>Institution Breakdown</Text>
+                <View style={styles.chartDetailsTable}>
+                  <View style={styles.chartDetailsHeaderRow}>
+                    <Text style={[styles.chartDetailsHeaderCell, { flex: 1.5 }]}>Institute</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Sent</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Open</Text>
+                    <Text style={[styles.chartDetailsHeaderCellText, { flex: 1.2 }]}>Click</Text>
+                  </View>
+                  {[
+                    { inst: 'RVCE', val1: 15000, val2: 1800, val3: 600 },
+                    { inst: 'RVITM', val1: 5000, val2: 450, val3: 180 },
+                    { inst: 'RVPU', val1: 2000, val2: 150, val3: 50 },
+                    { inst: 'RVIS', val1: 1118, val2: 68, val3: 20 },
+                  ].map((row, idx) => (
+                    <View key={idx} style={styles.chartDetailsRow}>
+                      <Text style={[styles.chartDetailsCellLabel, { flex: 1.5 }]}>{row.inst}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val1}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val2}</Text>
+                      <Text style={[styles.chartDetailsCellVal, { flex: 1.2 }]}>{row.val3}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.chartDetailsHelpText}>Tap card to expand institution breakdown</Text>
+            )}
+          </TouchableOpacity>
         </ScrollView>
       </View>
     );
@@ -3558,6 +3948,256 @@ const styles = StyleSheet.create({
   },
   statusInactive: {
     backgroundColor: '#F1F5F9',
+  },
+  // --- Start of newly added interactivity features styles ---
+  // Broadcast announcement
+  broadcastCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  broadcastCardTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#003366',
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  broadcastInputRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 10,
+  },
+  broadcastInput: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: '#0F172A',
+    minHeight: 48,
+    maxHeight: 120,
+    textAlignVertical: 'top',
+  },
+  broadcastSendBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#003366',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  announcementBadge: {
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 0.5,
+    borderColor: '#F59E0B',
+  },
+  announcementBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#D97706',
+  },
+
+  // Spreadsheet Editor
+  sheetContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginVertical: 12,
+    borderWidth: 1.5,
+    borderColor: '#003366',
+    shadowColor: '#003366',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  sheetTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#003366',
+    marginBottom: 12,
+  },
+  sheetHeaderRow: {
+    flexDirection: 'row',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    marginBottom: 6,
+  },
+  sheetHeaderCell: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#475569',
+    textAlign: 'center',
+  },
+  sheetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+    paddingVertical: 4,
+    paddingHorizontal: 4,
+  },
+  sheetCellInput: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 6,
+    fontSize: 12,
+    color: '#0F172A',
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    marginHorizontal: 2,
+    textAlign: 'center',
+  },
+  sheetAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E6F0FA',
+    borderWidth: 1,
+    borderColor: '#003366',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  sheetAddBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#003366',
+    marginLeft: 4,
+  },
+  sheetClearBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  sheetClearBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+
+  // Color Presets & Theme Swatches
+  presetColorChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  presetColorChipText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  presetSwatchMini: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+
+  // Password Strength Indicator
+  strengthBarBg: {
+    height: 6,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 3,
+    marginTop: 6,
+    overflow: 'hidden',
+  },
+  strengthBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+
+  // Logs/Stats interactive Breakdown Table
+  chartDetailsContainer: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 12,
+    marginTop: 12,
+  },
+  chartDetailsTitle: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#0D9488',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  chartDetailsTable: {
+    width: '100%',
+  },
+  chartDetailsHeaderRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1.5,
+    borderColor: '#E2E8F0',
+    paddingBottom: 6,
+    marginBottom: 6,
+  },
+  chartDetailsHeaderCell: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#64748B',
+  },
+  chartDetailsHeaderCellText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#64748B',
+    textAlign: 'right',
+  },
+  chartDetailsRow: {
+    flexDirection: 'row',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderColor: '#F1F5F9',
+  },
+  chartDetailsCellLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  chartDetailsCellVal: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#475569',
+    textAlign: 'right',
+  },
+  chartDetailsHelpText: {
+    fontSize: 11,
+    color: '#0D9488',
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 10,
+    textDecorationLine: 'underline',
   },
 });
 
