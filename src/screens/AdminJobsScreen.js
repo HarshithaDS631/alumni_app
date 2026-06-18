@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -188,12 +189,15 @@ export default function AdminJobsScreen({ navigation, route }) {
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 400;
   const isSuperAdmin = route?.params?.isSuperAdmin || false;
-  const [selectedInstitution, setSelectedInstitution] = useState('All');
+  const isFocused = useIsFocused();
+  const [selectedInstitution, setSelectedInstitution] = useState(global.selectedInstitution || 'All');
+  const [selectedWorkMode, setSelectedWorkMode] = useState('All');
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [screen, setScreen] = useState('list');
   const [jobs, setJobs] = useState(DUMMY_JOBS);
   const [detail, setDetail] = useState(null);
   const [search, setSearch] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false); // work mode picker inside editor
 
   const [fRole, setFRole] = useState('');
   const [fCompany, setFCompany] = useState('');
@@ -201,6 +205,13 @@ export default function AdminJobsScreen({ navigation, route }) {
   const [fExp, setFExp] = useState('');
   const [fLoc, setFLoc] = useState('');
   const [fDesc, setFDesc] = useState('');
+
+  // Sync selected institution with global value when screen is focused
+  useEffect(() => {
+    if (isFocused && isSuperAdmin && global.selectedInstitution) {
+      setSelectedInstitution(global.selectedInstitution);
+    }
+  }, [isFocused, isSuperAdmin]);
 
   const clearForm = () => { setFRole(''); setFCompany(''); setFMode(''); setFExp(''); setFLoc(''); setFDesc(''); };
 
@@ -230,14 +241,34 @@ export default function AdminJobsScreen({ navigation, route }) {
 
   const openDetail = (job) => { setDetail(job); setScreen('detail'); };
 
-  const filtered = jobs.filter(j => {
-    if (isSuperAdmin && selectedInstitution !== 'All') {
-      if (j.institution !== selectedInstitution) return false;
+  const filtered = useMemo(() => {
+    return jobs.filter(j => {
+      if (isSuperAdmin && selectedInstitution !== 'All') {
+        if (j.institution !== selectedInstitution) return false;
+      }
+      if (selectedWorkMode !== 'All') {
+        if (j.workMode.toLowerCase() !== selectedWorkMode.toLowerCase()) return false;
+      }
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return j.role.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.location.toLowerCase().includes(q);
+    });
+  }, [jobs, selectedInstitution, selectedWorkMode, search, isSuperAdmin]);
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (selectedWorkMode !== 'All') count++;
+    if (isSuperAdmin && selectedInstitution !== 'All') count++;
+    return count;
+  }, [selectedWorkMode, isSuperAdmin, selectedInstitution]);
+
+  const handleResetFilters = () => {
+    setSelectedWorkMode('All');
+    if (isSuperAdmin) {
+      setSelectedInstitution('All');
+      global.selectedInstitution = 'All';
     }
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return j.role.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.location.toLowerCase().includes(q);
-  });
+  };
 
   // ─── HEADER (always shown) ─────────────────────────────────────
   const header = (
@@ -246,8 +277,8 @@ export default function AdminJobsScreen({ navigation, route }) {
         onPress={() => navigation && navigation.navigate('AdminProfile')}
         activeOpacity={0.7}
       >
-        <View style={s.avatar}>
-          <Ionicons name="person" size={20} color="#FFFFFF" />
+        <View style={[s.avatar, isSuperAdmin && { backgroundColor: '#D97706' }]}>
+          <Text style={s.avatarText}>{isSuperAdmin ? 'SA' : 'AD'}</Text>
         </View>
       </TouchableOpacity>
       <View style={s.searchBar}>
@@ -392,29 +423,29 @@ export default function AdminJobsScreen({ navigation, route }) {
     <SafeAreaView style={s.safe}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       {header}
-      {isSuperAdmin && (
-        <View style={s.superAdminSelector}>
-          <Text style={s.selectorLabel}>Institution:</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.selectorScroll}>
-            {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
-              <TouchableOpacity
-                key={inst}
-                style={[
-                  s.selectorChip,
-                  selectedInstitution === inst && s.selectorChipActive
-                ]}
-                onPress={() => setSelectedInstitution(inst)}
-              >
-                <Text style={[
-                  s.selectorChipText,
-                  selectedInstitution === inst && s.selectorChipTextActive
-                ]}>{inst}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 20, paddingBottom: 12 }}>
+      
+      {/* Filter Summary Bar */}
+      <View style={s.filterSummaryBar}>
+        <Text style={s.filterSummaryText}>
+          Showing {filtered.length} jobs
+        </Text>
+        <TouchableOpacity
+          style={[s.filterButton, activeFiltersCount > 0 && s.filterButtonActive]}
+          activeOpacity={0.7}
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Ionicons
+            name="options-outline"
+            size={18}
+            color={activeFiltersCount > 0 ? '#FFFFFF' : '#003366'}
+          />
+          <Text style={[s.filterButtonText, activeFiltersCount > 0 && s.filterButtonTextActive]}>
+            Filter{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 10, paddingBottom: 12 }}>
         <Text style={{ fontSize: 20, fontWeight: '800', color: '#002144' }}>Job Postings</Text>
         <TouchableOpacity activeOpacity={0.7} onPress={() => setScreen('editor')}>
           <Ionicons name="add-circle" size={26} color="#003366" />
@@ -444,6 +475,75 @@ export default function AdminJobsScreen({ navigation, route }) {
       <TouchableOpacity style={s.fab} activeOpacity={0.8} onPress={() => setScreen('editor')}>
         <Ionicons name="add" size={28} color="#FFFFFF" />
       </TouchableOpacity>
+
+      {/* Filter Modal */}
+      <Modal visible={showFilterModal} animationType="slide" transparent>
+        <View style={s.filterModalOverlay}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => setShowFilterModal(false)} />
+          <View style={s.filterSheet}>
+            <View style={s.filterSheetHeader}>
+              <Text style={s.filterSheetTitle}>Filter Jobs</Text>
+              <View style={{ flexDirection: 'row', gap: 14 }}>
+                <TouchableOpacity onPress={handleResetFilters} activeOpacity={0.7}>
+                  <Text style={s.resetText}>Reset All</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowFilterModal(false)} activeOpacity={0.7}>
+                  <Ionicons name="close" size={24} color="#0F172A" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <ScrollView style={s.filterScrollView} showsVerticalScrollIndicator={false}>
+              {/* Work Mode */}
+              <Text style={s.filterGroupLabel}>Work Mode</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.pillsRow}>
+                {['All', ...WORK_MODES].map((mode) => (
+                  <TouchableOpacity
+                    key={mode}
+                    style={[s.pill, selectedWorkMode === mode && s.pillActive]}
+                    onPress={() => setSelectedWorkMode(mode)}
+                  >
+                    <Text style={[s.pillText, selectedWorkMode === mode && s.pillTextActive]}>
+                      {mode}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Institution Filter (Super Admin only) */}
+              {isSuperAdmin && (
+                <>
+                  <Text style={s.filterGroupLabel}>Institution</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.pillsRow}>
+                    {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
+                      <TouchableOpacity
+                        key={inst}
+                        style={[s.pill, selectedInstitution === inst && s.pillActive]}
+                        onPress={() => {
+                          setSelectedInstitution(inst);
+                          global.selectedInstitution = inst;
+                        }}
+                      >
+                        <Text style={[s.pillText, selectedInstitution === inst && s.pillTextActive]}>
+                          {inst}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </>
+              )}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={s.applyButton}
+              activeOpacity={0.8}
+              onPress={() => setShowFilterModal(false)}
+            >
+              <Text style={s.applyButtonText}>Apply Filters</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -453,6 +553,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F8FAFC' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#003366', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  avatarText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8FAFC', borderRadius: 10, paddingHorizontal: 12, height: 40, borderWidth: 1, borderColor: '#E2E8F0', marginRight: 8 },
   searchInput: { flex: 1, fontSize: 14, color: '#0F172A', padding: 0 },
   subHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
@@ -504,39 +605,122 @@ const s = StyleSheet.create({
   // FABs
   fab: { position: 'absolute', bottom: Platform.OS === 'ios' ? 110 : 90, right: 20, width: 56, height: 56, borderRadius: 16, backgroundColor: '#003366', alignItems: 'center', justifyContent: 'center', elevation: 6, shadowColor: '#003366', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   resumeFab: { position: 'absolute', bottom: Platform.OS === 'ios' ? 40 : 24, right: 20, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, paddingVertical: 14, borderRadius: 16, backgroundColor: '#002144', elevation: 6, shadowColor: '#002144', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
-  superAdminSelector: {
+
+  // Filter Styles
+  filterSummaryBar: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    borderBottomColor: '#E2E8F0',
   },
-  selectorLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#475569',
-    marginRight: 8,
+  filterSummaryText: {
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '600',
   },
-  selectorScroll: {
-    gap: 8,
-  },
-  selectorChip: {
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#003366',
+    borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F1F5F9',
+    gap: 6,
   },
-  selectorChipActive: {
+  filterButtonActive: {
     backgroundColor: '#003366',
   },
-  selectorChipText: {
-    fontSize: 11,
+  filterButtonText: {
+    fontSize: 12.5,
     fontWeight: '700',
-    color: '#64748B',
+    color: '#003366',
   },
-  selectorChipTextActive: {
+  filterButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  filterModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'flex-end',
+  },
+  filterSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '85%',
+    paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+  },
+  filterSheetHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  filterSheetTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  resetText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#EF4444',
+  },
+  filterScrollView: {
+    padding: 20,
+  },
+  filterGroupLabel: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#475569',
+    marginTop: 16,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+  },
+  pillsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingBottom: 4,
+  },
+  pill: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  pillActive: {
+    backgroundColor: '#003366',
+    borderColor: '#003366',
+  },
+  pillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  pillTextActive: {
+    color: '#FFFFFF',
+  },
+  applyButton: {
+    backgroundColor: '#003366',
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: Platform.OS === 'ios' ? 20 : 10,
+  },
+  applyButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
     color: '#FFFFFF',
   },
 });

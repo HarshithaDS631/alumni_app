@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -15,6 +16,8 @@ import {
   Switch,
   ActivityIndicator,
   Platform,
+  Image,
+  Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -109,10 +112,69 @@ const panelItems = [
   { id: '12', title: 'Admin Activities', icon: 'time-outline', color: '#F1F5F9', iconColor: '#475569', moduleName: 'admin_activities', desc: 'Audit log of actions taken by admins' },
 ];
 
+const MOCK_POSTS = [
+  {
+    id: 'p1',
+    user: 'Dr. Ramesh Kumar',
+    role: 'Principal Admin @ RVCE',
+    avatar: 'RK',
+    content: 'We are proud to announce that RVCE has been ranked #1 in state engineering college rankings for 2026. Congratulations to all students and faculty! 🎓🎉 #RVCE #Rankings',
+    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=600&h=400&q=80',
+    likes: 245,
+    commentsCount: 18,
+    time: '2 hours ago',
+    institution: 'RVCE',
+  },
+  {
+    id: 'p2',
+    user: 'Suresh Babu',
+    role: 'Placement Coordinator @ RVITM',
+    avatar: 'SB',
+    content: 'Fantastic start to the placement season at RVITM! Over 45 alumni placed in Infosys this week. More recruiters visiting campus next week. Keep it up! 💼🚀 #Placements #RVITM',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&h=400&q=80',
+    likes: 182,
+    commentsCount: 9,
+    time: '5 hours ago',
+    institution: 'RVITM',
+  },
+  {
+    id: 'p3',
+    user: 'Meera Nair',
+    role: 'Admissions Officer @ RVPU',
+    avatar: 'MN',
+    content: "Welcoming the new batch of PU Science and Commerce streams! Orientation starts tomorrow at 9:00 AM. Let's make this academic year amazing! 📚✨ #NewBatch #Orientation",
+    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&h=400&q=80',
+    likes: 95,
+    commentsCount: 3,
+    time: '1 day ago',
+    institution: 'RVPU',
+  },
+  {
+    id: 'p4',
+    user: 'Vikram Joshi',
+    role: 'Principal @ RVIS',
+    avatar: 'VJ',
+    content: 'Our school sports meet was a grand success! Outstanding performance by all houses. A huge shoutout to our physical education instructors and volunteers! 🏆🏃‍♂️ #SportsMeet #RVIS',
+    image: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=600&h=400&q=80',
+    likes: 120,
+    commentsCount: 7,
+    time: '2 days ago',
+    institution: 'RVIS',
+  },
+];
+
 const SuperAdminDashboardScreen = ({ navigation, route }) => {
   const initialModule = route?.params?.initialModule ?? null;
   const [activeModule, setActiveModule] = useState(initialModule);
-  const [selectedInstitution, setSelectedInstitution] = useState('All');
+  const [selectedInstitution, setSelectedInstitution] = useState(global.selectedInstitution || 'All');
+  const isFocused = useIsFocused();
+
+  // Sync selected institution with global value when screen is focused
+  useEffect(() => {
+    if (isFocused && global.selectedInstitution) {
+      setSelectedInstitution(global.selectedInstitution);
+    }
+  }, [isFocused]);
 
   // Dynamic States
   const [admins, setAdmins] = useState(INITIAL_ADMINS);
@@ -122,6 +184,176 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   const [activities, setActivities] = useState(INITIAL_ACTIVITIES);
   const [imports, setImports] = useState(INITIAL_IMPORTS);
   const [networkSettings, setNetworkSettings] = useState(INITIAL_NETWORK_SETTINGS);
+
+  // News Feed & Dropdown States
+  const [postsList, setPostsList] = useState(MOCK_POSTS);
+  const [likedPosts, setLikedPosts] = useState({});
+  const [bookmarkedPosts, setBookmarkedPosts] = useState({});
+  const [followedUsers, setFollowedUsers] = useState({});
+  const [showInstDropdown, setShowInstDropdown] = useState(false);
+
+  // Post Actions
+  const togglePostLike = (postId) => {
+    setLikedPosts((prev) => {
+      const isLiked = prev[postId];
+      setPostsList(curr => curr.map(p => {
+        if (p.id === postId) {
+          return {
+            ...p,
+            likes: isLiked ? p.likes - 1 : p.likes + 1
+          };
+        }
+        return p;
+      }));
+      return { ...prev, [postId]: !isLiked };
+    });
+  };
+
+  const togglePostBookmark = (postId) => {
+    setBookmarkedPosts((prev) => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  const togglePostFollow = (postId) => {
+    setFollowedUsers((prev) => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  const handlePostShare = async (post) => {
+    try {
+      await Share.share({
+        message: `Check out this post from ${post.user} on Alumni App:\n"${post.content}"`,
+      });
+    } catch (_error) {
+      Alert.alert('Error', 'Could not share this post');
+    }
+  };
+
+  // Institution Dropdown Component
+  const InstitutionDropdown = () => {
+    return (
+      <View style={styles.dropdownContainer}>
+        <TouchableOpacity 
+          style={styles.dropdownButton} 
+          activeOpacity={0.7}
+          onPress={() => setShowInstDropdown(true)}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="business-outline" size={20} color="#003366" style={{ marginRight: 8 }} />
+            <Text style={styles.dropdownButtonText}>
+              {selectedInstitution === 'All' ? 'All Institutions' : selectedInstitution}
+            </Text>
+          </View>
+          <Ionicons name="chevron-down" size={18} color="#003366" />
+        </TouchableOpacity>
+
+        <Modal visible={showInstDropdown} transparent animationType="fade">
+          <TouchableOpacity 
+            style={styles.dropdownModalOverlay} 
+            activeOpacity={1} 
+            onPress={() => setShowInstDropdown(false)}
+          >
+            <View style={styles.dropdownModalContent}>
+              <Text style={styles.dropdownModalTitle}>Select Institution</Text>
+              {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
+                <TouchableOpacity
+                  key={inst}
+                  style={[
+                    styles.dropdownOption,
+                    selectedInstitution === inst && styles.dropdownOptionActive
+                  ]}
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    setSelectedInstitution(inst);
+                    global.selectedInstitution = inst;
+                    setShowInstDropdown(false);
+                  }}
+                >
+                  <Text style={[
+                    styles.dropdownOptionText,
+                    selectedInstitution === inst && styles.dropdownOptionTextActive
+                  ]}>
+                    {inst === 'All' ? 'All Institutions' : inst}
+                  </Text>
+                  {selectedInstitution === inst && (
+                    <Ionicons name="checkmark" size={18} color="#003366" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      </View>
+    );
+  };
+
+  // Render Post Card
+  const renderPostCard = (post) => {
+    const isLiked = !!likedPosts[post.id];
+    const isBookmarked = !!bookmarkedPosts[post.id];
+    const isFollowing = !!followedUsers[post.id];
+
+    return (
+      <View key={post.id} style={styles.postCard}>
+        {/* Post header */}
+        <View style={styles.postHeader}>
+          <View style={styles.postUserAvatar}>
+            <Text style={styles.postAvatarText}>{post.avatar}</Text>
+          </View>
+          <View style={styles.postUserInfo}>
+            <Text style={styles.postUserName}>{post.user}</Text>
+            <Text style={styles.postUserRole}>{post.role}</Text>
+          </View>
+          <TouchableOpacity 
+            style={[styles.followBtn, isFollowing && styles.followBtnActive]} 
+            onPress={() => togglePostFollow(post.id)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
+              {isFollowing ? 'Following' : '+ Follow'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Post Content */}
+        <Text style={styles.postContent}>{post.content}</Text>
+
+        {/* Post image */}
+        {post.image && (
+          <Image source={{ uri: post.image }} style={styles.postImage} />
+        )}
+
+        {/* Action Buttons */}
+        <View style={styles.postActions}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <TouchableOpacity onPress={() => togglePostLike(post.id)} activeOpacity={0.6} style={styles.actionBtn}>
+              <Ionicons 
+                name={isLiked ? 'heart' : 'heart-outline'} 
+                size={22} 
+                color={isLiked ? '#EF4444' : '#64748B'} 
+              />
+              <Text style={[styles.actionBtnText, isLiked && { color: '#EF4444' }]}>{post.likes}</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity activeOpacity={0.6} style={styles.actionBtn} onPress={() => Alert.alert('Comments', 'Comments are in view-only mode for Super Admins.')}>
+              <Ionicons name="chatbubble-outline" size={20} color="#64748B" />
+              <Text style={styles.actionBtnText}>{post.commentsCount}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity activeOpacity={0.6} style={styles.actionBtn} onPress={() => handlePostShare(post)}>
+              <Ionicons name="share-social-outline" size={20} color="#64748B" />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity onPress={() => togglePostBookmark(post.id)} activeOpacity={0.6}>
+            <Ionicons 
+              name={isBookmarked ? 'bookmark' : 'bookmark-outline'} 
+              size={22} 
+              color={isBookmarked ? '#003366' : '#64748B'} 
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
 
   // Search, tabs and toggles
   const [searchQuery, setSearchQuery] = useState('');
@@ -214,82 +446,251 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   // MODULE RENDERERS
   // ==========================================
 
-  // 1. Dashboard Home (Grid & summary)
+  // 1. Dashboard Home (Grid & summary, specific institution details, news feed)
   const renderDashboardHome = () => {
     const totalAlumniAgg = INSTITUTIONS.reduce((sum, item) => sum + item.totalAlumni, 0);
     const registeredUsersAgg = INSTITUTIONS.reduce((sum, item) => sum + item.registeredUsers, 0);
     const activeAdminsAgg = admins.filter(a => a.status === 'Active').length;
 
+    // Filter posts by selected institution
+    const filteredPosts = postsList.filter(p => {
+      if (selectedInstitution === 'All') return true;
+      return p.institution === selectedInstitution;
+    });
+
     return (
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.moduleScroll}>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryHeaderRow}>
-            <Text style={styles.summaryTitle}>SYSTEM STATUS & HEALTH</Text>
-            <View style={styles.healthStatusBadge}>
-              <View style={styles.healthDot} />
-              <Text style={styles.healthText}>All Services Online</Text>
+      <View style={styles.dashboardHomeView}>
+        {/* Custom Institution Dropdown at the top */}
+        <InstitutionDropdown />
+
+        {selectedInstitution === 'All' ? (
+          <>
+            {/* Aggregate Stats Card */}
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryHeaderRow}>
+                <Text style={styles.summaryTitle}>SYSTEM STATUS & HEALTH</Text>
+                <View style={styles.healthStatusBadge}>
+                  <View style={styles.healthDot} />
+                  <Text style={styles.healthText}>All Services Online</Text>
+                </View>
+              </View>
+              <View style={styles.summaryGrid}>
+                <View style={styles.summaryItem}>
+                  <Text style={styles.summaryValue}>{totalAlumniAgg.toLocaleString()}</Text>
+                  <Text style={styles.summaryLabel}>Total Alumni</Text>
+                </View>
+                <View style={styles.summaryItem}>
+                  <Text style={styles.summaryValue}>{registeredUsersAgg.toLocaleString()}</Text>
+                  <Text style={styles.summaryLabel}>Registered Users</Text>
+                </View>
+                <View style={styles.summaryItem}>
+                  <Text style={styles.summaryValue}>{activeAdminsAgg}</Text>
+                  <Text style={styles.summaryLabel}>Active Admins</Text>
+                </View>
+              </View>
             </View>
-          </View>
-          <View style={styles.summaryGrid}>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryValue}>{totalAlumniAgg.toLocaleString()}</Text>
-              <Text style={styles.summaryLabel}>Total Alumni</Text>
+
+            {/* Institution Performance Cards List */}
+            <Text style={styles.sectionHeaderTitle}>Institution Performance</Text>
+            {INSTITUTIONS.map((inst) => {
+              const instAdmins = admins.filter(a => a.institution === inst.shortName).length;
+              const instSpam = spamReports.filter(s => s.institution === inst.shortName).length;
+
+              return (
+                <TouchableOpacity
+                  key={inst.id}
+                  style={styles.instMetricCard}
+                  onPress={() => Alert.alert(inst.name, `Location: ${inst.location}\nEstablished: ${inst.established}\nAlumni: ${inst.totalAlumni}`)}
+                >
+                  <View style={styles.instMetricHeader}>
+                    <View style={styles.instTitleWrap}>
+                      <View style={[styles.instBadgeCircle, { backgroundColor: inst.color }]}>
+                        <Text style={styles.instBadgeCircleText}>{inst.shortName.substring(0,2)}</Text>
+                      </View>
+                      <View style={{ marginLeft: 12 }}>
+                        <Text style={styles.instCardTitle}>{inst.name}</Text>
+                        <Text style={styles.instCardLoc}>{inst.location}</Text>
+                      </View>
+                    </View>
+                    <View style={[styles.statusTag, inst.status === 'Active' ? styles.statusActive : styles.statusPending]}>
+                      <Text style={inst.status === 'Active' ? styles.statusActiveText : styles.statusPendingText}>{inst.status}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.instMetricsRow}>
+                    <View style={styles.metricItem}>
+                      <Text style={styles.metricVal}>{inst.totalAlumni}</Text>
+                      <Text style={styles.metricLbl}>Total Alumni</Text>
+                    </View>
+                    <View style={styles.metricItem}>
+                      <Text style={styles.metricVal}>{instAdmins}</Text>
+                      <Text style={styles.metricLbl}>Admins</Text>
+                    </View>
+                    <View style={styles.metricItem}>
+                      <Text style={[styles.metricVal, instSpam > 0 && { color: '#EF4444' }]}>{instSpam}</Text>
+                      <Text style={styles.metricLbl}>Reports</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </>
+        ) : (
+          <>
+            {/* Specific Institution Details */}
+            {(() => {
+              const instDetails = INSTITUTIONS.find(i => i.shortName === selectedInstitution);
+              const instAdminsList = admins.filter(a => a.institution === selectedInstitution);
+              const instPlacements = placements.filter(p => p.institution === selectedInstitution);
+              const instSettings = networkSettings[selectedInstitution] || {};
+
+              return (
+                <View style={{ gap: 16 }}>
+                  {/* General Info Card */}
+                  <View style={styles.detailsCard}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <Text style={styles.detailsCardHeaderTitle}>{instDetails?.name || selectedInstitution}</Text>
+                      <View style={[styles.statusTag, instDetails?.status === 'Active' ? styles.statusActive : styles.statusPending]}>
+                        <Text style={instDetails?.status === 'Active' ? styles.statusActiveText : styles.statusPendingText}>
+                          {instDetails?.status || 'Active'}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.detailsDivider} />
+
+                    <View style={styles.detailsInfoRow}>
+                      <Ionicons name="location-outline" size={16} color="#64748B" style={{ marginRight: 6 }} />
+                      <Text style={styles.detailsInfoText}>Location: {instDetails?.location || 'Bengaluru, Karnataka'}</Text>
+                    </View>
+                    <View style={styles.detailsInfoRow}>
+                      <Ionicons name="calendar-outline" size={16} color="#64748B" style={{ marginRight: 6 }} />
+                      <Text style={styles.detailsInfoText}>Established: {instDetails?.established || 'N/A'}</Text>
+                    </View>
+                    {instSettings.website && (
+                      <TouchableOpacity 
+                        style={styles.detailsLinkRow}
+                        onPress={() => Alert.alert('Website Link', `Opening ${instSettings.website}`)}
+                      >
+                        <Ionicons name="globe-outline" size={16} color="#003366" style={{ marginRight: 6 }} />
+                        <Text style={styles.detailsLinkText}>{instSettings.website}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* Feature Status Cards */}
+                  <View style={styles.detailsCard}>
+                    <Text style={styles.detailsSectionHeader}>Feature Settings Overview</Text>
+                    <View style={styles.featuresGrid}>
+                      <View style={styles.featureItem}>
+                        <Ionicons 
+                          name={instSettings.displayJobs ? "checkmark-circle" : "close-circle"} 
+                          size={18} 
+                          color={instSettings.displayJobs ? "#10B981" : "#EF4444"} 
+                        />
+                        <Text style={styles.featureItemText}>Jobs Board</Text>
+                      </View>
+                      <View style={styles.featureItem}>
+                        <Ionicons 
+                          name={instSettings.displayEvents ? "checkmark-circle" : "close-circle"} 
+                          size={18} 
+                          color={instSettings.displayEvents ? "#10B981" : "#EF4444"} 
+                        />
+                        <Text style={styles.featureItemText}>Events</Text>
+                      </View>
+                      <View style={styles.featureItem}>
+                        <Ionicons 
+                          name={instSettings.displayGroups ? "checkmark-circle" : "close-circle"} 
+                          size={18} 
+                          color={instSettings.displayGroups ? "#10B981" : "#EF4444"} 
+                        />
+                        <Text style={styles.featureItemText}>Groups</Text>
+                      </View>
+                      <View style={styles.featureItem}>
+                        <Ionicons 
+                          name={instSettings.displayMemories ? "checkmark-circle" : "close-circle"} 
+                          size={18} 
+                          color={instSettings.displayMemories ? "#10B981" : "#EF4444"} 
+                        />
+                        <Text style={styles.featureItemText}>Timeline</Text>
+                      </View>
+                      <View style={styles.featureItem}>
+                        <Ionicons 
+                          name={instSettings.displayDonations ? "checkmark-circle" : "close-circle"} 
+                          size={18} 
+                          color={instSettings.displayDonations ? "#10B981" : "#EF4444"} 
+                        />
+                        <Text style={styles.featureItemText}>Donations</Text>
+                      </View>
+                      <View style={styles.featureItem}>
+                        <Ionicons 
+                          name={instSettings.displayMentorship ? "checkmark-circle" : "close-circle"} 
+                          size={18} 
+                          color={instSettings.displayMentorship ? "#10B981" : "#EF4444"} 
+                        />
+                        <Text style={styles.featureItemText}>Mentorship</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Administrators List */}
+                  <View style={styles.detailsCard}>
+                    <Text style={styles.detailsSectionHeader}>Administrators ({instAdminsList.length})</Text>
+                    {instAdminsList.length > 0 ? (
+                      instAdminsList.map(a => (
+                        <View key={a.id} style={styles.adminListRow}>
+                          <View style={styles.adminInfoCol}>
+                            <Text style={styles.adminNameText}>{a.name}</Text>
+                            <Text style={styles.adminEmailText}>{a.email}</Text>
+                          </View>
+                          <View style={[styles.statusTagMini, a.status === 'Active' ? styles.statusActive : styles.statusInactive]}>
+                            <Text style={styles.statusTagMiniText}>{a.status}</Text>
+                          </View>
+                        </View>
+                      ))
+                    ) : (
+                      <Text style={styles.emptyDetailsText}>No administrators registered.</Text>
+                    )}
+                  </View>
+
+                  {/* Placement Tool Data */}
+                  <View style={styles.detailsCard}>
+                    <Text style={styles.detailsSectionHeader}>Hiring Partners & Placements</Text>
+                    {instPlacements.length > 0 ? (
+                      instPlacements.map(p => (
+                        <View key={p.id} style={styles.placementListRow}>
+                          <View>
+                            <Text style={styles.placementCompanyText}>{p.company}</Text>
+                            <Text style={styles.placementIndustryText}>{p.industry}</Text>
+                          </View>
+                          <View style={styles.placementCountBadge}>
+                            <Text style={styles.placementCountText}>{p.count} Alumni</Text>
+                          </View>
+                        </View>
+                      ))
+                    ) : (
+                      <Text style={styles.emptyDetailsText}>No placement data available.</Text>
+                    )}
+                  </View>
+                </View>
+              );
+            })()}
+          </>
+        )}
+
+        {/* News Feed / Posts list */}
+        <Text style={styles.sectionHeaderTitle}>Alumni News Feed</Text>
+        <View style={{ paddingBottom: 20 }}>
+          {filteredPosts.length > 0 ? (
+            filteredPosts.map(post => renderPostCard(post))
+          ) : (
+            <View style={styles.emptyStateContainer}>
+              <Ionicons name="newspaper-outline" size={48} color="#94A3B8" />
+              <Text style={styles.emptyStateText}>No posts for this institution.</Text>
             </View>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryValue}>{registeredUsersAgg.toLocaleString()}</Text>
-              <Text style={styles.summaryLabel}>Registered Users</Text>
-            </View>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryValue}>{activeAdminsAgg}</Text>
-              <Text style={styles.summaryLabel}>Active Admins</Text>
-            </View>
-          </View>
+          )}
         </View>
-
-        <Text style={styles.sectionHeaderTitle}>Institution Performance</Text>
-        {INSTITUTIONS.map((inst) => {
-          const instAdmins = admins.filter(a => a.institution === inst.shortName).length;
-          const instSpam = spamReports.filter(s => s.institution === inst.shortName).length;
-
-          return (
-            <TouchableOpacity
-              key={inst.id}
-              style={styles.instMetricCard}
-              onPress={() => Alert.alert(inst.name, `Location: ${inst.location}\nEstablished: ${inst.established}\nAlumni: ${inst.totalAlumni}`)}
-            >
-              <View style={styles.instMetricHeader}>
-                <View style={styles.instTitleWrap}>
-                  <View style={[styles.instBadgeCircle, { backgroundColor: inst.color }]}>
-                    <Text style={styles.instBadgeCircleText}>{inst.shortName.substring(0,2)}</Text>
-                  </View>
-                  <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.instCardTitle}>{inst.name}</Text>
-                    <Text style={styles.instCardLoc}>{inst.location}</Text>
-                  </View>
-                </View>
-                <View style={[styles.statusTag, inst.status === 'Active' ? styles.statusActive : styles.statusPending]}>
-                  <Text style={inst.status === 'Active' ? styles.statusActiveText : styles.statusPendingText}>{inst.status}</Text>
-                </View>
-              </View>
-
-              <View style={styles.instMetricsRow}>
-                <View style={styles.metricItem}>
-                  <Text style={styles.metricVal}>{inst.totalAlumni}</Text>
-                  <Text style={styles.metricLbl}>Total Alumni</Text>
-                </View>
-                <View style={styles.metricItem}>
-                  <Text style={styles.metricVal}>{instAdmins}</Text>
-                  <Text style={styles.metricLbl}>Admins</Text>
-                </View>
-                <View style={styles.metricItem}>
-                  <Text style={[styles.metricVal, instSpam > 0 && { color: '#EF4444' }]}>{instSpam}</Text>
-                  <Text style={styles.metricLbl}>Reports</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      </View>
     );
   };
 
@@ -2831,6 +3232,332 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#334155',
     marginBottom: 6,
+  },
+  // New Styles
+  dashboardHomeView: {
+    flex: 1,
+  },
+  dropdownContainer: {
+    marginBottom: 16,
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#003366',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  dropdownButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#003366',
+  },
+  dropdownModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  dropdownModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    width: '100%',
+    maxWidth: 320,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  dropdownModalTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0F172A',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  dropdownOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    marginBottom: 6,
+  },
+  dropdownOptionActive: {
+    backgroundColor: '#F0F9FF',
+  },
+  dropdownOptionText: {
+    fontSize: 14.5,
+    fontWeight: '600',
+    color: '#334155',
+  },
+  dropdownOptionTextActive: {
+    color: '#003366',
+    fontWeight: '700',
+  },
+  // News Feed / Posts
+  postCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  postUserAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  postAvatarText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#003366',
+  },
+  postUserInfo: {
+    flex: 1,
+  },
+  postUserName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  postUserRole: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  followBtn: {
+    borderWidth: 1,
+    borderColor: '#003366',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  followBtnActive: {
+    backgroundColor: '#003366',
+  },
+  followBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#003366',
+  },
+  followBtnTextActive: {
+    color: '#FFFFFF',
+  },
+  postContent: {
+    fontSize: 14,
+    color: '#334155',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  postImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 12,
+    resizeMode: 'cover',
+  },
+  postActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 10,
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  actionBtnText: {
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '600',
+  },
+  // Details Card
+  detailsCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 16,
+  },
+  detailsCardHeaderTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0F172A',
+    flex: 1,
+  },
+  detailsDivider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+    marginVertical: 12,
+  },
+  detailsInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  detailsInfoText: {
+    fontSize: 14,
+    color: '#475569',
+  },
+  detailsLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  detailsLinkText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#003366',
+    textDecorationLine: 'underline',
+  },
+  detailsSectionHeader: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0F172A',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  featuresGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    width: '47%',
+  },
+  featureItemText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#475569',
+    marginLeft: 6,
+  },
+  adminListRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  adminInfoCol: {
+    flex: 1,
+  },
+  adminNameText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  adminEmailText: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 1,
+  },
+  statusTagMini: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  statusTagMiniText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  placementListRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  placementCompanyText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  placementIndustryText: {
+    fontSize: 12,
+    color: '#64748B',
+  },
+  placementCountBadge: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+  },
+  placementCountText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#003366',
+  },
+  emptyDetailsText: {
+    fontSize: 13,
+    color: '#94A3B8',
+    textAlign: 'center',
+    paddingVertical: 12,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: '#94A3B8',
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  statusInactive: {
+    backgroundColor: '#F1F5F9',
   },
 });
 

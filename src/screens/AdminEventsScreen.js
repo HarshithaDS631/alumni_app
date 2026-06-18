@@ -1,16 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StatusBar, Alert, Modal, FlatList, Dimensions } from 'react-native';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StatusBar, Alert, Modal, FlatList, Dimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
 const AdminEventsScreen = ({ navigation, route }) => {
   const isSuperAdmin = route?.params?.isSuperAdmin || false;
-  const [selectedInstitution, setSelectedInstitution] = useState('All');
+  const isFocused = useIsFocused();
+  const [selectedInstitution, setSelectedInstitution] = useState(global.selectedInstitution || 'All');
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [commentModalEvent, setCommentModalEvent] = useState(null);
   const [newComment, setNewComment] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Event form states
   const [eventTitle, setEventTitle] = useState('');
@@ -68,6 +72,13 @@ const AdminEventsScreen = ({ navigation, route }) => {
       institution: 'RVPU',
     },
   ]);
+
+  // Sync selected institution with global value when screen is focused
+  useEffect(() => {
+    if (isFocused && isSuperAdmin && global.selectedInstitution) {
+      setSelectedInstitution(global.selectedInstitution);
+    }
+  }, [isFocused, isSuperAdmin]);
 
   const handleLike = (eventId) => {
     setEventList(prev => prev.map(ev => {
@@ -141,87 +152,112 @@ const AdminEventsScreen = ({ navigation, route }) => {
     if (isSuperAdmin && selectedInstitution !== 'All') {
       data = data.filter((event) => event.institution === selectedInstitution);
     }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      data = data.filter(
+        (event) =>
+          event.title.toLowerCase().includes(q) ||
+          event.description.toLowerCase().includes(q) ||
+          event.location.toLowerCase().includes(q)
+      );
+    }
     return data;
-  }, [eventList, isSuperAdmin, selectedInstitution]);
+  }, [eventList, isSuperAdmin, selectedInstitution, searchQuery]);
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (isSuperAdmin && selectedInstitution !== 'All') count++;
+    return count;
+  }, [isSuperAdmin, selectedInstitution]);
+
+  const handleResetFilters = () => {
+    if (isSuperAdmin) {
+      setSelectedInstitution('All');
+      global.selectedInstitution = 'All';
+    }
+  };
 
   // Get the latest comment data for the modal
   const currentModalEvent = commentModalEvent ? eventList.find(e => e.id === commentModalEvent.id) : null;
 
   // ===== EVENT DETAIL VIEW =====
   if (selectedEvent) {
-    const ev = eventList.find(e => e.id === selectedEvent.id) || selectedEvent;
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
-        <View style={styles.editorHeader}>
-          <TouchableOpacity onPress={() => setSelectedEvent(null)}>
-            <Ionicons name="arrow-back" size={24} color="#0F172A" />
+        
+        {/* Detail Header */}
+        <View style={styles.detailHeader}>
+          <TouchableOpacity onPress={() => setSelectedEvent(null)} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color="#003366" />
           </TouchableOpacity>
-          <Text style={styles.editorTitleText}>Event Details</Text>
-          <View style={{ width: 24 }} />
+          <Text style={styles.detailTitleText}>Event Details</Text>
+          <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+          {/* Top Card */}
           <View style={styles.detailTopCard}>
             <View style={styles.detailIconCircle}>
               <Ionicons name="calendar" size={32} color="#003366" />
             </View>
-            <Text style={styles.detailTitle}>{ev.title}</Text>
+            <Text style={styles.detailTitle}>{selectedEvent.title}</Text>
+            
             <View style={styles.detailBadgeRow}>
               <View style={styles.detailBadge}>
-                <Ionicons name="calendar-outline" size={14} color="#64748B" style={{marginRight:4}} />
-                <Text style={styles.detailBadgeText}>{ev.date}</Text>
+                <Ionicons name="time-outline" size={14} color="#64748B" style={{ marginRight: 6 }} />
+                <Text style={styles.detailBadgeText}>{selectedEvent.date}</Text>
               </View>
               <View style={styles.detailBadge}>
-                <Ionicons name="location-outline" size={14} color="#64748B" style={{marginRight:4}} />
-                <Text style={styles.detailBadgeText}>{ev.location}</Text>
+                <Ionicons name="location-outline" size={14} color="#64748B" style={{ marginRight: 6 }} />
+                <Text style={styles.detailBadgeText}>{selectedEvent.location}</Text>
               </View>
             </View>
           </View>
 
+          {/* Description Section */}
           <View style={styles.detailSection}>
-            <Text style={styles.detailSectionTitle}>About this Event</Text>
-            <Text style={styles.detailDescText}>{ev.description}</Text>
+            <Text style={styles.detailSectionTitle}>Description</Text>
+            <Text style={styles.detailDescText}>{selectedEvent.description}</Text>
           </View>
 
-          {ev.attachment && (
+          {/* Attachment Section */}
+          {selectedEvent.attachment && (
             <View style={styles.detailSection}>
-              <Text style={styles.detailSectionTitle}>Attachments</Text>
+              <Text style={styles.detailSectionTitle}>Attachment</Text>
               <View style={styles.attachmentDownloadCard}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                  <Ionicons name="document-text-outline" size={24} color="#003366" style={{ marginRight: 10 }} />
-                  <Text style={styles.attachmentDownloadName} numberOfLines={1}>{ev.attachment}</Text>
+                <Ionicons name="document-attach" size={24} color="#003366" style={{ marginRight: 10 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.attachmentDownloadName}>{selectedEvent.attachment}</Text>
+                  <Text style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>PDF Document • 1.2 MB</Text>
                 </View>
-                <TouchableOpacity 
-                  style={styles.downloadIconBtn} 
-                  onPress={() => Alert.alert('Downloading', `Downloading ${ev.attachment}...`)}
-                  activeOpacity={0.7}
-                >
+                <TouchableOpacity style={styles.downloadIconBtn} onPress={() => Alert.alert('Download', `Downloading ${selectedEvent.attachment}...`)}>
                   <Ionicons name="download-outline" size={20} color="#003366" />
                 </TouchableOpacity>
               </View>
             </View>
           )}
 
+          {/* Engagement Statistics */}
           <View style={styles.detailStatsRow}>
             <View style={styles.detailStatItem}>
               <Ionicons name="eye-outline" size={20} color="#64748B" />
-              <Text style={styles.detailStatValue}>{ev.views}</Text>
+              <Text style={styles.detailStatValue}>{selectedEvent.views}</Text>
               <Text style={styles.detailStatLabel}>Views</Text>
             </View>
             <View style={styles.detailStatItem}>
-              <Ionicons name="heart-outline" size={20} color="#EF4444" />
-              <Text style={styles.detailStatValue}>{ev.likes}</Text>
+              <Ionicons name="heart-outline" size={20} color="#64748B" />
+              <Text style={styles.detailStatValue}>{selectedEvent.likes}</Text>
               <Text style={styles.detailStatLabel}>Likes</Text>
             </View>
             <View style={styles.detailStatItem}>
-              <Ionicons name="chatbubble-outline" size={20} color="#003366" />
-              <Text style={styles.detailStatValue}>{ev.comments.length}</Text>
+              <Ionicons name="chatbubble-outline" size={20} color="#64748B" />
+              <Text style={styles.detailStatValue}>{selectedEvent.comments.length}</Text>
               <Text style={styles.detailStatLabel}>Comments</Text>
             </View>
             <View style={styles.detailStatItem}>
-              <Ionicons name="repeat-outline" size={20} color="#16A34A" />
-              <Text style={styles.detailStatValue}>{ev.reshares}</Text>
+              <Ionicons name="repeat-outline" size={20} color="#64748B" />
+              <Text style={styles.detailStatValue}>{selectedEvent.reshares}</Text>
               <Text style={styles.detailStatLabel}>Reshares</Text>
             </View>
           </View>
@@ -230,14 +266,16 @@ const AdminEventsScreen = ({ navigation, route }) => {
     );
   }
 
-  // ===== EDITOR VIEW =====
+  // ===== CREATE EVENT EDITOR VIEW =====
   if (showEditor) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
+        
+        {/* Editor Header */}
         <View style={styles.editorHeader}>
           <TouchableOpacity onPress={() => setShowEditor(false)}>
-            <Ionicons name="close" size={24} color="#0F172A" />
+            <Text style={{ fontSize: 15, fontWeight: '600', color: '#64748B' }}>Cancel</Text>
           </TouchableOpacity>
           <Text style={styles.editorTitleText}>Create Event</Text>
           <TouchableOpacity style={styles.postBtn} onPress={handlePostEvent}>
@@ -248,45 +286,64 @@ const AdminEventsScreen = ({ navigation, route }) => {
         <ScrollView style={styles.editorBody} showsVerticalScrollIndicator={false}>
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Event Title *</Text>
-            <TextInput style={styles.textInput} placeholder="e.g. Alumni Gala Night" placeholderTextColor="#94A3B8" value={eventTitle} onChangeText={setEventTitle} />
+            <TextInput
+              style={styles.textInput}
+              placeholder="e.g. Annual Alumni Meet 2026"
+              placeholderTextColor="#94A3B8"
+              value={eventTitle}
+              onChangeText={setEventTitle}
+            />
           </View>
+
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Date *</Text>
-            <TextInput style={styles.textInput} placeholder="e.g. Dec 18, 2026" placeholderTextColor="#94A3B8" value={eventDate} onChangeText={setEventDate} />
+            <Text style={styles.inputLabel}>Date & Time *</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="e.g. Dec 18, 2026 at 6:00 PM"
+              placeholderTextColor="#94A3B8"
+              value={eventDate}
+              onChangeText={setEventDate}
+            />
           </View>
+
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Location</Text>
-            <TextInput style={styles.textInput} placeholder="e.g. RVITM Campus, Bengaluru" placeholderTextColor="#94A3B8" value={eventLocation} onChangeText={setEventLocation} />
+            <Text style={styles.inputLabel}>Location / Link</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="e.g. Campus Auditorium / Zoom Link"
+              placeholderTextColor="#94A3B8"
+              value={eventLocation}
+              onChangeText={setEventLocation}
+            />
           </View>
+
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Description</Text>
-            <TextInput style={[styles.textInput, { height: 120, textAlignVertical: 'top' }]} placeholder="Describe your event..." placeholderTextColor="#94A3B8" value={eventDescription} onChangeText={setEventDescription} multiline />
+            <TextInput
+              style={[styles.textInput, { height: 120, textAlignVertical: 'top', paddingVertical: 12 }]}
+              placeholder="Describe the event, agenda, speakers, etc..."
+              placeholderTextColor="#94A3B8"
+              multiline
+              numberOfLines={6}
+              value={eventDescription}
+              onChangeText={setEventDescription}
+            />
           </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Event Flyer / Attachment</Text>
+
+          <View style={[styles.inputGroup, { marginBottom: 40 }]}>
+            <Text style={styles.inputLabel}>Attachment (Optional)</Text>
             {eventAttachment ? (
               <View style={styles.attachmentPreview}>
-                <Ionicons name="document-text-outline" size={20} color="#003366" />
-                <Text style={styles.attachmentName} numberOfLines={1}>{eventAttachment}</Text>
+                <Ionicons name="document" size={20} color="#003366" />
+                <Text style={styles.attachmentName}>{eventAttachment}</Text>
                 <TouchableOpacity onPress={() => setEventAttachment(null)}>
                   <Ionicons name="close-circle" size={20} color="#EF4444" />
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity
-                style={styles.attachBtn}
-                activeOpacity={0.7}
-                onPress={() => {
-                  Alert.alert('Attach File', 'Select a file to attach:', [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'event_flyer.pdf', onPress: () => setEventAttachment('event_flyer.pdf') },
-                    { text: 'campus_map.png', onPress: () => setEventAttachment('campus_map.png') },
-                    { text: 'agenda.docx', onPress: () => setEventAttachment('agenda.docx') },
-                  ]);
-                }}
-              >
-                <Ionicons name="attach" size={20} color="#003366" style={{ marginRight: 6 }} />
-                <Text style={styles.attachBtnText}>Attach Document/Image</Text>
+              <TouchableOpacity style={styles.attachBtn} onPress={() => setEventAttachment('event_brochure.pdf')}>
+                <Ionicons name="add" size={20} color="#003366" style={{ marginRight: 6 }} />
+                <Text style={styles.attachBtnText}>Attach Brochure / Agenda</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -295,19 +352,30 @@ const AdminEventsScreen = ({ navigation, route }) => {
     );
   }
 
-  // ===== MAIN LIST VIEW =====
+  // ===== DEFAULT: EVENT LIST VIEW =====
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.headerAvatar} activeOpacity={0.8} onPress={() => navigation && navigation.navigate('AdminProfile')}>
-          <Text style={styles.headerAvatarText}>AD</Text>
+        <TouchableOpacity style={[styles.headerAvatar, isSuperAdmin && { backgroundColor: '#D97706' }]} activeOpacity={0.8} onPress={() => navigation && navigation.navigate('AdminProfile')}>
+          <Text style={styles.headerAvatarText}>{isSuperAdmin ? 'SA' : 'AD'}</Text>
         </TouchableOpacity>
         <View style={styles.searchBar}>
           <Ionicons name="search-outline" size={18} color="#94A3B8" style={{ marginRight: 6 }} />
-          <Text style={styles.searchPlaceholder}>Search events</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search events..."
+            placeholderTextColor="#94A3B8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')} activeOpacity={0.7}>
+              <Ionicons name="close-circle" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.headerIconBtn} onPress={() => navigation && navigation.navigate('Messages')}>
@@ -320,28 +388,27 @@ const AdminEventsScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
-      {isSuperAdmin && (
-        <View style={styles.superAdminSelector}>
-          <Text style={styles.selectorLabel}>Institution:</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.selectorScroll}>
-            {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
-              <TouchableOpacity
-                key={inst}
-                style={[
-                  styles.selectorChip,
-                  selectedInstitution === inst && styles.selectorChipActive
-                ]}
-                onPress={() => setSelectedInstitution(inst)}
-              >
-                <Text style={[
-                  styles.selectorChipText,
-                  selectedInstitution === inst && styles.selectorChipTextActive
-                ]}>{inst}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
+
+      {/* Filter Summary Bar */}
+      <View style={styles.filterSummaryBar}>
+        <Text style={styles.filterSummaryText}>
+          Showing {filteredEvents.length} events
+        </Text>
+        <TouchableOpacity
+          style={[styles.filterButton, activeFiltersCount > 0 && styles.filterButtonActive]}
+          activeOpacity={0.7}
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Ionicons
+            name="options-outline"
+            size={18}
+            color={activeFiltersCount > 0 ? '#FFFFFF' : '#003366'}
+          />
+          <Text style={[styles.filterButtonText, activeFiltersCount > 0 && styles.filterButtonTextActive]}>
+            Filter{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={filteredEvents}
@@ -451,6 +518,59 @@ const AdminEventsScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Filter Modal */}
+      <Modal visible={showFilterModal} animationType="slide" transparent>
+        <View style={styles.filterModalOverlay}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => setShowFilterModal(false)} />
+          <View style={styles.filterSheet}>
+            <View style={styles.filterSheetHeader}>
+              <Text style={styles.filterSheetTitle}>Filter Events</Text>
+              <View style={{ flexDirection: 'row', gap: 14 }}>
+                <TouchableOpacity onPress={handleResetFilters} activeOpacity={0.7}>
+                  <Text style={styles.resetText}>Reset All</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowFilterModal(false)} activeOpacity={0.7}>
+                  <Ionicons name="close" size={24} color="#0F172A" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <ScrollView style={styles.filterScrollView} showsVerticalScrollIndicator={false}>
+              {/* Institution Filter (Super Admin only) */}
+              {isSuperAdmin && (
+                <>
+                  <Text style={styles.filterGroupLabel}>Institution</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsRow}>
+                    {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
+                      <TouchableOpacity
+                        key={inst}
+                        style={[styles.pill, selectedInstitution === inst && styles.pillActive]}
+                        onPress={() => {
+                          setSelectedInstitution(inst);
+                          global.selectedInstitution = inst;
+                        }}
+                      >
+                        <Text style={[styles.pillText, selectedInstitution === inst && styles.pillTextActive]}>
+                          {inst}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </>
+              )}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.applyButton}
+              activeOpacity={0.8}
+              onPress={() => setShowFilterModal(false)}
+            >
+              <Text style={styles.applyButtonText}>Apply Filters</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -461,7 +581,7 @@ const styles = StyleSheet.create({
   headerAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#003366', justifyContent: 'center', alignItems: 'center', marginRight: 10 },
   headerAvatarText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', borderRadius: 10, paddingHorizontal: 12, height: 36 },
-  searchPlaceholder: { color: '#94A3B8', fontSize: 14 },
+  searchInput: { flex: 1, fontSize: 14, color: '#0F172A', padding: 0 },
   headerIcons: { flexDirection: 'row', alignItems: 'center', marginLeft: 10 },
   headerIconBtn: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', marginLeft: 4 },
   dot: { position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: 4, backgroundColor: '#EF4444' },
@@ -479,6 +599,12 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 16, fontWeight: '700', color: '#94A3B8', marginTop: 12 },
   emptySubtitle: { fontSize: 13, color: '#CBD5E1', marginTop: 4, textAlign: 'center' },
   fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#003366', justifyContent: 'center', alignItems: 'center', shadowColor: '#003366', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
+  
+  // Detail view header
+  detailHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  backBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#F8FAFC', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#E2E8F0' },
+  detailTitleText: { fontSize: 18, fontWeight: '800', color: '#002144' },
+
   editorHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   editorTitleText: { fontSize: 17, fontWeight: '700', color: '#0F172A' },
   postBtn: { backgroundColor: '#003366', paddingHorizontal: 18, paddingVertical: 8, borderRadius: 8 },
@@ -573,39 +699,122 @@ const styles = StyleSheet.create({
   commentInputRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
   commentInput: { flex: 1, backgroundColor: '#F1F5F9', borderRadius: 20, paddingHorizontal: 16, height: 40, fontSize: 14, color: '#0F172A', marginRight: 10 },
   commentSendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#003366', justifyContent: 'center', alignItems: 'center' },
-  superAdminSelector: {
+
+  // Filter Styles
+  filterSummaryBar: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
+    borderBottomColor: '#E2E8F0',
   },
-  selectorLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#475569',
-    marginRight: 8,
+  filterSummaryText: {
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '600',
   },
-  selectorScroll: {
-    gap: 8,
-  },
-  selectorChip: {
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#003366',
+    borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F1F5F9',
+    gap: 6,
   },
-  selectorChipActive: {
+  filterButtonActive: {
     backgroundColor: '#003366',
   },
-  selectorChipText: {
-    fontSize: 11,
+  filterButtonText: {
+    fontSize: 12.5,
     fontWeight: '700',
-    color: '#64748B',
+    color: '#003366',
   },
-  selectorChipTextActive: {
+  filterButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  filterModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'flex-end',
+  },
+  filterSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '85%',
+    paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+  },
+  filterSheetHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  filterSheetTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  resetText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#EF4444',
+  },
+  filterScrollView: {
+    padding: 20,
+  },
+  filterGroupLabel: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#475569',
+    marginTop: 16,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+  },
+  pillsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingBottom: 4,
+  },
+  pill: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  pillActive: {
+    backgroundColor: '#003366',
+    borderColor: '#003366',
+  },
+  pillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  pillTextActive: {
+    color: '#FFFFFF',
+  },
+  applyButton: {
+    backgroundColor: '#003366',
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: Platform.OS === 'ios' ? 20 : 10,
+  },
+  applyButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
     color: '#FFFFFF',
   },
 });

@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -42,7 +43,8 @@ const COURSE_OPTIONS = ['All', 'B.E.', 'M.Tech', 'MCA', 'MBA'];
 
 const AdminUsersScreen = ({ navigation, route }) => {
   const isSuperAdmin = route?.params?.isSuperAdmin || false;
-  const [selectedInstitution, setSelectedInstitution] = useState('All');
+  const isFocused = useIsFocused();
+  const [selectedInstitution, setSelectedInstitution] = useState(global.selectedInstitution || 'All');
   const [activeTab, setActiveTab] = useState('friends');
   const [searchQuery, setSearchQuery] = useState('');
   const [communities, setCommunities] = useState(COMMUNITIES_DATA);
@@ -55,12 +57,22 @@ const AdminUsersScreen = ({ navigation, route }) => {
   const [selectedLoc, setSelectedLoc] = useState('All');
   const [selectedCourse, setSelectedCourse] = useState('All');
 
+  useEffect(() => {
+    if (isFocused && isSuperAdmin && global.selectedInstitution) {
+      setSelectedInstitution(global.selectedInstitution);
+    }
+  }, [isFocused, isSuperAdmin]);
+
   const handleResetAll = () => {
     setSelectedBatch('All');
     setSelectedBranch('All');
     setSelectedDept('All');
     setSelectedLoc('All');
     setSelectedCourse('All');
+    if (isSuperAdmin) {
+      setSelectedInstitution('All');
+      global.selectedInstitution = 'All';
+    }
   };
 
   const filteredFriends = useMemo(() => {
@@ -125,17 +137,17 @@ const AdminUsersScreen = ({ navigation, route }) => {
     if (selectedDept !== 'All') count++;
     if (selectedLoc !== 'All') count++;
     if (selectedCourse !== 'All') count++;
+    if (isSuperAdmin && selectedInstitution !== 'All') count++;
     return count;
-  }, [selectedBatch, selectedBranch, selectedDept, selectedLoc, selectedCourse]);
+  }, [selectedBatch, selectedBranch, selectedDept, selectedLoc, selectedCourse, isSuperAdmin, selectedInstitution]);
 
   const renderHeader = () => (
     <View style={styles.header}>
       <TouchableOpacity
-        style={styles.headerAvatar}
+        style={[styles.headerAvatar, isSuperAdmin && { backgroundColor: '#D97706' }]}
         onPress={() => navigation && navigation.navigate('AdminProfile')}
-        activeOpacity={0.7}
       >
-        <Text style={styles.headerAvatarText}>AD</Text>
+        <Text style={styles.headerAvatarText}>{isSuperAdmin ? 'SA' : 'AD'}</Text>
       </TouchableOpacity>
       <View style={styles.headerSearchContainer}>
         <Ionicons name="search-outline" size={18} color="#94A3B8" style={styles.headerSearchIcon} />
@@ -259,28 +271,6 @@ const AdminUsersScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       {renderHeader()}
-      {isSuperAdmin && (
-        <View style={styles.superAdminSelector}>
-          <Text style={styles.selectorLabel}>Institution:</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.selectorScroll}>
-            {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
-              <TouchableOpacity
-                key={inst}
-                style={[
-                  styles.selectorChip,
-                  selectedInstitution === inst && styles.selectorChipActive
-                ]}
-                onPress={() => setSelectedInstitution(inst)}
-              >
-                <Text style={[
-                  styles.selectorChipText,
-                  selectedInstitution === inst && styles.selectorChipTextActive
-                ]}>{inst}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
       {renderTabs()}
 
       {activeTab === 'friends' && (
@@ -421,6 +411,29 @@ const AdminUsersScreen = ({ navigation, route }) => {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
+
+              {/* Institution */}
+              {isSuperAdmin && (
+                <>
+                  <Text style={styles.filterGroupLabel}>Institution</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsRow}>
+                    {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS'].map((inst) => (
+                      <TouchableOpacity
+                        key={inst}
+                        style={[styles.pill, selectedInstitution === inst && styles.pillActive]}
+                        onPress={() => {
+                          setSelectedInstitution(inst);
+                          global.selectedInstitution = inst;
+                        }}
+                      >
+                        <Text style={[styles.pillText, selectedInstitution === inst && styles.pillTextActive]}>
+                          {inst}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </>
+              )}
 
               <View style={{ height: 40 }} />
             </ScrollView>
