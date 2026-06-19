@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, Image, StatusBar, Modal, TextInput, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, useWindowDimensions, Image, StatusBar, Modal, TextInput, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
-
 const EngageScreen = ({ navigation }) => {
+  const { width } = useWindowDimensions();
   const [currentView, setCurrentView] = useState('feed');
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [jobPreference, setJobPreference] = useState('Full-Time');
@@ -323,7 +322,7 @@ const EngageScreen = ({ navigation }) => {
             <View style={styles.postContentContainer}>
               <Text style={styles.postContentText}>{post.content}</Text>
             </View>
-            <Image source={{ uri: post.image }} style={styles.postImage} />
+            <Image source={{ uri: post.image }} style={[styles.postImage, { width: width, height: width * 0.65 }]} />
             <View style={styles.postActions}>
               <View style={styles.leftActions}>
                 <TouchableOpacity onPress={() => toggleLike(post.id)}>
@@ -379,7 +378,7 @@ const EngageScreen = ({ navigation }) => {
             <View style={styles.postContentContainer}>
               <Text style={styles.postContentText}>{post.content}</Text>
             </View>
-            <Image source={{ uri: post.image }} style={styles.postImage} />
+            <Image source={{ uri: post.image }} style={[styles.postImage, { width: width, height: width * 0.65 }]} />
             <View style={styles.postActions}>
               <View style={styles.leftActions}>
                 <TouchableOpacity onPress={() => toggleLike(post.id)}>
@@ -523,7 +522,7 @@ const styles = StyleSheet.create({
   postSubtitle: { fontSize: 12, color: '#64748B', marginTop: 1 },
   followBtn: { paddingHorizontal: 12, paddingVertical: 6 },
   followBtnText: { color: '#003366', fontWeight: '700', fontSize: 13 },
-  postImage: { width: width, height: width * 0.65, backgroundColor: '#F1F5F9' },
+  postImage: { backgroundColor: '#F1F5F9' },
   postActions: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12 },
   leftActions: { flexDirection: 'row', alignItems: 'center', gap: 18 },
 

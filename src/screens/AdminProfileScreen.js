@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, StatusBar, Modal, Image, TextInput, Dimensions, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, StatusBar, Modal, Image, TextInput, useWindowDimensions, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const { width } = Dimensions.get('window');
 
 // Seed Data for Profile Campus Info Tab
 const INSTITUTIONS = [
@@ -68,12 +66,14 @@ const INITIAL_NETWORK_SETTINGS = {
 };
 
 const AdminProfileScreen = ({ navigation }) => {
-  const [settingsVisible, setSettingsVisible] = useState(false);
-  const [settingsSubView, setSettingsSubView] = useState('menu');
-  const [activeTab, setActiveTab] = useState('post');
+  const { width } = useWindowDimensions();
+  const [activeTab, setActiveTab] = useState('posts'); // 'posts' | 'campus' | 'admin'
+  const [userInfo, setUserInfo] = useState(null);
   const [listModalType, setListModalType] = useState(null);
   const [userRole, setUserRole] = useState('admin');
   const [activeInst, setActiveInst] = useState('RVCE');
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [settingsSubView, setSettingsSubView] = useState('menu');
 
   const [profileData, setProfileData] = useState({
     name: 'RVITM Admin',
@@ -443,7 +443,7 @@ const AdminProfileScreen = ({ navigation }) => {
         {activeTab === 'post' && (
           <View style={styles.postsGrid}>
             {posts.map((post) => (
-              <TouchableOpacity key={post.id} style={styles.gridItem} activeOpacity={0.9}>
+              <TouchableOpacity key={post.id} style={[styles.gridItem, { width: width / 3, height: width / 3 }]} activeOpacity={0.9}>
                 <Image source={{ uri: post.uri }} style={styles.gridImage} />
               </TouchableOpacity>
             ))}
@@ -453,7 +453,7 @@ const AdminProfileScreen = ({ navigation }) => {
         {activeTab === 'tags' && (
           <View style={styles.postsGrid}>
             {mockTags.map((tag) => (
-              <TouchableOpacity key={tag.id} style={styles.gridItem} activeOpacity={0.9}>
+              <TouchableOpacity key={tag.id} style={[styles.gridItem, { width: width / 3, height: width / 3 }]} activeOpacity={0.9}>
                 <Image source={{ uri: tag.uri }} style={styles.gridImage} />
                 <View style={styles.tagOverlay}>
                   <Ionicons name="person" size={16} color="#FFFFFF" />
@@ -635,7 +635,7 @@ const AdminProfileScreen = ({ navigation }) => {
                 {settingsSubView === 'saved' && (
                   <View style={styles.postsGrid}>
                     {mockSaved.map((item) => (
-                      <TouchableOpacity key={item.id} style={styles.gridItem} activeOpacity={0.9}>
+                      <TouchableOpacity key={item.id} style={[styles.gridItem, { width: width / 3, height: width / 3 }]} activeOpacity={0.9}>
                         <Image source={{ uri: item.uri }} style={styles.gridImage} />
                       </TouchableOpacity>
                     ))}
@@ -780,7 +780,7 @@ const styles = StyleSheet.create({
   tabLabel: { fontSize: 11, color: '#94A3B8', fontWeight: '600', marginTop: 4 },
   activeTabLabel: { color: '#003366' },
   postsGrid: { flexDirection: 'row', flexWrap: 'wrap' },
-  gridItem: { width: width / 3, height: width / 3, padding: 1 },
+  gridItem: { padding: 1 },
   gridImage: { width: '100%', height: '100%', backgroundColor: '#F1F5F9' },
   tagOverlay: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.5)', padding: 4, borderRadius: 12 },
   tabContentList: { padding: 16 },

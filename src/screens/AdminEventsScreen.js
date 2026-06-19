@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StatusBar, Alert, Modal, FlatList, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StatusBar, Alert, Modal, FlatList, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 const AdminEventsScreen = ({ navigation, route }) => {
   const isSuperAdmin = route?.params?.isSuperAdmin || false;

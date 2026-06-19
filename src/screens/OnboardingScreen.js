@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList, Dimensions, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList, useWindowDimensions, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width, height } = Dimensions.get('window');
 
 const slides = [
   {
@@ -21,14 +19,15 @@ const slides = [
   },
   {
     id: '3',
-    title: 'Attend Events',
-    highlight: 'Never Miss Out',
-    subtitle: 'Stay updated and join reunions, webinars, and alumni meetups.',
-    icon: 'calendar-outline',
-  },
+    title: 'Give Back',
+    highlight: 'Support Alma Mater',
+    subtitle: 'Mentor current students, deliver guest lectures, or support campus drives.',
+    icon: 'school-outline',
+  }
 ];
 
 const OnboardingScreen = ({ navigation }) => {
+  const { width } = useWindowDimensions();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
 
@@ -53,7 +52,7 @@ const OnboardingScreen = ({ navigation }) => {
 
   const renderSlide = ({ item }) => {
     return (
-      <View style={styles.slide}>
+      <View style={[styles.slide, { width: width }]}>
         <View style={styles.imageContainer}>
           <View style={styles.circle}>
             <Ionicons name={item.icon} size={84} color="#003366" />
@@ -137,7 +136,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   slide: {
-    width: width,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 40,

@@ -10,7 +10,6 @@ import {
   TextInput,
   StatusBar,
   Alert,
-  Dimensions,
   FlatList,
   Modal,
   Switch,
@@ -18,10 +17,9 @@ import {
   Platform,
   Image,
   Share,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 // ==========================================
 // DUMMY DATABASE / SEED DATA
@@ -252,6 +250,7 @@ const MOCK_POSTS = [
 ];
 
 const SuperAdminDashboardScreen = ({ navigation, route }) => {
+  const { width } = useWindowDimensions();
   const initialModule = route?.params?.initialModule ?? null;
   const [activeModule, setActiveModule] = useState(initialModule);
   const [selectedInstitution, setSelectedInstitution] = useState(global.selectedInstitution || 'All');
@@ -2711,7 +2710,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
             {filteredPanelItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
-                style={[styles.gridCard, { backgroundColor: item.color }]}
+                style={[styles.gridCard, { backgroundColor: item.color, width: (width - 44) / 2 }]}
                 onPress={() => {
                   setActiveModule(item.moduleName);
                   setActiveSubTab('1');
@@ -2865,7 +2864,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   gridCard: {
-    width: (width - 44) / 2,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,

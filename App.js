@@ -12,6 +12,8 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import OTPVerificationScreen from './src/screens/OTPVerificationScreen';
 import ProfileSetupScreen from './src/screens/ProfileSetupScreen';
+import SelectInstitutionScreen from './src/screens/SelectInstitutionScreen';
+import DemoCarouselScreen from './src/screens/DemoCarouselScreen';
 
 // Main Tab Screens (Alumni)
 import DashboardScreen from './src/screens/DashboardScreen';
@@ -239,6 +241,8 @@ export default function App() {
         <Stack.Screen name="Signup" component={RegisterScreen} />
         <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
         <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
+        <Stack.Screen name="SelectInstitution" component={SelectInstitutionScreen} />
+        <Stack.Screen name="DemoCarousel" component={DemoCarouselScreen} />
 
         {/* Alumni Main App */}
         <Stack.Screen name="Main" component={MainTabs} />

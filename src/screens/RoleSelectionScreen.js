@@ -61,8 +61,8 @@ const RoleSelectionScreen = ({ navigation }) => {
           style={[styles.button, !selected && styles.disabledButton]}
           disabled={!selected}
           onPress={() => {
-            if (selected === 'Admin') navigation.navigate('AdminDashboard');
-            else if (selected === 'Super Admin') navigation.navigate('SuperAdminDashboard');
+            if (selected === 'Admin') navigation.navigate('AdminMain');
+            else if (selected === 'Super Admin') navigation.navigate('SuperAdminMain');
             else navigation.navigate('Main');
           }}
         >

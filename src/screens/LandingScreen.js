@@ -1,7 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 
 const LandingScreen = ({ navigation }) => {
   return (
@@ -37,7 +35,10 @@ const LandingScreen = ({ navigation }) => {
           <Text style={styles.primaryButtonText}>Join the Network</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.secondaryButton}>
+        <TouchableOpacity 
+          style={styles.secondaryButton}
+          onPress={() => navigation.navigate('SelectInstitution')}
+        >
           <Text style={styles.secondaryButtonText}>Explore as Guest</Text>
         </TouchableOpacity>
       </View>

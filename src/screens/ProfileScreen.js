@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, Dimensions, Alert, StatusBar, Modal, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, useWindowDimensions, Alert, StatusBar, Modal, TextInput, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { width } = Dimensions.get('window');
-
 const ProfileScreen = ({ navigation }) => {
+  const { width } = useWindowDimensions();
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [settingsSubView, setSettingsSubView] = useState('menu'); // 'menu' | 'profile_edit' | 'profile_settings' | 'security'
   const [activeTab, setActiveTab] = useState('post'); // 'post' | 'reshare' | 'saved' | 'tags'
@@ -235,7 +234,7 @@ const ProfileScreen = ({ navigation }) => {
         {activeTab === 'post' && (
           <View style={styles.postsGrid}>
             {posts.map((post) => (
-              <TouchableOpacity key={post.id} style={styles.gridItem} activeOpacity={0.9}>
+              <TouchableOpacity key={post.id} style={[styles.gridItem, { width: (width - 6) / 3, height: (width - 6) / 3 }]} activeOpacity={0.9}>
                 <Image source={{ uri: post.uri }} style={styles.gridImage} />
               </TouchableOpacity>
             ))}
@@ -245,7 +244,7 @@ const ProfileScreen = ({ navigation }) => {
         {activeTab === 'tags' && (
           <View style={styles.postsGrid}>
             {mockTags.map((tag) => (
-              <TouchableOpacity key={tag.id} style={styles.gridItem} activeOpacity={0.9}>
+              <TouchableOpacity key={tag.id} style={[styles.gridItem, { width: (width - 6) / 3, height: (width - 6) / 3 }]} activeOpacity={0.9}>
                 <Image source={{ uri: tag.uri }} style={styles.gridImage} />
                 <View style={styles.tagOverlay}>
                   <Ionicons name="person" size={16} color="#FFFFFF" />
@@ -258,7 +257,7 @@ const ProfileScreen = ({ navigation }) => {
         {activeTab === 'saved' && (
           <View style={styles.postsGrid}>
             {mockSaved.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.gridItem} activeOpacity={0.9}>
+              <TouchableOpacity key={item.id} style={[styles.gridItem, { width: (width - 6) / 3, height: (width - 6) / 3 }]} activeOpacity={0.9}>
                 <Image source={{ uri: item.uri }} style={styles.gridImage} />
               </TouchableOpacity>
             ))}
@@ -757,8 +756,6 @@ const styles = StyleSheet.create({
     paddingTop: 1,
   },
   gridItem: {
-    width: (width - 6) / 3,
-    height: (width - 6) / 3,
     margin: 1,
   },
   gridImage: {
@@ -891,7 +888,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748B',
     marginTop: 2,
-    maxWidth: width * 0.7,
+    maxWidth: '70%',
   },
   saveSettingsBtn: {
     backgroundColor: '#003366',

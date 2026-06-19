@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  Dimensions,
   Image,
   Share,
   Alert,
@@ -16,10 +15,9 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 const SELECTED_STUDENTS = [
   { id: 'ss1', name: 'Sarthak Banka', placement: 'Qualcomm', branch: 'CSE', batch: '2023', avatar: 'SB' },
@@ -94,6 +92,7 @@ const MOCK_USERS = [
 ];
 
 export default function AdminHomeScreen({ navigation }) {
+  const { width } = useWindowDimensions();
   const [likedPosts, setLikedPosts] = useState({});
   const [bookmarkedPosts, setBookmarkedPosts] = useState({});
   const [followedUsers, setFollowedUsers] = useState({});
@@ -167,7 +166,7 @@ export default function AdminHomeScreen({ navigation }) {
       </View>
 
       {/* Image */}
-      <Image source={{ uri: post.image }} style={styles.postImage} />
+      <Image source={{ uri: post.image }} style={[styles.postImage, { width: width, height: width * 0.65 }]} />
 
       {/* Actions */}
       <View style={styles.postActions}>
@@ -327,7 +326,7 @@ export default function AdminHomeScreen({ navigation }) {
             contentContainerStyle={styles.eventsScroll}
           >
             {EVENTS_AND_JOBS.map((ev) => (
-              <View key={ev.id} style={styles.eventRowCard}>
+              <View key={ev.id} style={[styles.eventRowCard, { width: width * 0.76 }]}>
                 <Image source={{ uri: ev.image }} style={styles.eventRowImage} />
                 <View style={styles.eventRowContent}>
                   <Text style={styles.eventRowTitle} numberOfLines={1}>
@@ -607,8 +606,6 @@ const styles = StyleSheet.create({
     color: '#003366',
   },
   postImage: {
-    width: width,
-    height: width * 0.65,
     backgroundColor: '#E2E8F0',
   },
   postActions: {
@@ -749,7 +746,6 @@ const styles = StyleSheet.create({
   },
   eventRowCard: {
     flexDirection: 'row',
-    width: width * 0.76,
     height: 110,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,

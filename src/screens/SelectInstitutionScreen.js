@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, TextInput, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const institutions = [
   { id: 'RVCE', name: 'RVCE', fullName: 'RV College of Engineering', icon: 'school' },
@@ -44,9 +45,28 @@ const SelectInstitutionScreen = ({ navigation }) => {
         <Text style={styles.title}>Institutions</Text>
       </View>
 
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#94A3B8" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search Institution..."
+          placeholderTextColor="#94A3B8"
+          value={search}
+          onChangeText={setSearch}
+          clearButtonMode="while-editing"
+          autoCapitalize="none"
+        />
+        {search.length > 0 && (
+          <TouchableOpacity onPress={() => setSearch('')}>
+            <Ionicons name="close-circle" size={18} color="#94A3B8" />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.listContainer}>
-          {institutions.map((item) => (
+          {filtered.map((item) => (
             <TouchableOpacity
               key={item.id}
               style={[
@@ -74,7 +94,17 @@ const SelectInstitutionScreen = ({ navigation }) => {
         <TouchableOpacity 
           style={[styles.button, !selected && styles.disabledButton]}
           disabled={!selected}
-          onPress={() => navigation.navigate('Welcome')}
+          onPress={async () => {
+            if (selected) {
+              global.selectedInstitution = selected;
+              try {
+                await AsyncStorage.setItem('selectedInstitution', selected);
+              } catch (e) {
+                console.error(e);
+              }
+              navigation.navigate('Welcome');
+            }
+          }}
         >
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
@@ -173,6 +203,26 @@ const styles = StyleSheet.create({
   footer: {
     padding: 24,
     backgroundColor: '#FFFFFF',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    marginHorizontal: 24,
+    marginBottom: 16,
+    paddingHorizontal: 14,
+    height: 48,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#002144',
   },
   button: {
     backgroundColor: '#003366',

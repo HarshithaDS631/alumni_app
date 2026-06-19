@@ -193,15 +193,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
     borderColor: '#E2E8F0',
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 52,
-    justifyContent: 'center',
   },
   input: {
+    flex: 1,
     fontSize: 15,
     color: '#002144',
   },

@@ -9,13 +9,11 @@ import {
   TextInput,
   StatusBar,
   Alert,
-  Dimensions,
   FlatList,
   Modal,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width, height } = Dimensions.get('window');
 
 // ==========================================
 // DUMMY DATA FOR THE NEW MODULES
@@ -72,6 +70,7 @@ const panelItems = [
 ];
 
 export default function AdminPanelScreen({ navigation }) {
+  const { width } = useWindowDimensions();
   // Navigation & View Control
   const [activeModule, setActiveModule] = useState(null);
 
@@ -700,7 +699,7 @@ export default function AdminPanelScreen({ navigation }) {
       <View style={styles.activityLayout}>
         
         {/* Left Filters Sidebar */}
-        <View style={styles.activityLeftSidebar}>
+        <View style={[styles.activityLeftSidebar, { width: width * 0.22 }]}>
           <Text style={styles.sidebarSectionTitle}>Modules</Text>
           {['All', 'Memories', 'Events', 'Mentorship Program'].map((cat) => (
             <TouchableOpacity 
@@ -767,7 +766,7 @@ export default function AdminPanelScreen({ navigation }) {
         </View>
 
         {/* Right Filter Options Sidebar */}
-        <View style={styles.activityRightSidebar}>
+        <View style={[styles.activityRightSidebar, { width: width * 0.26 }]}>
           <Text style={styles.sidebarSectionTitle}>Activity Types</Text>
           {['Call Interaction', 'Email Interaction', 'Facebook Interaction'].map((type) => (
             <TouchableOpacity 
@@ -860,7 +859,7 @@ export default function AdminPanelScreen({ navigation }) {
               {panelItems.map((item) => (
                 <TouchableOpacity 
                   key={item.id} 
-                  style={styles.gridCard} 
+                  style={[styles.gridCard, { width: (width - 52) / 2 }]} 
                   activeOpacity={0.7}
                   onPress={() => setActiveModule(item.moduleName)}
                 >
@@ -1004,7 +1003,7 @@ const styles = StyleSheet.create({
   
   sectionTitle: { fontSize: 16, fontWeight: '800', color: '#002144', marginBottom: 14 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 24 },
-  gridCard: { width: (width - 52) / 2, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' },
+  gridCard: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' },
   gridIconCircle: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
   gridCardTitle: { fontSize: 13, fontWeight: '700', color: '#0F172A', textAlign: 'center' },
   gridCardDesc: { fontSize: 10, color: '#64748B', textAlign: 'center', marginTop: 4, lineHeight: 14, paddingHorizontal: 4 },
@@ -1157,7 +1156,7 @@ const styles = StyleSheet.create({
   // Admin Activities Log Layout
   activityLayout: { flex: 1, flexDirection: 'row' },
   
-  activityLeftSidebar: { width: width * 0.22, borderRightWidth: 1, borderRightColor: '#E2E8F0', backgroundColor: '#FFFFFF', paddingVertical: 8 },
+  activityLeftSidebar: { borderRightWidth: 1, borderRightColor: '#E2E8F0', backgroundColor: '#FFFFFF', paddingVertical: 8 },
   sidebarSectionTitle: { fontSize: 11, fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', paddingHorizontal: 8, marginBottom: 8, marginTop: 4 },
   sidebarTab: { paddingVertical: 10, paddingHorizontal: 8, borderRadius: 6, marginHorizontal: 4, marginBottom: 4 },
   sidebarTabActive: { backgroundColor: '#EFF6FF' },
@@ -1179,7 +1178,7 @@ const styles = StyleSheet.create({
   emptyFeedState: { paddingVertical: 60, paddingHorizontal: 16, alignItems: 'center' },
   emptyFeedStateText: { fontSize: 12.5, color: '#94A3B8', textAlign: 'center', lineHeight: 18 },
 
-  activityRightSidebar: { width: width * 0.26, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', backgroundColor: '#FFFFFF', paddingVertical: 8, paddingHorizontal: 4 },
+  activityRightSidebar: { borderLeftWidth: 1, borderLeftColor: '#E2E8F0', backgroundColor: '#FFFFFF', paddingVertical: 8, paddingHorizontal: 4 },
   checkboxOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 4, marginBottom: 4 },
   checkboxLabel: { fontSize: 11, fontWeight: '600', color: '#475569', marginLeft: 6, flex: 1 },
 

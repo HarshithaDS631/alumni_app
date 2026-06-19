@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Dimensions, ScrollView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, useWindowDimensions, ScrollView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
-
 const DemoCarouselScreen = ({ navigation }) => {
+  const { width } = useWindowDimensions();
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollViewRef = useRef(null);
 
@@ -71,9 +70,9 @@ const DemoCarouselScreen = ({ navigation }) => {
         scrollEventThrottle={16}
       >
         {slides.map((slide, index) => (
-          <View key={index} style={styles.slide}>
+          <View key={index} style={[styles.slide, { width: width }]}>
             <View style={styles.imageContainer}>
-              <Image source={{ uri: slide.image }} style={styles.slideImage} />
+              <Image source={{ uri: slide.image }} style={[styles.slideImage, { width: width - 48, height: width * 0.7 }]} />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.slideTitle}>{slide.title}</Text>
@@ -139,7 +138,6 @@ const styles = StyleSheet.create({
     color: '#002144',
   },
   slide: {
-    width: width,
     paddingHorizontal: 24,
     justifyContent: 'center',
     alignItems: 'center',
@@ -155,8 +153,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   slideImage: {
-    width: width - 48,
-    height: width * 0.7,
     resizeMode: 'cover',
     backgroundColor: '#F1F5F9',
   },

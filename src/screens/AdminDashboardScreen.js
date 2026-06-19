@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, StatusBar, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, useWindowDimensions, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
-
 const AdminDashboardScreen = ({ navigation }) => {
+  const { width } = useWindowDimensions();
   const [pendingApprovals, setPendingApprovals] = useState(45);
   
   const stats = [
@@ -58,7 +57,7 @@ const AdminDashboardScreen = ({ navigation }) => {
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           {stats.map((stat, index) => (
-            <View key={index} style={styles.statCard}>
+            <View key={index} style={[styles.statCard, { width: (width - 52) / 2 }]}>
               <View style={styles.statTopRow}>
                 <View style={[styles.iconBox, { backgroundColor: stat.color }]}>
                   <Ionicons name={stat.icon} size={20} color={stat.iconColor} />
@@ -236,7 +235,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statCard: {
-    width: (width - 52) / 2,
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 14,
