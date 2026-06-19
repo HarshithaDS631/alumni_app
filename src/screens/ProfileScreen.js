@@ -99,19 +99,19 @@ const ProfileScreen = ({ navigation }) => {
       }
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Welcome' }],
+        routes: [{ name: 'Login' }],
       });
     };
 
     if (Platform.OS === 'web') {
-      const confirmLogout = window.confirm('Are you sure you want to log out of the RVITM Alumni portal?');
+      const confirmLogout = window.confirm('Are you sure you want to log out of the Alumni portal?');
       if (confirmLogout) {
         performLogout();
       }
     } else {
       Alert.alert(
         'Confirm Logout',
-        'Are you sure you want to log out of the RVITM Alumni portal?',
+        'Are you sure you want to log out of the Alumni portal?',
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Log Out', style: 'destructive', onPress: performLogout }
