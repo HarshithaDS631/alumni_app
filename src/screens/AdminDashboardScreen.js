@@ -57,7 +57,7 @@ const AdminDashboardScreen = ({ navigation }) => {
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           {stats.map((stat, index) => (
-            <View key={index} style={[styles.statCard, { width: (width - 52) / 2 }]}>
+            <View key={index} style={[styles.statCard, { width: width > 1024 ? '23%' : width > 768 ? '31%' : '48%' }]}>
               <View style={styles.statTopRow}>
                 <View style={[styles.iconBox, { backgroundColor: stat.color }]}>
                   <Ionicons name={stat.icon} size={20} color={stat.iconColor} />

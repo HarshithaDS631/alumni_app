@@ -11,7 +11,7 @@ const LandingScreen = ({ navigation }) => {
             Alumni <Text style={styles.highlight}>Portal</Text>
           </Text>
           <Text style={styles.subtitle}>
-            Connect, Collaborate, and Grow Together with the exclusive global network of your institution's alumni.
+            Connect, Collaborate, and Grow Together with the exclusive global network of your institution&apos;s alumni.
           </Text>
         </View>
 

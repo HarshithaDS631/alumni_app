@@ -866,7 +866,7 @@ export default function AdminPanelScreen({ navigation }) {
               {panelItems.map((item) => (
                 <TouchableOpacity 
                   key={item.id} 
-                  style={[styles.gridCard, { width: (width - 52) / 2 }]} 
+                  style={[styles.gridCard, { width: width > 1024 ? '23%' : width > 768 ? '31%' : '48%' }]} 
                   activeOpacity={0.7}
                   onPress={() => setActiveModule(item.moduleName)}
                 >

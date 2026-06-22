@@ -2744,7 +2744,13 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
             {filteredPanelItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
-                style={[styles.gridCard, { backgroundColor: item.color, width: (width - 44) / 2 }]}
+                style={[
+                  styles.gridCard, 
+                  { 
+                    backgroundColor: item.color, 
+                    width: width > 1024 ? '23%' : width > 768 ? '31%' : '48%' 
+                  }
+                ]}
                 onPress={() => {
                   setActiveModule(item.moduleName);
                   setActiveSubTab('1');
