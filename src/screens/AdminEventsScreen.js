@@ -53,7 +53,7 @@ const AdminEventsScreen = ({ navigation, route }) => {
         { id: 'c3', user: 'Arjun R.', text: 'Great lineup of speakers!', time: '1d ago' },
       ],
       reshares: 12,
-      institution: 'Institution',
+      institution: 'RVITM',
     },
     {
       id: 'e3',
@@ -125,7 +125,7 @@ const AdminEventsScreen = ({ navigation, route }) => {
       comments: [],
       reshares: 0,
       attachment: eventAttachment,
-      institution: isSuperAdmin ? selectedInstitution === 'All' ? 'RVCE' : selectedInstitution : 'Institution',
+      institution: isSuperAdmin ? selectedInstitution === 'All' ? 'RVCE' : selectedInstitution : 'RVITM',
     };
     setEventList([newEvent, ...eventList]);
     setEventTitle('');
@@ -540,7 +540,7 @@ const AdminEventsScreen = ({ navigation, route }) => {
                 <>
                   <Text style={styles.filterGroupLabel}>Institution</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsRow}>
-                    {['All', 'RVCE', 'Institution', 'RVPU', 'RVIS', 'RVU', 'RVCA', 'RVIM', 'RVILS', 'DAPMRV', 'RVCN', 'RVCP', 'RVTC', 'RVTTI', 'NMKRV', 'SSMRV', 'RVPS', 'RVS', 'RVLH'].map((inst) => (
+                    {['All', 'RVCE', 'RVITM', 'RVPU', 'RVIS', 'RVU', 'RVCA', 'RVIM', 'RVILS', 'DAPMRV', 'RVCN', 'RVCP', 'RVTC', 'RVTTI', 'NMKRV', 'SSMRV', 'RVPS', 'RVS', 'RVLH'].map((inst) => (
                       <TouchableOpacity
                         key={inst}
                         style={[styles.pill, selectedInstitution === inst && styles.pillActive]}

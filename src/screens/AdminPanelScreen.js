@@ -328,7 +328,7 @@ export default function AdminPanelScreen({ navigation }) {
             {mailBody
               .replace('{alumni_name}', 'Karthik Nagaraju')
               .replace('{graduation_year}', '2018')
-              .replace('{institution}', 'Institution')}
+              .replace('{institution}', 'RVITM')}
           </Text>
         </View>
       </View>

@@ -26,8 +26,8 @@ const connectionRequests = [
 const directoryAlumni = [
   { id: 'da1', name: 'Priya Sharma', branch: 'CSE \'20', title: 'Product Manager at Microsoft', institution: 'RVCE', initials: 'PS', color: '#003366' },
   { id: 'da2', name: 'Rahul Verma', branch: 'ECE \'19', title: 'Software Engineer at Apple', institution: 'RVCE', initials: 'RV', color: '#1E40AF' },
-  { id: 'da3', name: 'Sneha Patel', branch: 'ISE \'21', title: 'Frontend Engineer at Meta', institution: 'Institution', initials: 'SP', color: '#7C3AED' },
-  { id: 'da4', name: 'Arjun Reddy', branch: 'ME \'18', title: 'Mechanical Lead at Tesla', institution: 'Institution', initials: 'AR', color: '#0E7490' },
+  { id: 'da3', name: 'Sneha Patel', branch: 'ISE \'21', title: 'Frontend Engineer at Meta', institution: 'RVITM', initials: 'SP', color: '#7C3AED' },
+  { id: 'da4', name: 'Arjun Reddy', branch: 'ME \'18', title: 'Mechanical Lead at Tesla', institution: 'RVITM', initials: 'AR', color: '#0E7490' },
   { id: 'da5', name: 'Kavitha Nair', branch: 'EEE \'22', title: 'Systems Lead at Qualcomm', institution: 'RVPU', initials: 'KN', color: '#B45309' },
   { id: 'da6', name: 'Deepak Kumar', branch: 'CSE \'17', title: 'Data Scientist at Amazon', institution: 'RVPU', initials: 'DK', color: '#059669' },
   { id: 'da7', name: 'Sarthak Banka', branch: 'CSE \'23', title: 'Fullstack Engineer at Coinbase', institution: 'RVIS', initials: 'SB', color: '#E11D48' },
@@ -291,9 +291,6 @@ const DirectoryScreen = ({ navigation }) => {
               <View style={styles.requestInfo}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <Text style={styles.requestName} numberOfLines={1}>{item.name}</Text>
-                  <View style={styles.institutionTag}>
-                    <Text style={styles.institutionTagText}>{item.institution}</Text>
-                  </View>
                 </View>
                 <Text style={styles.requestSubtitle} numberOfLines={1}>{item.branch} • {item.title}</Text>
               </View>
@@ -374,15 +371,6 @@ const DirectoryScreen = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'directory' && styles.activeTab]}
-          onPress={() => setActiveTab('directory')}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.tabText, activeTab === 'directory' && styles.activeTabText]}>
-            Network
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.tab, activeTab === 'community' && styles.activeTab]}
           onPress={() => setActiveTab('community')}
           activeOpacity={0.7}
@@ -396,8 +384,6 @@ const DirectoryScreen = ({ navigation }) => {
       {/* ───── Tab Content ───── */}
       {activeTab === 'request' ? (
         renderRequestTab()
-      ) : activeTab === 'directory' ? (
-        renderDirectoryTab()
       ) : (
         renderCommunityTab()
       )}

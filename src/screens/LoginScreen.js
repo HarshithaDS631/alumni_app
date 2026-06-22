@@ -19,8 +19,8 @@ const LoginScreen = ({ navigation }) => {
 
     const dummyAlumni = [
       { email: 'alumni@rvce.edu', password: 'alumni123', name: 'RVCE Alumni User', institution: 'RVCE' },
-      { email: 'alumni@institution.edu.in', password: 'alumni123', name: 'Institution Alumni User', institution: 'Institution' },
-      { email: 'alumni@institution.edu', password: 'alumni123', name: 'Institution Alumni User', institution: 'Institution' },
+      { email: 'alumni@rvitm.edu.in', password: 'alumni123', name: 'RVITM Alumni User', institution: 'RVITM' },
+      { email: 'alumni@rvitm.edu', password: 'alumni123', name: 'RVITM Alumni User', institution: 'RVITM' },
       { email: 'alumni@rvpu.edu', password: 'alumni123', name: 'RVPU Alumni User', institution: 'RVPU' },
       { email: 'alumni@rvis.edu', password: 'alumni123', name: 'RVIS Alumni User', institution: 'RVIS' },
     ];

@@ -15,7 +15,7 @@ import {
 import api from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const institutions = [
-  'RVCE', 'Institution', 'RVPU', 'RVIS', 'RVU', 'RVCA', 'RVIM', 'RVILS', 'DAPMRV', 'RVCN', 'RVCP', 'RVTC', 'RVTTI', 'NMKRV', 'SSMRV', 'RVPS', 'RVS', 'RVLH', 'Other'
+  'RVCE', 'RVITM', 'RVPU', 'RVIS', 'RVU', 'RVCA', 'RVIM', 'RVILS', 'DAPMRV', 'RVCN', 'RVCP', 'RVTC', 'RVTTI', 'NMKRV', 'SSMRV', 'RVPS', 'RVS', 'RVLH', 'Other'
 ];
 
 const institutionDepartments = {
@@ -33,7 +33,7 @@ const institutionDepartments = {
     "Industrial Engineering & Management",
     "Mechanical Engineering"
   ],
-  'Institution': ["Computer Science & Engineering", "Information Science & Engineering", "Electronics & Communication Engineering", "Mechanical Engineering"],
+  'RVITM': ["Computer Science & Engineering", "Information Science & Engineering", "Electronics & Communication Engineering", "Mechanical Engineering"],
   'RVPU': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
   'RVIM': ["MBA", "Executive Education"],
   'RVU': ["School of Computer Science & Engineering", "School of Design", "School of Business", "School of Economics", "School of Liberal Arts & Sciences"],
