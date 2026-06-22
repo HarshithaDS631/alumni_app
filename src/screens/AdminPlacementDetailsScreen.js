@@ -55,7 +55,16 @@ export default function AdminPlacementDetailsScreen({ navigation, route }) {
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity 
+          style={styles.backBtn} 
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate('AdminMain');
+            }
+          }}
+        >
           <Ionicons name="arrow-back" size={24} color="#003366" />
         </TouchableOpacity>
         <View style={styles.headerTitleBox}>

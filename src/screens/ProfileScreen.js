@@ -127,7 +127,16 @@ const ProfileScreen = ({ navigation }) => {
       {/* Premium Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={{ marginRight: 12 }} onPress={() => navigation.goBack()}>
+          <TouchableOpacity 
+            style={{ marginRight: 12 }} 
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                navigation.navigate('Main');
+              }
+            }}
+          >
             <Ionicons name="arrow-back" size={24} color="#0F172A" />
           </TouchableOpacity>
           <Ionicons name="shield-checkmark" size={18} color="#003366" />

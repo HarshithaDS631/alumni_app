@@ -121,7 +121,13 @@ const RegisterScreen = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <TouchableOpacity 
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                navigation.navigate('Welcome');
+              }
+            }}
           >
             <Text style={styles.backButtonText}>← Back</Text>
           </TouchableOpacity>

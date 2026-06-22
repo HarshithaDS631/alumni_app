@@ -369,7 +369,15 @@ const AdminProfileScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation && navigation.goBack()}>
+          <TouchableOpacity onPress={() => {
+            if (navigation) {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                navigation.navigate('AdminMain');
+              }
+            }
+          }}>
             <Ionicons name="arrow-back" size={22} color="#0F172A" />
           </TouchableOpacity>
           <Text style={styles.headerUsername}>{profileData.username}</Text>

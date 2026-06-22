@@ -71,7 +71,13 @@ const LoginScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <TouchableOpacity 
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                navigation.navigate('Welcome');
+              }
+            }}
           >
             <Ionicons name="arrow-back" size={24} color="#002144" />
           </TouchableOpacity>

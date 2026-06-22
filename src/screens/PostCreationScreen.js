@@ -17,7 +17,13 @@ const PostCreationScreen = ({ navigation }) => {
     Alert.alert(
       'Success',
       'Your post has been shared with the community!',
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
+      [{ text: 'OK', onPress: () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          navigation.navigate('Main');
+        }
+      } }]
     );
   };
 
@@ -52,7 +58,16 @@ const PostCreationScreen = ({ navigation }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.cancelBtn}>
+          <TouchableOpacity 
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                navigation.navigate('Main');
+              }
+            }} 
+            style={styles.cancelBtn}
+          >
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Create Post</Text>

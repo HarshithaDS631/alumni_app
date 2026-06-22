@@ -54,7 +54,16 @@ const DemoCarouselScreen = ({ navigation }) => {
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
+        <TouchableOpacity 
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate('Welcome');
+            }
+          }} 
+          style={styles.closeBtn}
+        >
           <Ionicons name="close" size={26} color="#002144" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Platform Tour</Text>

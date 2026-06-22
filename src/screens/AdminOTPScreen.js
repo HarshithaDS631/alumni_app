@@ -75,7 +75,13 @@ const AdminOTPScreen = ({ navigation, route }) => {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate('AdminLogin');
+            }
+          }}
         >
           <Ionicons name="arrow-back" size={24} color="#002144" />
         </TouchableOpacity>

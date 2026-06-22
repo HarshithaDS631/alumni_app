@@ -107,7 +107,16 @@ const NotificationsScreen = ({ navigation }) => {
       {/* Header with Back Button */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity 
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                navigation.navigate('Main');
+              }
+            }} 
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back" size={24} color="#002144" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Notifications</Text>
