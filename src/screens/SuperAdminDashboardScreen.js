@@ -257,27 +257,6 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   const [selectedInstitution, setSelectedInstitution] = useState(global.selectedInstitution || 'All');
   const isFocused = useIsFocused();
 
-  const handleLogout = () => {
-    if (Platform.OS === 'web') {
-      if (window.confirm('Are you sure you want to logout?')) {
-        AsyncStorage.removeItem('userInfo');
-        navigation.reset({ index: 0, routes: [{ name: 'AdminLogin' }] });
-      }
-    } else {
-      Alert.alert('Logout', 'Are you sure you want to logout?', [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Logout', 
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('userInfo');
-            navigation.reset({ index: 0, routes: [{ name: 'AdminLogin' }] });
-          }
-        }
-      ]);
-    }
-  };
-
   // Sync selected institution with global value when screen is focused
   useEffect(() => {
     if (isFocused && global.selectedInstitution) {
@@ -2069,9 +2048,10 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
         <InstitutionSelector />
 
         <ScrollView contentContainerStyle={styles.listPadding} showsVerticalScrollIndicator={false}>
+          <View style={styles.gridContainer}>
           {/* Card 1: Database Signups */}
           <TouchableOpacity 
-            style={styles.statCard} 
+            style={[styles.statCard, { width: width > 1024 ? '48%' : '100%' }]} 
             activeOpacity={0.9} 
             onPress={() => setExpandedChart(expandedChart === 'signups' ? null : 'signups')}
           >
@@ -2139,7 +2119,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
           {/* Card 2: Engagement / News Feed Visitors */}
           <TouchableOpacity 
-            style={styles.statCard} 
+            style={[styles.statCard, { width: width > 1024 ? '48%' : '100%' }]} 
             activeOpacity={0.9} 
             onPress={() => setExpandedChart(expandedChart === 'engagement' ? null : 'engagement')}
           >
@@ -2207,7 +2187,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
           {/* Card 3: Overall Users */}
           <TouchableOpacity 
-            style={styles.statCard} 
+            style={[styles.statCard, { width: width > 1024 ? '48%' : '100%' }]} 
             activeOpacity={0.9} 
             onPress={() => setExpandedChart(expandedChart === 'users' ? null : 'users')}
           >
@@ -2282,7 +2262,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
           {/* Card 4: Jobs */}
           <TouchableOpacity 
-            style={styles.statCard} 
+            style={[styles.statCard, { width: width > 1024 ? '48%' : '100%' }]} 
             activeOpacity={0.9} 
             onPress={() => setExpandedChart(expandedChart === 'jobs' ? null : 'jobs')}
           >
@@ -2354,7 +2334,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
           {/* Card 5: Emails */}
           <TouchableOpacity 
-            style={styles.statCard} 
+            style={[styles.statCard, { width: width > 1024 ? '48%' : '100%' }]} 
             activeOpacity={0.9} 
             onPress={() => setExpandedChart(expandedChart === 'emails' ? null : 'emails')}
           >
@@ -2420,6 +2400,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               <Text style={styles.chartDetailsHelpText}>Tap card to expand institution breakdown</Text>
             )}
           </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
     );
@@ -2671,12 +2652,6 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               <Ionicons name="notifications-outline" size={24} color="#003366" />
               <View style={styles.dotAdminStyle} />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.headerIconBtnAdminStyle}
-              onPress={handleLogout}
-            >
-              <Ionicons name="log-out-outline" size={24} color="#dc2626" />
-            </TouchableOpacity>
           </View>
         </View>
       ) : (
@@ -2721,12 +2696,6 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
             >
               <Ionicons name="notifications-outline" size={24} color="#003366" />
               <View style={styles.dotAdminStyle} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.headerIconBtnAdminStyle}
-              onPress={handleLogout}
-            >
-              <Ionicons name="log-out-outline" size={24} color="#dc2626" />
             </TouchableOpacity>
           </View>
         </View>

@@ -299,12 +299,6 @@ const DashboardScreen = ({ navigation }) => {
             <Ionicons name="notifications-outline" size={24} color="#003366" />
             <View style={styles.dot} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerIconBtn}
-            onPress={handleLogout}
-          >
-            <Ionicons name="log-out-outline" size={24} color="#dc2626" />
-          </TouchableOpacity>
         </View>
       </View>
 
