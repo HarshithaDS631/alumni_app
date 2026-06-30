@@ -49,8 +49,12 @@ const PostCreationScreen = ({ navigation }) => {
     setAttachedImage('https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&h=400&q=80');
   };
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -159,6 +163,7 @@ const PostCreationScreen = ({ navigation }) => {
           </View>
         </View>
       </KeyboardAvoidingView>
+    </View>
     </SafeAreaView>
   );
 };

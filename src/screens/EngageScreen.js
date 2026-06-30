@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, useWindowDimensions, Image, StatusBar, Modal, TextInput, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, useWindowDimensions, Image, StatusBar, Modal, TextInput, FlatList, Alert , Platform} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const EngageScreen = ({ navigation }) => {
@@ -301,8 +301,12 @@ const EngageScreen = ({ navigation }) => {
   }
 
   // ===== MAIN FEED VIEW =====
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -504,6 +508,7 @@ const EngageScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+    </View>
     </SafeAreaView>
   );
 };

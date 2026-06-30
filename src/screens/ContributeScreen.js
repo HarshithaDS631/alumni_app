@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, StatusBar, ScrollView, TextInput , Platform} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const ContributeScreen = ({ navigation }) => {
@@ -191,8 +191,12 @@ const ContributeScreen = ({ navigation }) => {
     );
   };
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
       
       {/* Header exactly like Dashboard/Jobs flow */}
@@ -310,6 +314,7 @@ const ContributeScreen = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
+    </View>
     </SafeAreaView>
   );
 };

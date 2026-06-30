@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, ScrollView , Platform} from 'react-native';
 
 const MentorshipScreen = () => {
   const mentors = [
@@ -29,8 +29,12 @@ const MentorshipScreen = () => {
     }
   ];
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Mentorship Hub</Text>
@@ -87,6 +91,7 @@ const MentorshipScreen = () => {
           </View>
         </View>
       </ScrollView>
+    </View>
     </SafeAreaView>
   );
 };

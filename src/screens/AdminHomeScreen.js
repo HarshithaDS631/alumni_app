@@ -217,8 +217,12 @@ export default function AdminHomeScreen({ navigation }) {
     </View>
   );
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 1024, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -459,6 +463,7 @@ export default function AdminHomeScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+    </View>
     </SafeAreaView>
   );
 }

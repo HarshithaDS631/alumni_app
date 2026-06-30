@@ -241,8 +241,12 @@ const JobsScreen = ({ navigation, route }) => {
   }
 
   // ─── DEFAULT: MAIN LIST ─────────────────────────────────────
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={st.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
       {/* Header */}
       <View style={[st.header, isSmallScreen && { paddingHorizontal: 10, paddingVertical: 8 }]}>
@@ -311,6 +315,7 @@ const JobsScreen = ({ navigation, route }) => {
           ))}
         </ScrollView>
       )}
+    </View>
     </SafeAreaView>
   );
 };

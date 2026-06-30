@@ -73,8 +73,12 @@ const ProfileSetupScreen = ({ navigation }) => {
     setAvatar('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80');
   };
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -285,6 +289,7 @@ const ProfileSetupScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+    </View>
     </SafeAreaView>
   );
 };

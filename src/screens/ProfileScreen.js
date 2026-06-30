@@ -120,8 +120,12 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
       
       {/* Premium Header */}
@@ -622,6 +626,7 @@ const ProfileScreen = ({ navigation }) => {
         </View>
       </Modal>
 
+    </View>
     </SafeAreaView>
   );
 };

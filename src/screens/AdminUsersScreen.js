@@ -267,8 +267,12 @@ const AdminUsersScreen = ({ navigation, route }) => {
     </View>
   );
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 1024, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       {renderHeader()}
       {renderTabs()}
@@ -448,6 +452,7 @@ const AdminUsersScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+    </View>
     </SafeAreaView>
   );
 };

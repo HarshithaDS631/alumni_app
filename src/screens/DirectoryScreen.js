@@ -10,8 +10,7 @@ import {
   ScrollView,
   StatusBar,
   Modal,
-  Alert,
-} from 'react-native';
+  Alert, Platform} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const connectionRequests = [
@@ -323,8 +322,12 @@ const DirectoryScreen = ({ navigation }) => {
     );
   };
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* ───── Header ───── */}
@@ -509,6 +512,7 @@ const DirectoryScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+    </View>
     </SafeAreaView>
   );
 };

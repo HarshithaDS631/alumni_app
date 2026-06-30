@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, StatusBar, ScrollView , Platform} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const initialNotifications = [
@@ -100,8 +100,12 @@ const NotificationsScreen = ({ navigation }) => {
     return { section, data };
   }).filter(group => group.data.length > 0);
 
+    const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={webContainerStyle}>
       <StatusBar barStyle="dark-content" />
       
       {/* Header with Back Button */}
@@ -170,6 +174,7 @@ const NotificationsScreen = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
+    </View>
     </SafeAreaView>
   );
 };
