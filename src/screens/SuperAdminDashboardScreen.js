@@ -2620,10 +2620,13 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   }, [searchQuery]);
 
   const isMainScreen = activeModule === null || activeModule === 'dashboard_home';
+  const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 1024, flex: 1 } : { flex: 1 };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <View style={webContainerStyle}>
 
       {/* Header */}
       {!isMainScreen ? (
@@ -2740,6 +2743,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
           {renderModuleContent()}
         </View>
       )}
+      </View>
     </SafeAreaView>
   );
 };

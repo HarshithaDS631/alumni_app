@@ -22,6 +22,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 const DashboardScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
+  const contentWidth = Platform.OS === 'web' ? Math.min(width, 800) : width;
+  const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+  
   const [likedPosts, setLikedPosts] = useState({});
   const [bookmarkedPosts, setBookmarkedPosts] = useState({});
   const [followedUsers, setFollowedUsers] = useState({});
@@ -200,7 +204,7 @@ const DashboardScreen = ({ navigation }) => {
       </View>
 
       {/* Post image */}
-      <Image source={{ uri: post.image }} style={[styles.postImage, { width: width, height: width * 0.65 }]} />
+      <Image source={{ uri: post.image }} style={[styles.postImage, { width: '100%', height: contentWidth * 0.65 }]} />
 
       {/* Action row */}
       <View style={styles.postActions}>
@@ -260,8 +264,9 @@ const DashboardScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* ── Header ─────────────────────────────────────── */}
-      <View style={styles.header}>
+      <View style={webContainerStyle}>
+        {/* ── Header ─────────────────────────────────────── */}
+        <View style={styles.header}>
         {/* Left – User avatar */}
         <TouchableOpacity
           style={styles.headerAvatar}
@@ -381,7 +386,7 @@ const DashboardScreen = ({ navigation }) => {
             contentContainerStyle={styles.eventsScroll}
           >
             {eventsAndJobs.map((ev) => (
-              <View key={ev.id} style={[styles.eventRowCard, { width: width * 0.76 }]}>
+              <View key={ev.id} style={[styles.eventRowCard, { width: contentWidth * 0.76 }]}>
                 <Image source={{ uri: ev.image }} style={styles.eventRowImage} />
                 <View style={styles.eventRowContent}>
                   <Text style={styles.eventRowTitle} numberOfLines={1}>
@@ -404,6 +409,7 @@ const DashboardScreen = ({ navigation }) => {
 
         <View style={{ height: 30 }} />
       </ScrollView>
+      </View>
 
       {/* ── Modals ────────────────────────────────────────────── */}
       {/* Comments Modal */}

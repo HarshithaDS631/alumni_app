@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, useWindowDimensions, StatusBar, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, useWindowDimensions, StatusBar, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const AdminDashboardScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
+  const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+  
   const [pendingApprovals, setPendingApprovals] = useState(45);
   
   const stats = [
@@ -61,6 +64,7 @@ const AdminDashboardScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      <View style={webContainerStyle}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
         {/* Stats Grid */}
@@ -185,6 +189,7 @@ const AdminDashboardScreen = ({ navigation }) => {
         </TouchableOpacity>
 
       </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
