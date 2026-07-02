@@ -267,6 +267,66 @@ const DirectoryScreen = ({ navigation }) => {
     );
   };
 
+
+  const renderWebDirectoryTab = () => {
+    const filteredDirectory = directoryAlumni.filter(
+      (a) =>
+        a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.branch.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.institution.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return (
+      <View style={styles.webTableContainer}>
+        <View style={styles.webTableHeader}>
+          <Text style={[styles.webTableColHeader, { flex: 3 }]}>Alumni Name</Text>
+          <Text style={[styles.webTableColHeader, { flex: 2 }]}>Batch & Branch</Text>
+          <Text style={[styles.webTableColHeader, { flex: 3 }]}>Current Role</Text>
+          <Text style={[styles.webTableColHeader, { flex: 2 }]}>Institution</Text>
+          <Text style={[styles.webTableColHeader, { flex: 1, textAlign: 'center' }]}>Action</Text>
+        </View>
+        <ScrollView style={styles.webTableBody}>
+          {filteredDirectory.length === 0 ? (
+            <View style={{ padding: 40, alignItems: 'center' }}>
+              <Ionicons name="people-outline" size={48} color="#CBD5E1" />
+              <Text style={{ marginTop: 16, fontSize: 16, color: '#64748B' }}>No Alumni Found</Text>
+            </View>
+          ) : (
+            filteredDirectory.map((item, index) => (
+              <View key={item.id} style={[styles.webTableRow, index % 2 === 0 ? { backgroundColor: '#FFFFFF' } : { backgroundColor: '#F8FAFC' }]}>
+                <View style={{ flex: 3, flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={[styles.avatar, { backgroundColor: item.color, width: 32, height: 32, borderRadius: 16, marginRight: 12 }]}>
+                    <Text style={[styles.avatarText, { fontSize: 12 }]}>{item.initials}</Text>
+                  </View>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A' }}>{item.name}</Text>
+                </View>
+                <View style={{ flex: 2, justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 14, color: '#475569' }}>{item.branch}</Text>
+                </View>
+                <View style={{ flex: 3, justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 14, color: '#475569' }}>{item.title}</Text>
+                </View>
+                <View style={{ flex: 2, justifyContent: 'center' }}>
+                  <View style={{ backgroundColor: '#E2E8F0', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, alignSelf: 'flex-start' }}>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#334155' }}>{item.institution}</Text>
+                  </View>
+                </View>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+                  <TouchableOpacity
+                    style={{ padding: 6, backgroundColor: '#EFF6FF', borderRadius: 6 }}
+                    onPress={() => navigation.navigate('Chat', { user: { name: item.name, role: item.branch + ' • ' + item.title, initials: item.initials, lastMessage: 'Let\'s connect and catch up!', time: 'Now' } })}
+                  >
+                    <Ionicons name="chatbubble-ellipses-outline" size={16} color="#003366" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
+    );
+  };
   const renderDirectoryTab = () => {
     const filteredDirectory = directoryAlumni.filter(
       (a) =>
@@ -399,7 +459,7 @@ const DirectoryScreen = ({ navigation }) => {
 
       {/* ───── Tab Content ───── */}
       {activeTab === 'directory' ? (
-        renderDirectoryTab()
+        isWeb ? renderWebDirectoryTab() : renderDirectoryTab()
       ) : activeTab === 'request' ? (
         renderRequestTab()
       ) : (
@@ -1211,6 +1271,11 @@ const getStyles = (theme) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  webTableContainer: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, margin: 24, borderWidth: 1, borderColor: theme.border, overflow: 'hidden' },
+  webTableHeader: { flexDirection: 'row', padding: 16, backgroundColor: '#F1F5F9', borderBottomWidth: 1, borderBottomColor: theme.border },
+  webTableColHeader: { fontSize: 12, fontWeight: '700', color: '#475569', textTransform: 'uppercase' },
+  webTableBody: { flex: 1 },
+  webTableRow: { flexDirection: 'row', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
 });
 
 export default DirectoryScreen;

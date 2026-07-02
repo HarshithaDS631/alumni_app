@@ -266,165 +266,131 @@ const DashboardScreen = ({ navigation }) => {
   // ─── Render ────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor="#FFFFFF" />
-
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <View style={webContainerStyle}>
-        {/* ── Header ─────────────────────────────────────── */}
-        <View style={styles.header}>
-        {/* Left – User avatar */}
-        <TouchableOpacity
-          style={styles.headerAvatar}
-          activeOpacity={0.8}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Text style={styles.headerAvatarText}>AJ</Text>
-        </TouchableOpacity>
-
-        {/* Center – Search bar */}
-        <View style={styles.searchBar}>
-          <Ionicons name="search-outline" size={18} color="#94A3B8" style={{ marginRight: 6 }} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search"
-            placeholderTextColor="#94A3B8"
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-        </View>
-
-        {/* Right – Icons */}
-        <View style={styles.headerIcons}>
-          <TouchableOpacity
-            style={styles.headerIconBtn}
-            onPress={() => navigation.navigate('Messages')}
-          >
-            <Ionicons name="chatbubble-ellipses-outline" size={24} color="#003366" />
-            <View style={styles.dot} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerIconBtn}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <Ionicons name="notifications-outline" size={24} color="#003366" />
-            <View style={styles.dot} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* ── Welcome Message ────────────────────────────── */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontSize: 20, fontWeight: '800', color: theme.primary }}>
-          Welcome to {userInstitution}
-        </Text>
-      </View>
-
-      {/* ── Feed ───────────────────────────────────────── */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* ── Post 1 ──────────────────────────────────── */}
-        {renderPostCard(posts[0])}
-
-        {/* ── Suggestions for you ─────────────────────── */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Suggestions for you</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See all</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.suggestionsScroll}
-          >
-            {suggestions.map((s) => (
-              <View key={s.id} style={styles.suggestionCard}>
-                <TouchableOpacity style={styles.suggestCloseBtn}>
-                  <Ionicons name="close" size={14} color="#94A3B8" />
-                </TouchableOpacity>
-                <View style={styles.suggestionAvatar}>
-                  <Text style={styles.suggestionAvatarText}>{s.avatar}</Text>
-                </View>
-                <Text style={styles.suggestionName} numberOfLines={1}>
-                  {s.name}
-                </Text>
-                <Text style={styles.suggestSubText}>Lorem Ipsum</Text>
-                <TouchableOpacity
-                  style={[
-                    styles.suggestionFollowBtn,
-                    followedSuggestions[s.id] && styles.suggestionFollowBtnActive,
-                  ]}
-                  activeOpacity={0.7}
-                  onPress={() => toggleSuggestionFollow(s.id)}
-                >
-                  <Text
-                    style={[
-                      styles.suggestionFollowText,
-                      followedSuggestions[s.id] && styles.suggestionFollowTextActive,
-                    ]}
-                  >
-                    {followedSuggestions[s.id] ? 'Following' : 'Follow'}
-                  </Text>
-                </TouchableOpacity>
+        
+        {isWeb ? (
+          // WEB GRID DASHBOARD
+          <View style={{ flex: 1, padding: 24, flexDirection: 'row', gap: 24 }}>
+            {/* Left Column: Feed */}
+            <View style={{ flex: 7 }}>
+              <View style={{ backgroundColor: '#F8FAFC', padding: 24, borderRadius: 16, marginBottom: 24 }}>
+                <Text style={{ fontSize: 24, fontWeight: '800', color: '#0F172A' }}>Welcome back, {userInstitution} Alumni!</Text>
+                <Text style={{ fontSize: 16, color: '#64748B', marginTop: 8 }}>Here&apos;s what&apos;s happening in your network today.</Text>
               </View>
-            ))}
-          </ScrollView>
-        </View>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+                {posts.map(post => renderPostCard(post))}
+              </ScrollView>
+            </View>
 
-        {/* ── Post 2 ──────────────────────────────────── */}
-        {renderPostCard(posts[1])}
-
-        {/* ── Events & Job Suggestions ────────────────── */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Events & Job Suggestions</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See all</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.eventsScroll}
-          >
-            {eventsAndJobs.map((ev) => (
-              <View key={ev.id} style={[styles.eventRowCard, { width: contentWidth * 0.76 }]}>
-                <Image source={{ uri: ev.image }} style={styles.eventRowImage} />
-                <View style={styles.eventRowContent}>
-                  <Text style={styles.eventRowTitle} numberOfLines={1}>
-                    {ev.title}
-                  </Text>
-                  <Text style={styles.eventRowSub} numberOfLines={1}>
-                    Lorem Ipsum
-                  </Text>
-                  <TouchableOpacity style={styles.eventRowBtn}>
-                    <Text style={styles.eventRowBtnText}>Lorem Ipsum</Text>
-                  </TouchableOpacity>
+            {/* Right Column: Widgets */}
+            <View style={{ flex: 4 }}>
+              {/* Suggestions Widget */}
+              <View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 24, elevation: 2, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A' }}>People you may know</Text>
+                  <Text style={{ fontSize: 13, color: '#003366', fontWeight: '600' }}>See all</Text>
                 </View>
-                <TouchableOpacity style={styles.eventRowClose}>
-                  <Ionicons name="close" size={14} color="#94A3B8" />
-                </TouchableOpacity>
+                {suggestions.map(s => (
+                  <View key={s.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                    <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#E2E8F0', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                      <Text style={{ fontWeight: '700', color: '#64748B' }}>{s.avatar}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A' }}>{s.name}</Text>
+                      <Text style={{ fontSize: 12, color: '#64748B' }}>Alumni</Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={[styles.suggestionFollowBtn, followedSuggestions[s.id] && styles.suggestionFollowBtnActive, { paddingHorizontal: 12, paddingVertical: 6 }]}
+                      onPress={() => toggleSuggestionFollow(s.id)}
+                    >
+                      <Text style={[styles.suggestionFollowText, followedSuggestions[s.id] && styles.suggestionFollowTextActive]}>{followedSuggestions[s.id] ? 'Following' : 'Follow'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
               </View>
-            ))}
-          </ScrollView>
-        </View>
 
-        <View style={{ height: 30 }} />
-      </ScrollView>
+              {/* Events & Jobs Widget */}
+              <View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, elevation: 2, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A' }}>Upcoming & Opportunities</Text>
+                  <Text style={{ fontSize: 13, color: '#003366', fontWeight: '600' }}>See all</Text>
+                </View>
+                {eventsAndJobs.map(ev => (
+                  <View key={ev.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
+                    <Image source={{ uri: ev.image }} style={{ width: 60, height: 60, borderRadius: 8, marginRight: 12 }} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A', marginBottom: 4 }}>{ev.title}</Text>
+                      <TouchableOpacity style={{ backgroundColor: '#F1F5F9', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '600', color: '#003366' }}>View Details</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        ) : (
+          // MOBILE LAYOUT (Current)
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            {renderPostCard(posts[0])}
+            <View style={styles.sectionContainer}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Suggestions for you</Text>
+                <TouchableOpacity><Text style={styles.seeAllText}>See all</Text></TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsScroll}>
+                {suggestions.map((s) => (
+                  <View key={s.id} style={styles.suggestionCard}>
+                    <TouchableOpacity style={styles.suggestionRemove}><Ionicons name="close" size={14} color="#94A3B8" /></TouchableOpacity>
+                    <View style={styles.suggestionAvatar}><Text style={styles.avatarText}>{s.avatar}</Text></View>
+                    <Text style={styles.suggestionName} numberOfLines={1}>{s.name}</Text>
+                    <Text style={styles.suggestSubText}>Lorem Ipsum</Text>
+                    <TouchableOpacity
+                      style={[styles.suggestionFollowBtn, followedSuggestions[s.id] && styles.suggestionFollowBtnActive]}
+                      onPress={() => toggleSuggestionFollow(s.id)}
+                    >
+                      <Text style={[styles.suggestionFollowText, followedSuggestions[s.id] && styles.suggestionFollowTextActive]}>
+                        {followedSuggestions[s.id] ? 'Following' : 'Follow'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+            {renderPostCard(posts[1])}
+            <View style={styles.sectionContainer}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Events & Job Suggestions</Text>
+                <TouchableOpacity><Text style={styles.seeAllText}>See all</Text></TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.eventsScroll}>
+                {eventsAndJobs.map((ev) => (
+                  <View key={ev.id} style={[styles.eventRowCard, { width: contentWidth * 0.76 }]}>
+                    <Image source={{ uri: ev.image }} style={styles.eventRowImage} />
+                    <View style={styles.eventRowContent}>
+                      <Text style={styles.eventRowTitle} numberOfLines={1}>{ev.title}</Text>
+                      <Text style={styles.eventRowSub} numberOfLines={1}>Lorem Ipsum</Text>
+                      <TouchableOpacity style={styles.eventRowBtn}><Text style={styles.eventRowBtnText}>Lorem Ipsum</Text></TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={styles.eventRowClose}><Ionicons name="close" size={14} color="#94A3B8" /></TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+            <View style={{ height: 30 }} />
+          </ScrollView>
+        )}
       </View>
 
       {/* ── Modals ────────────────────────────────────────────── */}
       {/* Comments Modal */}
       <Modal visible={activeModal === 'comments'} animationType="slide" transparent={true}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
-          <View style={styles.bottomSheet}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={isWeb ? styles.webModalOverlay : styles.modalOverlay}>
+          <View style={isWeb ? styles.webModalContainer : styles.bottomSheet}>
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>Comments</Text>
-              <TouchableOpacity onPress={closeModal}>
-                <Ionicons name="close" size={24} color="#0F172A" />
-              </TouchableOpacity>
+              <TouchableOpacity onPress={closeModal}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
             </View>
             <FlatList
               data={mockComments}
@@ -439,80 +405,47 @@ const DashboardScreen = ({ navigation }) => {
               contentContainerStyle={{ paddingHorizontal: 16 }}
             />
             <View style={styles.commentInputRow}>
-              <TextInput
-                style={styles.commentInput}
-                placeholder="Add a comment..."
-                value={commentText}
-                onChangeText={setCommentText}
-              />
-              <TouchableOpacity onPress={() => setCommentText('')}>
-                <Text style={styles.commentPostBtn}>Post</Text>
+              <TextInput style={styles.commentInput} placeholder="Add a comment..." value={commentText} onChangeText={setCommentText} />
+              <TouchableOpacity onPress={() => setCommentText('')}><Text style={styles.commentPostBtn}>Post</Text></TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal visible={activeModal === 'share'} animationType="slide" transparent={true}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={isWeb ? styles.webModalOverlay : styles.modalOverlay}>
+          <View style={isWeb ? styles.webModalContainer : styles.bottomSheet}>
+            <View style={styles.sheetHeader}>
+              <Text style={styles.sheetTitle}>Share to...</Text>
+              <TouchableOpacity onPress={closeModal}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
+            </View>
+            <View style={styles.shareGrid}>
+              <TouchableOpacity style={styles.shareItem} onPress={() => handleShare(selectedPost)}>
+                <View style={[styles.shareIconWrap, {backgroundColor:'#25D366'}]}><Ionicons name="logo-whatsapp" size={24} color="#FFF"/></View>
+                <Text style={styles.shareText}>WhatsApp</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareItem} onPress={() => handleShare(selectedPost)}>
+                <View style={[styles.shareIconWrap, {backgroundColor:'#0077B5'}]}><Ionicons name="logo-linkedin" size={24} color="#FFF"/></View>
+                <Text style={styles.shareText}>LinkedIn</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareItem} onPress={() => handleShare(selectedPost)}>
+                <View style={[styles.shareIconWrap, {backgroundColor:'#1DA1F2'}]}><Ionicons name="logo-twitter" size={24} color="#FFF"/></View>
+                <Text style={styles.shareText}>Twitter</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareItem} onPress={() => handleShare(selectedPost)}>
+                <View style={[styles.shareIconWrap, {backgroundColor:'#E2E8F0'}]}><Ionicons name="copy-outline" size={24} color="#0F172A"/></View>
+                <Text style={styles.shareText}>Copy Link</Text>
               </TouchableOpacity>
             </View>
           </View>
         </KeyboardAvoidingView>
       </Modal>
 
-      {/* Reshare Modal */}
-      <Modal visible={activeModal === 'reshare'} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.bottomSheetMini}>
-            <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Repost</Text>
-              <TouchableOpacity onPress={closeModal}>
-                <Ionicons name="close" size={24} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.sheetActionRow} onPress={closeModal}>
-              <Ionicons name="repeat" size={24} color="#0F172A" />
-              <Text style={styles.sheetActionText}>Repost</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.sheetActionRow} onPress={closeModal}>
-              <Ionicons name="pencil" size={24} color="#0F172A" />
-              <Text style={styles.sheetActionText}>Quote Post</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Share Modal */}
-      <Modal visible={activeModal === 'share'} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.bottomSheet}>
-            <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Share</Text>
-              <TouchableOpacity onPress={closeModal}>
-                <Ionicons name="close" size={24} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.shareGrid}>
-              {mockUsers.map(u => (
-                <TouchableOpacity key={u.id} style={styles.shareUserAvatar}>
-                  <View style={styles.shareAvatarCircle}>
-                    <Text style={styles.shareAvatarText}>{u.avatar}</Text>
-                  </View>
-                  <Text style={styles.shareUserName} numberOfLines={1}>{u.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            
-            <TouchableOpacity style={styles.systemShareBtn} onPress={() => {
-               const postToShare = selectedPost;
-               closeModal();
-               if(postToShare) handleShare(postToShare);
-            }}>
-              <Ionicons name="share-social-outline" size={20} color="#0F172A" style={{marginRight: 8}}/>
-              <Text style={styles.systemShareText}>Share via...</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
 
-// ─── Styles ──────────────────────────────────────────────
 const getStyles = (theme) => StyleSheet.create({
   /* ── Container ──────────────────────────────────────── */
   container: {
@@ -969,7 +902,9 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: theme.text,
-  }
+  },
+  webModalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.5)', justifyContent: 'center', alignItems: 'center' },
+  webModalContainer: { width: 500, backgroundColor: theme.card, borderRadius: 16, paddingBottom: 16, maxHeight: '80%', overflow: 'hidden' },
 });
 
 export default DashboardScreen;

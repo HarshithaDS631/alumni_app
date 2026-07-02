@@ -714,6 +714,9 @@ const getStyles = (theme) => StyleSheet.create({
   dmName: { fontSize: 11, color: '#475569', textAlign: 'center', marginTop: 4 },
   postContentContainer: { paddingHorizontal: 14, paddingVertical: 10 },
   postContentText: { fontSize: 14, color: theme.text, lineHeight: 20 },
+
+  webModalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.5)', justifyContent: 'center', alignItems: 'center' },
+  webModalContainer: { width: 500, backgroundColor: theme.card, borderRadius: 16, padding: 24, maxHeight: '80%', overflow: 'hidden' },
 });
 
 export default EngageScreen;

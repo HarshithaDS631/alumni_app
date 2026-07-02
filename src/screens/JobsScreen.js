@@ -225,7 +225,29 @@ const JobsScreen = ({ navigation, route }) => {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: isSmallScreen ? 14 : 20, backgroundColor: '#FFFFFF' }} showsVerticalScrollIndicator={false}>
         <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Role / Job Title *</Text><TextInput style={st.textInput} placeholder="e.g. Senior Software Engineer" placeholderTextColor="#94A3B8" value={fRole} onChangeText={setFRole} /></View>
         <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Company *</Text><TextInput style={st.textInput} placeholder="e.g. Google, Amazon" placeholderTextColor="#94A3B8" value={fCompany} onChangeText={setFCompany} /></View>
-        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Work Mode</Text><TouchableOpacity style={st.selectorInput} onPress={() => setModalVis(true)}><Text style={{ fontSize: 14.5, color: '#0F172A' }}>{fMode}</Text><Ionicons name="chevron-down" size={20} color="#64748B" /></TouchableOpacity></View>
+        
+        <View style={{ marginBottom: 20 }}>
+          <Text style={st.inputLabel}>Work Mode</Text>
+          {isWeb ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {WORK_MODES.map(mode => (
+                <TouchableOpacity 
+                  key={mode} 
+                  style={[st.webChip, fMode === mode && st.webChipActive]} 
+                  onPress={() => setFMode(mode)}
+                >
+                  <Text style={[st.webChipText, fMode === mode && st.webChipTextActive]}>{mode}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : (
+            <TouchableOpacity style={st.selectorInput} onPress={() => setModalVis(true)}>
+              <Text style={{ fontSize: 14.5, color: '#0F172A' }}>{fMode}</Text>
+              <Ionicons name="chevron-down" size={20} color="#64748B" />
+            </TouchableOpacity>
+          )}
+        </View>
+
         <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Experience Required</Text><TextInput style={st.textInput} placeholder="e.g. 3-5 years" placeholderTextColor="#94A3B8" value={fExp} onChangeText={setFExp} /></View>
         <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Location</Text><TextInput style={st.textInput} placeholder="e.g. Bengaluru, Remote" placeholderTextColor="#94A3B8" value={fLoc} onChangeText={setFLoc} /></View>
         <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Job Description</Text><TextInput style={[st.textInput, { height: 120, textAlignVertical: 'top' }]} placeholder="Description..." placeholderTextColor="#94A3B8" value={fDesc} onChangeText={setFDesc} multiline /></View>
@@ -338,7 +360,8 @@ const JobsScreen = ({ navigation, route }) => {
         )}
       </View>
 
-      <Modal visible={modalVis} transparent animationType="fade">
+      {!isWeb && (
+        <Modal visible={modalVis} transparent animationType="fade">
         <View style={st.modalOverlay}>
           <TouchableOpacity style={{ flex: 1 }} onPress={() => setModalVis(false)} />
           <View style={st.modalContent}>
@@ -354,7 +377,8 @@ const JobsScreen = ({ navigation, route }) => {
             ))}
           </View>
         </View>
-      </Modal>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -427,6 +451,10 @@ const st = StyleSheet.create({
   fabContainer: { position: 'absolute', bottom: Platform.OS === 'ios' ? 34 : 24, right: 24, alignItems: 'flex-end', zIndex: 10 },
   fabSmall: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#0F172A', justifyContent: 'center', alignItems: 'center', elevation: 6, shadowColor: '#0F172A', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   extendedFab: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#003366', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 24, elevation: 6, shadowColor: '#003366', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
+  webChip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, backgroundColor: '#F1F5F9', borderWidth: 1, borderColor: '#E2E8F0' },
+  webChipActive: { backgroundColor: '#EFF6FF', borderColor: '#003366' },
+  webChipText: { fontSize: 13, color: '#475569', fontWeight: '600' },
+  webChipTextActive: { color: '#003366' },
 });
 
 export default JobsScreen;
