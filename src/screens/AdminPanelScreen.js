@@ -70,6 +70,8 @@ const panelItems = [
 ];
 
 export default function AdminPanelScreen({ navigation }) {
+  const { theme, isDarkMode } = useTheme();
+  const styles = getStyles(theme);
   const { width } = useWindowDimensions();
   // Navigation & View Control
   const [activeModule, setActiveModule] = useState(null);
@@ -123,8 +125,6 @@ export default function AdminPanelScreen({ navigation }) {
 
   // Action Handlers
   const handleSpamAction = (id, action) => {
-  const { theme, isDarkMode } = useTheme();
-  const styles = getStyles(theme);
 
     if (action === 'suspend') {
       Alert.alert('Suspend Account', 'Are you sure you want to suspend this account?', [

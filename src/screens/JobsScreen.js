@@ -70,11 +70,13 @@ function JobCard({ item, onPress, onDelete, isSmallScreen }) {
 // ─── MAIN SCREEN ─────────────────────────────────────────────────────
 const JobsScreen = ({ navigation, route }) => {
   const { theme, isDarkMode } = useTheme();
-  const styles = getStyles(theme);
 
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 400;
-  const [screen, setScreen] = useState('list');
+  const isDesktop = screenWidth >= 1024;
+  const isWeb = Platform.OS === 'web';
+  
+  const [screen, setScreen] = useState('list'); // list, detail, editor, resume
   const [activeTab, setActiveTab] = useState('post_job');
   const [searchQ, setSearchQ] = useState('');
   const [detail, setDetail] = useState(null);
@@ -108,17 +110,27 @@ const JobsScreen = ({ navigation, route }) => {
     Alert.alert('Success', 'Job posted!');
   };
 
-  const openDetail = (job) => { setDetail(job); setScreen('detail'); };
+  const openDetail = (job) => { 
+    setDetail(job); 
+    if (!isDesktop) setScreen('detail'); 
+  };
 
   const filtered = jobList.filter(j => j.role.toLowerCase().includes(searchQ.toLowerCase()) || j.company.toLowerCase().includes(searchQ.toLowerCase()) || j.location.toLowerCase().includes(searchQ.toLowerCase()));
 
-  // ─── DETAIL ─────────────────────────────────────────────────
-  if (screen === 'detail' && detail) {
+  // ─── RENDER DETAIL ──────────────────────────────────────────────
+  const renderDetail = () => {
+    if (!detail) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8FAFC' }}>
+          <Ionicons name="document-text-outline" size={48} color="#CBD5E1" />
+          <Text style={{ fontSize: 16, color: '#94A3B8', marginTop: 12 }}>Select a job to view details</Text>
+        </View>
+      );
+    }
     return (
-      <SafeAreaView style={st.container}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <View style={st.editorHeader}>
-          <TouchableOpacity onPress={() => { setDetail(null); setScreen('list'); }}><Ionicons name="arrow-back" size={24} color="#0F172A" /></TouchableOpacity>
+      <View style={{ flex: 1 }}>
+        <View style={[st.editorHeader, isDesktop && { borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }]}>
+          {!isDesktop && <TouchableOpacity onPress={() => { setDetail(null); setScreen('list'); }}><Ionicons name="arrow-back" size={24} color="#0F172A" /></TouchableOpacity>}
           <Text style={st.editorTitle}>Job Details</Text>
           <View style={{ width: 24 }} />
         </View>
@@ -148,110 +160,82 @@ const JobsScreen = ({ navigation, route }) => {
             <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>Apply Now</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
-  }
+  };
 
-  // ─── RESUME ─────────────────────────────────────────────────
-  if (screen === 'resume') {
-    return (
-      <SafeAreaView style={st.container}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <View style={st.editorHeader}>
-          <TouchableOpacity onPress={() => setScreen('list')}><Ionicons name="arrow-back" size={24} color="#0F172A" /></TouchableOpacity>
-          <Text style={st.editorTitle}>Resume Book</Text>
-          <View style={{ width: 24 }} />
+  // ─── RENDER RESUME ──────────────────────────────────────────────
+  const renderResume = () => (
+    <View style={{ flex: 1 }}>
+      <View style={[st.editorHeader, isDesktop && { borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }]}>
+        {!isDesktop && <TouchableOpacity onPress={() => setScreen('list')}><Ionicons name="arrow-back" size={24} color="#0F172A" /></TouchableOpacity>}
+        <Text style={st.editorTitle}>Resume Book</Text>
+        <View style={{ width: 24 }} />
+      </View>
+      <ScrollView contentContainerStyle={{ padding: isSmallScreen ? 12 : 16, paddingBottom: 40, backgroundColor: '#F8FAFC' }} showsVerticalScrollIndicator={false}>
+        <View style={st.seekerBanner}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 12 }}>Are you a job seeker?</Text>
+          <View style={{ flexDirection: 'row', width: '100%' }}>
+            <TouchableOpacity style={st.getListedBtn}><Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 14 }}>Get Listed</Text></TouchableOpacity>
+            <TouchableOpacity style={st.learnMoreBtn}><Text style={{ color: '#003366', fontWeight: '700', fontSize: 14 }}>Learn More</Text></TouchableOpacity>
+          </View>
         </View>
-        <ScrollView contentContainerStyle={{ padding: isSmallScreen ? 12 : 16, paddingBottom: 40, backgroundColor: '#F8FAFC' }} showsVerticalScrollIndicator={false}>
-          <View style={st.seekerBanner}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 12 }}>Are you a job seeker?</Text>
-            <View style={{ flexDirection: 'row', width: '100%' }}>
-              <TouchableOpacity style={st.getListedBtn}><Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 14 }}>Get Listed</Text></TouchableOpacity>
-              <TouchableOpacity style={st.learnMoreBtn}><Text style={{ color: '#003366', fontWeight: '700', fontSize: 14 }}>Learn More</Text></TouchableOpacity>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: '#0F172A', marginBottom: 16 }}>Resume book of your network</Text>
+        {RESUME_LIST.map(item => (
+          <View key={item.id} style={st.resumeCard}>
+            <View style={{ padding: isSmallScreen ? 12 : 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                <View style={[st.resumeAvatar, isSmallScreen && { width: 48, height: 48, borderRadius: 24 }]}><Text style={{ fontSize: isSmallScreen ? 18 : 22, fontWeight: '700', color: '#64748B' }}>{item.name.charAt(0)}</Text></View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: isSmallScreen ? 15 : 18, fontWeight: '700', color: '#0F172A', marginBottom: 4 }}>{item.name}</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: '#003366' }}>More Info</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 }}>
+                {item.skills.map((sk, i) => (<View key={i} style={st.skillPill}><Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{sk}</Text></View>))}
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Ionicons name="briefcase-outline" size={16} color="#94A3B8" style={{ marginRight: 8 }} />
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', flex: 1 }}>{item.company} - <Text style={{ fontWeight: '400', color: '#64748B' }}>{item.role}</Text></Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Ionicons name="build-outline" size={16} color="#94A3B8" style={{ marginRight: 8 }} />
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A', flex: 1 }}>{item.domain} <Text style={{ fontWeight: '400', color: '#64748B' }}>{item.experience}</Text></Text>
+              </View>
+              {item.desc ? <Text style={{ fontSize: 13, color: '#64748B', lineHeight: 20, marginTop: 8, fontStyle: 'italic' }}>{item.desc}</Text> : null}
+            </View>
+            <View style={{ flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'space-between', paddingHorizontal: isSmallScreen ? 12 : 16, paddingVertical: 12, backgroundColor: '#FAFAFA', gap: isSmallScreen ? 8 : 0 }}>
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}><Text style={{ fontSize: 14, fontWeight: '700', color: '#003366' }}>Show Resume</Text><Ionicons name="open-outline" size={16} color="#003366" style={{ marginLeft: 4 }} /></TouchableOpacity>
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}><Text style={{ fontSize: 14, fontWeight: '700', color: '#003366' }}>Forward Resume</Text><Ionicons name="arrow-forward" size={16} color="#003366" style={{ marginLeft: 4 }} /></TouchableOpacity>
             </View>
           </View>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#0F172A', marginBottom: 16 }}>Resume book of your network</Text>
-          {RESUME_LIST.map(item => (
-            <View key={item.id} style={st.resumeCard}>
-              <View style={{ padding: isSmallScreen ? 12 : 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-                  <View style={[st.resumeAvatar, isSmallScreen && { width: 48, height: 48, borderRadius: 24 }]}><Text style={{ fontSize: isSmallScreen ? 18 : 22, fontWeight: '700', color: '#64748B' }}>{item.name.charAt(0)}</Text></View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: isSmallScreen ? 15 : 18, fontWeight: '700', color: '#0F172A', marginBottom: 4 }}>{item.name}</Text>
-                    <Text style={{ fontSize: 13, fontWeight: '700', color: '#003366' }}>More Info</Text>
-                  </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 }}>
-                  {item.skills.map((sk, i) => (<View key={i} style={st.skillPill}><Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{sk}</Text></View>))}
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <Ionicons name="briefcase-outline" size={16} color="#94A3B8" style={{ marginRight: 8 }} />
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', flex: 1 }}>{item.company} - <Text style={{ fontWeight: '400', color: '#64748B' }}>{item.role}</Text></Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <Ionicons name="build-outline" size={16} color="#94A3B8" style={{ marginRight: 8 }} />
-                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A', flex: 1 }}>{item.domain} <Text style={{ fontWeight: '400', color: '#64748B' }}>{item.experience}</Text></Text>
-                </View>
-                {item.desc ? <Text style={{ fontSize: 13, color: '#64748B', lineHeight: 20, marginTop: 8, fontStyle: 'italic' }}>{item.desc}</Text> : null}
-              </View>
-              <View style={{ flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'space-between', paddingHorizontal: isSmallScreen ? 12 : 16, paddingVertical: 12, backgroundColor: '#FAFAFA', gap: isSmallScreen ? 8 : 0 }}>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}><Text style={{ fontSize: 14, fontWeight: '700', color: '#003366' }}>Show Resume</Text><Ionicons name="open-outline" size={16} color="#003366" style={{ marginLeft: 4 }} /></TouchableOpacity>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}><Text style={{ fontSize: 14, fontWeight: '700', color: '#003366' }}>Forward Resume</Text><Ionicons name="arrow-forward" size={16} color="#003366" style={{ marginLeft: 4 }} /></TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
+        ))}
+      </ScrollView>
+    </View>
+  );
 
-  // ─── EDITOR ─────────────────────────────────────────────────
-  if (screen === 'editor') {
-    return (
-      <SafeAreaView style={st.container}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <View style={st.editorHeader}>
-          <TouchableOpacity onPress={() => setScreen('list')}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
-          <Text style={st.editorTitle}>Create Job Post</Text>
-          <TouchableOpacity style={st.postHeaderBtn} onPress={postJob}><Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 14 }}>Post Job</Text></TouchableOpacity>
-        </View>
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: isSmallScreen ? 14 : 20, backgroundColor: '#FFFFFF' }} showsVerticalScrollIndicator={false}>
-          <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Role / Job Title *</Text><TextInput style={st.textInput} placeholder="e.g. Senior Software Engineer" placeholderTextColor="#94A3B8" value={fRole} onChangeText={setFRole} /></View>
-          <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Company *</Text><TextInput style={st.textInput} placeholder="e.g. Google, Amazon" placeholderTextColor="#94A3B8" value={fCompany} onChangeText={setFCompany} /></View>
-          <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Work Mode</Text><TouchableOpacity style={st.selectorInput} onPress={() => setModalVis(true)}><Text style={{ fontSize: 14.5, color: '#0F172A' }}>{fMode}</Text><Ionicons name="chevron-down" size={20} color="#64748B" /></TouchableOpacity></View>
-          <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Experience Required</Text><TextInput style={st.textInput} placeholder="e.g. 3-5 years" placeholderTextColor="#94A3B8" value={fExp} onChangeText={setFExp} /></View>
-          <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Location</Text><TextInput style={st.textInput} placeholder="e.g. Bengaluru, Remote" placeholderTextColor="#94A3B8" value={fLoc} onChangeText={setFLoc} /></View>
-          <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Job Description</Text><TextInput style={[st.textInput, { height: 120, textAlignVertical: 'top' }]} placeholder="Description..." placeholderTextColor="#94A3B8" value={fDesc} onChangeText={setFDesc} multiline /></View>
-        </ScrollView>
-        <Modal visible={modalVis} transparent animationType="fade">
-          <View style={st.modalOverlay}>
-            <TouchableOpacity style={{ flex: 1 }} onPress={() => setModalVis(false)} />
-            <View style={st.modalContent}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Text style={{ fontSize: 18, fontWeight: '700', color: '#0F172A' }}>Select Work Mode</Text>
-                <TouchableOpacity onPress={() => setModalVis(false)}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
-              </View>
-              {WORK_MODES.map(mode => (
-                <TouchableOpacity key={mode} style={[st.modalItem, fMode === mode && { backgroundColor: '#F8FAFC' }]} onPress={() => { setFMode(mode); setModalVis(false); }}>
-                  <Text style={{ fontSize: 16, color: fMode === mode ? '#003366' : '#475569', fontWeight: fMode === mode ? '600' : '400' }}>{mode}</Text>
-                  {fMode === mode && <Ionicons name="checkmark" size={20} color="#003366" />}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </Modal>
-      </SafeAreaView>
-    );
-  }
+  // ─── RENDER EDITOR ──────────────────────────────────────────────
+  const renderEditor = () => (
+    <View style={{ flex: 1 }}>
+      <View style={[st.editorHeader, isDesktop && { borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }]}>
+        {!isDesktop && <TouchableOpacity onPress={() => setScreen('list')}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>}
+        <Text style={st.editorTitle}>Create Job Post</Text>
+        <TouchableOpacity style={st.postHeaderBtn} onPress={postJob}><Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 14 }}>Post Job</Text></TouchableOpacity>
+      </View>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: isSmallScreen ? 14 : 20, backgroundColor: '#FFFFFF' }} showsVerticalScrollIndicator={false}>
+        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Role / Job Title *</Text><TextInput style={st.textInput} placeholder="e.g. Senior Software Engineer" placeholderTextColor="#94A3B8" value={fRole} onChangeText={setFRole} /></View>
+        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Company *</Text><TextInput style={st.textInput} placeholder="e.g. Google, Amazon" placeholderTextColor="#94A3B8" value={fCompany} onChangeText={setFCompany} /></View>
+        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Work Mode</Text><TouchableOpacity style={st.selectorInput} onPress={() => setModalVis(true)}><Text style={{ fontSize: 14.5, color: '#0F172A' }}>{fMode}</Text><Ionicons name="chevron-down" size={20} color="#64748B" /></TouchableOpacity></View>
+        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Experience Required</Text><TextInput style={st.textInput} placeholder="e.g. 3-5 years" placeholderTextColor="#94A3B8" value={fExp} onChangeText={setFExp} /></View>
+        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Location</Text><TextInput style={st.textInput} placeholder="e.g. Bengaluru, Remote" placeholderTextColor="#94A3B8" value={fLoc} onChangeText={setFLoc} /></View>
+        <View style={{ marginBottom: 20 }}><Text style={st.inputLabel}>Job Description</Text><TextInput style={[st.textInput, { height: 120, textAlignVertical: 'top' }]} placeholder="Description..." placeholderTextColor="#94A3B8" value={fDesc} onChangeText={setFDesc} multiline /></View>
+      </ScrollView>
+    </View>
+  );
 
-  // ─── DEFAULT: MAIN LIST ─────────────────────────────────────
-    const isWeb = Platform.OS === 'web';
-  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
-
-  return (
-    <SafeAreaView style={st.container}>
-      <View style={webContainerStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+  // ─── RENDER MAIN LIST ──────────────────────────────────────────────
+  const renderMainList = () => (
+    <View style={{ flex: 1 }}>
       {/* Header */}
       <View style={[st.header, isSmallScreen && { paddingHorizontal: 10, paddingVertical: 8 }]}>
         <TouchableOpacity style={[st.headerAvatar, isSmallScreen && { width: 32, height: 32, borderRadius: 16, marginRight: 8 }]} activeOpacity={0.8} onPress={() => navigation && navigation.navigate('Profile')}>
@@ -259,10 +243,10 @@ const JobsScreen = ({ navigation, route }) => {
         </TouchableOpacity>
         <View style={[st.searchBar, isSmallScreen && { height: 34, marginRight: 8 }]}>
           <Ionicons name="search-outline" size={16} color="#94A3B8" style={{ marginRight: 6 }} />
-          <TextInput style={{ flex: 1, fontSize: isSmallScreen ? 13 : 14, color: '#0F172A' }} placeholder="Search" placeholderTextColor="#94A3B8" value={searchQ} onChangeText={setSearchQ} />
+          <TextInput style={{ flex: 1, fontSize: isSmallScreen ? 13 : 14, color: '#0F172A', paddingVertical: 0 }} placeholder="Search" placeholderTextColor="#94A3B8" value={searchQ} onChangeText={setSearchQ} />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity style={[st.iconBtn, isSmallScreen && { width: 30, height: 30, marginLeft: 2 }]} onPress={() => setScreen('editor')}><Ionicons name="add-circle-outline" size={isSmallScreen ? 20 : 22} color="#003366" /></TouchableOpacity>
+          <TouchableOpacity style={[st.iconBtn, isSmallScreen && { width: 30, height: 30, marginLeft: 2 }]} onPress={() => { setDetail(null); setScreen('editor'); }}><Ionicons name="add-circle-outline" size={isSmallScreen ? 20 : 22} color="#003366" /></TouchableOpacity>
           <TouchableOpacity style={[st.iconBtn, isSmallScreen && { width: 30, height: 30, marginLeft: 2 }]} onPress={() => navigation && navigation.navigate('Messages')}><Ionicons name="chatbubble-ellipses-outline" size={isSmallScreen ? 20 : 22} color="#003366" /><View style={st.dot} /></TouchableOpacity>
           <TouchableOpacity style={[st.iconBtn, isSmallScreen && { width: 30, height: 30, marginLeft: 2 }]} onPress={() => navigation && navigation.navigate('Notifications')}><Ionicons name="notifications-outline" size={isSmallScreen ? 20 : 22} color="#003366" /><View style={st.dot} /></TouchableOpacity>
         </View>
@@ -298,33 +282,83 @@ const JobsScreen = ({ navigation, route }) => {
             )}
           </ScrollView>
           <View style={[st.fabContainer, isSmallScreen && { bottom: 16, right: 16 }]}>
-            <TouchableOpacity style={st.fabSmall} onPress={() => setScreen('editor')} activeOpacity={0.85}>
-              <Ionicons name="add" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-            <TouchableOpacity style={[st.extendedFab, { marginTop: 12 }, isSmallScreen && { paddingHorizontal: 14, paddingVertical: 10 }]} onPress={() => setScreen('resume')} activeOpacity={0.85}>
-              <Ionicons name="book-outline" size={isSmallScreen ? 18 : 20} color="#FFFFFF" style={{ marginRight: 6 }} />
-              <Text style={{ color: '#FFFFFF', fontSize: isSmallScreen ? 12 : 14, fontWeight: '700' }}>Resume Book</Text>
+            <TouchableOpacity style={[st.fab, isSmallScreen && { width: 50, height: 50, borderRadius: 25 }]} onPress={() => { setDetail(null); setScreen('resume'); }}>
+              <Ionicons name="document-text" size={isSmallScreen ? 20 : 24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: isSmallScreen ? 12 : 16, paddingBottom: 100 }} showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
-          <Text style={{ fontSize: 14, fontWeight: '700', color: '#64748B', marginBottom: 16, textTransform: 'uppercase' }}>Based on your profile</Text>
-          {PROFILE_MATCHES.map(m => (
-            <TouchableOpacity key={m.id} style={[st.matchCard, isSmallScreen && { padding: 12 }]} activeOpacity={0.7} onPress={() => openDetail({ id: m.id, role: m.title, company: m.company, location: m.location, workMode: 'Full-Time', experience: '3-5 years', description: `This is a ${m.match} for your profile as a ${m.title} at ${m.company}.` })}>
-              <View style={[st.matchIcon, isSmallScreen && { width: 38, height: 38 }]}><Ionicons name="briefcase" size={isSmallScreen ? 20 : 24} color="#003366" /></View>
-              <View style={{ flex: 1 }}><Text style={{ fontSize: isSmallScreen ? 13 : 15, fontWeight: '700', color: '#0F172A' }}>{m.title}</Text><Text style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>{m.company} • {m.location}</Text><Text style={{ fontSize: 12, color: '#16A34A', fontWeight: '700', marginTop: 6 }}>{m.match}</Text></View>
-              <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
-            </TouchableOpacity>
+        <ScrollView style={{ flex: 1, backgroundColor: '#F8FAFC' }} contentContainerStyle={{ padding: isSmallScreen ? 12 : 16, paddingBottom: 100 }}>
+          <View style={st.prefHeader}>
+            <View>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A' }}>Job Match Alerts</Text>
+              <Text style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>Get notified about roles fitting your profile.</Text>
+            </View>
+            <View style={[st.toggleTrack, { backgroundColor: '#10B981' }]}><View style={[st.toggleThumb, { transform: [{ translateX: 22 }] }]} /></View>
+          </View>
+          <Text style={{ fontSize: 15, fontWeight: '700', color: '#0F172A', marginBottom: 12, marginTop: 8 }}>Matches Based on Your Profile</Text>
+          {PROFILE_MATCHES.map(item => (
+            <View key={item.id} style={st.matchCard}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <View style={{ flex: 1, marginRight: 12 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#0F172A' }}>{item.title}</Text>
+                  <Text style={{ fontSize: 14, color: '#475569', marginTop: 2 }}>{item.company} • {item.location}</Text>
+                </View>
+                <View style={st.matchBadge}><Text style={st.matchBadgeText}>{item.match}</Text></View>
+              </View>
+              <TouchableOpacity style={st.viewMatchBtn}><Text style={{ fontSize: 13, fontWeight: '700', color: '#003366' }}>View Role</Text></TouchableOpacity>
+            </View>
           ))}
+          <TouchableOpacity style={st.updateProfileBtn}><Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>Update Profile Preferences</Text></TouchableOpacity>
         </ScrollView>
       )}
     </View>
+  );
+
+  // ─── FINAL RETURN COMPOSED FOR DESKTOP / MOBILE ──────────────────────
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 1200, flex: 1 } : { flex: 1 };
+
+  return (
+    <SafeAreaView style={st.container}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <View style={webContainerStyle}>
+        {isDesktop ? (
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            <View style={{ width: 400, borderRightWidth: 1, borderRightColor: '#E2E8F0', backgroundColor: '#FFFFFF' }}>
+              {renderMainList()}
+            </View>
+            <View style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
+              {screen === 'editor' ? renderEditor() : screen === 'resume' ? renderResume() : renderDetail()}
+            </View>
+          </View>
+        ) : (
+          <View style={{ flex: 1 }}>
+            {screen === 'editor' ? renderEditor() : screen === 'resume' ? renderResume() : screen === 'detail' ? renderDetail() : renderMainList()}
+          </View>
+        )}
+      </View>
+
+      <Modal visible={modalVis} transparent animationType="fade">
+        <View style={st.modalOverlay}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => setModalVis(false)} />
+          <View style={st.modalContent}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#0F172A' }}>Select Work Mode</Text>
+              <TouchableOpacity onPress={() => setModalVis(false)}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
+            </View>
+            {WORK_MODES.map(mode => (
+              <TouchableOpacity key={mode} style={[st.modalItem, fMode === mode && { backgroundColor: '#F8FAFC' }]} onPress={() => { setFMode(mode); setModalVis(false); }}>
+                <Text style={{ fontSize: 16, color: fMode === mode ? '#003366' : '#475569', fontWeight: fMode === mode ? '600' : '400' }}>{mode}</Text>
+                {fMode === mode && <Ionicons name="checkmark" size={20} color="#003366" />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
 
-// ─── STYLES ──────────────────────────────────────────────────────────
 const st = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF', minHeight: Platform.OS === 'web' ? '100vh' : undefined },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },

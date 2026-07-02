@@ -1,8 +1,10 @@
 import React from 'react';
-import { ThemeProvider } from './src/theme/ThemeContext';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { useWindowDimensions } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Platform, Text, Alert } from 'react-native';
 
@@ -66,6 +68,10 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const AdminTab = createBottomTabNavigator();
 const SuperAdminTab = createBottomTabNavigator();
+
+const Drawer = createDrawerNavigator();
+const AdminDrawer = createDrawerNavigator();
+const SuperAdminDrawer = createDrawerNavigator();
 
 // ===== ALUMNI BOTTOM TABS =====
 function MainTabs() {

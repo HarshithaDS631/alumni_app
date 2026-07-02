@@ -346,181 +346,158 @@ const EngageScreen = ({ navigation }) => {
   }
 
   // ===== MAIN FEED VIEW =====
-    const isWeb = Platform.OS === 'web';
-  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+  const isDesktop = width >= 1024;
+  const isWeb = Platform.OS === 'web';
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: isDesktop ? 1200 : 800, flex: 1, flexDirection: isDesktop ? 'row' : 'column' } : { flex: 1 };
+
+  const feedContent = (
+    <View style={{ flex: 1, maxWidth: isDesktop ? 750 : '100%' }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* Post Creator UI for Feed */}
+        <View style={{ backgroundColor: '#FFFFFF', padding: 16, marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#003366', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+              <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>{currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'ME'}</Text>
+            </View>
+            <TouchableOpacity style={{ flex: 1, height: 44, borderRadius: 22, backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0', paddingHorizontal: 16, justifyContent: 'center' }} onPress={() => setActionSheetVisible(true)}>
+              <Text style={{ color: '#94A3B8', fontSize: 14.5 }}>Share an update, milestone, or question...</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16, paddingHorizontal: 8 }}>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }} onPress={() => setActionSheetVisible(true)}><Ionicons name="image" size={20} color="#10B981" /><Text style={{ color: '#475569', fontSize: 13, fontWeight: '600' }}>Media</Text></TouchableOpacity>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }} onPress={() => setActionSheetVisible(true)}><Ionicons name="calendar" size={20} color="#F59E0B" /><Text style={{ color: '#475569', fontSize: 13, fontWeight: '600' }}>Event</Text></TouchableOpacity>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }} onPress={() => setActionSheetVisible(true)}><Ionicons name="newspaper" size={20} color="#3B82F6" /><Text style={{ color: '#475569', fontSize: 13, fontWeight: '600' }}>Article</Text></TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Posts List */}
+        {postsList.filter(p => !blockedUsers.has(p.user_id)).map((post, index) => (
+          <React.Fragment key={post.id}>
+            <View style={styles.postCard}>
+              <View style={styles.postHeader}>
+                <View style={styles.postAvatar}><Text style={styles.postAvatarText}>{post.avatar}</Text></View>
+                <View style={[styles.postInfo, { flex: 1 }]}>
+                  <Text style={styles.postUserName}>{post.user}</Text>
+                  <Text style={styles.postSubtitle}>{post.subtitle}</Text>
+                </View>
+                <TouchableOpacity style={styles.followBtn}>
+                  <Text style={styles.followBtnText}>+ Follow</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => {
+                  Alert.alert('Report Options', 'Select an action for this content', [
+                    { text: 'Report Post', style: 'destructive', onPress: async () => {
+                      if (!currentUser?.id) return;
+                      await supabase.from('reports').insert([{ reporter_id: currentUser.id, reported_item_id: post.id, item_type: 'post', reason: 'Flagged' }]);
+                    }},
+                    { text: 'Block User', style: 'destructive', onPress: async () => {
+                      if (!currentUser?.id) return;
+                      await supabase.from('blocked_users').insert([{ blocker_id: currentUser.id, blocked_id: post.user_id }]);
+                      setBlockedUsers(prev => new Set([...prev, post.user_id]));
+                    }},
+                    { text: 'Cancel', style: 'cancel' }
+                  ]);
+                }}>
+                  <Ionicons name="ellipsis-vertical" size={20} color="#94A3B8" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.postContentContainer}>
+                <Text style={styles.postContentText}>{post.content}</Text>
+              </View>
+              <Image source={{ uri: post.image }} style={[styles.postImage, { width: isDesktop ? 700 : width, height: isDesktop ? 450 : width * 0.65 }]} />
+              <View style={styles.postActions}>
+                <View style={styles.leftActions}>
+                  <TouchableOpacity onPress={() => toggleLike(post.id)}>
+                    <Ionicons name={likedPosts[post.id] ? "heart" : "heart-outline"} size={24} color={likedPosts[post.id] ? "#EF4444" : "#0F172A"} />
+                  </TouchableOpacity>
+                  <TouchableOpacity><Ionicons name="chatbubble-outline" size={22} color="#0F172A" /></TouchableOpacity>
+                  <TouchableOpacity onPress={() => setReshareModalVisible(true)}>
+                    <Ionicons name="paper-plane-outline" size={22} color="#0F172A" />
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity><Ionicons name="bookmark-outline" size={22} color="#0F172A" /></TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Show suggestions on mobile after first post */}
+            {index === 0 && !isDesktop && (
+              <View style={styles.suggestionsSection}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Suggestions for you</Text>
+                  <TouchableOpacity><Text style={styles.seeAll}>See all</Text></TouchableOpacity>
+                </View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsScroll}>
+                  {suggestions.map(s => (
+                    <View key={s.id} style={styles.suggestionCard}>
+                      <View style={styles.suggestionAvatar}><Text style={styles.suggestionAvatarText}>{s.avatar}</Text></View>
+                      <Text style={styles.suggestionName}>{s.name}</Text>
+                      <TouchableOpacity 
+                        style={[styles.followSmallBtn, followedSuggestions[s.id] && styles.followedBtn]}
+                        onPress={() => setFollowedSuggestions(prev => ({...prev, [s.id]: !prev[s.id]}))}
+                      >
+                        <Text style={[styles.followSmallText, followedSuggestions[s.id] && styles.followedText]}>{followedSuggestions[s.id] ? 'Following' : 'Follow'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </React.Fragment>
+        ))}
+      </ScrollView>
+    </View>
+  );
+
+  const sidePanel = isDesktop ? (
+    <View style={{ width: 350, marginLeft: 24, paddingVertical: 16 }}>
+      <View style={[styles.suggestionsSection, { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, elevation: 1, shadowOpacity: 0.1, shadowRadius: 4, marginTop: 0 }]}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Suggestions for you</Text>
+          <TouchableOpacity><Text style={styles.seeAll}>See all</Text></TouchableOpacity>
+        </View>
+        {suggestions.map(s => (
+          <View key={s.id} style={[styles.suggestionCard, { width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 12, backgroundColor: 'transparent', padding: 0, borderWidth: 0 }]}>
+            <View style={[styles.suggestionAvatar, { width: 40, height: 40, borderRadius: 20, marginBottom: 0, marginRight: 12 }]}><Text style={styles.suggestionAvatarText}>{s.avatar}</Text></View>
+            <Text style={[styles.suggestionName, { flex: 1, textAlign: 'left', marginBottom: 0 }]}>{s.name}</Text>
+            <TouchableOpacity 
+              style={[styles.followSmallBtn, followedSuggestions[s.id] && styles.followedBtn]}
+              onPress={() => setFollowedSuggestions(prev => ({...prev, [s.id]: !prev[s.id]}))}
+            >
+              <Text style={[styles.followSmallText, followedSuggestions[s.id] && styles.followedText]}>{followedSuggestions[s.id] ? 'Following' : 'Follow'}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+
+      <View style={[[styles.suggestionsSection, { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginTop: 16, elevation: 1, shadowOpacity: 0.1, shadowRadius: 4 }]]}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Trending Events</Text>
+        </View>
+        <View style={[styles.joinEventCard, { borderWidth: 0, paddingHorizontal: 0, paddingVertical: 8, marginBottom: 0 }]}>
+          <View style={[styles.joinEventImage, { width: 50, height: 50 }]} />
+          <View style={styles.joinEventInfo}>
+            <Text style={styles.joinEventTitle}>Alumni Meetup 2025</Text>
+            <Text style={styles.joinEventDate}>Oct 12, 2025 • Virtual</Text>
+          </View>
+        </View>
+        <View style={[styles.joinEventCard, { borderWidth: 0, paddingHorizontal: 0, paddingVertical: 8, marginBottom: 0 }]}>
+          <View style={[styles.joinEventImage, { width: 50, height: 50 }]} />
+          <View style={styles.joinEventInfo}>
+            <Text style={styles.joinEventTitle}>Startup Pitch Day</Text>
+            <Text style={styles.joinEventDate}>Nov 5, 2025 • Bengaluru</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  ) : null;
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor="#FFFFFF" />
       <View style={webContainerStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* First Post */}
-        {postsList.filter(p => !blockedUsers.has(p.user_id)).slice(0, 1).map(post => (
-          <View key={post.id} style={styles.postCard}>
-            <View style={styles.postHeader}>
-              <View style={styles.postAvatar}><Text style={styles.postAvatarText}>{post.avatar}</Text></View>
-              <View style={[styles.postInfo, { flex: 1 }]}>
-                <Text style={styles.postUserName}>{post.user}</Text>
-                <Text style={styles.postSubtitle}>{post.subtitle}</Text>
-              </View>
-              <TouchableOpacity style={styles.followBtn}>
-                <Text style={styles.followBtnText}>+ Follow</Text>
-              </TouchableOpacity>
-                            <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => {
-                Alert.alert('Report Options', 'Select an action for this content', [
-                  { 
-                    text: 'Report Post', 
-                    style: 'destructive', 
-                    onPress: async () => {
-                      if (!currentUser?.id) { Alert.alert('Error', 'Please login first'); return; }
-                      const { error } = await supabase.from('reports').insert([{
-                        reporter_id: currentUser.id,
-                        reported_item_id: post.id,
-                        item_type: 'post',
-                        reason: 'User flagged content as inappropriate'
-                      }]);
-                      if (!error) Alert.alert('Reported', 'This post has been reported to admins for review.');
-                      else Alert.alert('Error', 'Failed to report post.');
-                    }
-                  },
-                  { 
-                    text: 'Block User', 
-                    style: 'destructive', 
-                    onPress: async () => {
-                      if (!currentUser?.id) { Alert.alert('Error', 'Please login first'); return; }
-                      const { error } = await supabase.from('blocked_users').insert([{
-                        blocker_id: currentUser.id,
-                        blocked_id: post.user_id
-                      }]);
-                      if (!error) {
-                        setBlockedUsers(prev => new Set([...prev, post.user_id]));
-                        Alert.alert('Blocked', 'You will no longer see posts from this user.');
-                      } else {
-                        Alert.alert('Error', 'Failed to block user.');
-                      }
-                    }
-                  },
-                  { text: 'Cancel', style: 'cancel' }
-                ]);
-              }}>
-                <Ionicons name="ellipsis-vertical" size={20} color="#94A3B8" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.postContentContainer}>
-              <Text style={styles.postContentText}>{post.content}</Text>
-            </View>
-            <Image source={{ uri: post.image }} style={[styles.postImage, { width: width, height: width * 0.65 }]} />
-            <View style={styles.postActions}>
-              <View style={styles.leftActions}>
-                <TouchableOpacity onPress={() => toggleLike(post.id)}>
-                  <Ionicons name={likedPosts[post.id] ? "heart" : "heart-outline"} size={24} color={likedPosts[post.id] ? "#EF4444" : "#0F172A"} />
-                </TouchableOpacity>
-                <TouchableOpacity><Ionicons name="chatbubble-outline" size={22} color="#0F172A" /></TouchableOpacity>
-                <TouchableOpacity onPress={() => setReshareModalVisible(true)}>
-                  <Ionicons name="paper-plane-outline" size={22} color="#0F172A" />
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity><Ionicons name="bookmark-outline" size={22} color="#0F172A" /></TouchableOpacity>
-            </View>
-          </View>
-        ))}
-
-        {/* Suggestions Section */}
-        <View style={styles.suggestionsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Suggestions for you</Text>
-            <TouchableOpacity><Text style={styles.seeAll}>See all</Text></TouchableOpacity>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsScroll}>
-            {suggestions.map(s => (
-              <View key={s.id} style={styles.suggestionCard}>
-                <View style={styles.suggestionAvatar}><Text style={styles.suggestionAvatarText}>{s.avatar}</Text></View>
-                <Text style={styles.suggestionName}>{s.name}</Text>
-                <TouchableOpacity
-                  style={[styles.followSmallBtn, followedSuggestions[s.id] && styles.followedBtn]}
-                  onPress={() => setFollowedSuggestions(prev => ({...prev, [s.id]: !prev[s.id]}))}
-                >
-                  <Text style={[styles.followSmallText, followedSuggestions[s.id] && styles.followedText]}>
-                    {followedSuggestions[s.id] ? 'Following' : 'Follow'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Remaining Posts */}
-        {postsList.filter(p => !blockedUsers.has(p.user_id)).slice(1).map(post => (
-          <View key={post.id} style={styles.postCard}>
-            <View style={styles.postHeader}>
-              <View style={styles.postAvatar}><Text style={styles.postAvatarText}>{post.avatar}</Text></View>
-              <View style={[styles.postInfo, { flex: 1 }]}>
-                <Text style={styles.postUserName}>{post.user}</Text>
-                <Text style={styles.postSubtitle}>{post.subtitle}</Text>
-              </View>
-              <TouchableOpacity style={styles.followBtn}>
-                <Text style={styles.followBtnText}>+ Follow</Text>
-              </TouchableOpacity>
-                            <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => {
-                Alert.alert('Report Options', 'Select an action for this content', [
-                  { 
-                    text: 'Report Post', 
-                    style: 'destructive', 
-                    onPress: async () => {
-                      if (!currentUser?.id) { Alert.alert('Error', 'Please login first'); return; }
-                      const { error } = await supabase.from('reports').insert([{
-                        reporter_id: currentUser.id,
-                        reported_item_id: post.id,
-                        item_type: 'post',
-                        reason: 'User flagged content as inappropriate'
-                      }]);
-                      if (!error) Alert.alert('Reported', 'This post has been reported to admins for review.');
-                      else Alert.alert('Error', 'Failed to report post.');
-                    }
-                  },
-                  { 
-                    text: 'Block User', 
-                    style: 'destructive', 
-                    onPress: async () => {
-                      if (!currentUser?.id) { Alert.alert('Error', 'Please login first'); return; }
-                      const { error } = await supabase.from('blocked_users').insert([{
-                        blocker_id: currentUser.id,
-                        blocked_id: post.user_id
-                      }]);
-                      if (!error) {
-                        setBlockedUsers(prev => new Set([...prev, post.user_id]));
-                        Alert.alert('Blocked', 'You will no longer see posts from this user.');
-                      } else {
-                        Alert.alert('Error', 'Failed to block user.');
-                      }
-                    }
-                  },
-                  { text: 'Cancel', style: 'cancel' }
-                ]);
-              }}>
-                <Ionicons name="ellipsis-vertical" size={20} color="#94A3B8" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.postContentContainer}>
-              <Text style={styles.postContentText}>{post.content}</Text>
-            </View>
-            <Image source={{ uri: post.image }} style={[styles.postImage, { width: width, height: width * 0.65 }]} />
-            <View style={styles.postActions}>
-              <View style={styles.leftActions}>
-                <TouchableOpacity onPress={() => toggleLike(post.id)}>
-                  <Ionicons name={likedPosts[post.id] ? "heart" : "heart-outline"} size={24} color={likedPosts[post.id] ? "#EF4444" : "#0F172A"} />
-                </TouchableOpacity>
-                <TouchableOpacity><Ionicons name="chatbubble-outline" size={22} color="#0F172A" /></TouchableOpacity>
-                <TouchableOpacity onPress={() => setReshareModalVisible(true)}>
-                  <Ionicons name="paper-plane-outline" size={22} color="#0F172A" />
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity><Ionicons name="bookmark-outline" size={22} color="#0F172A" /></TouchableOpacity>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+        {feedContent}
+        {sidePanel}
+      </View>
 
       {/* Rewrite with AI floating button */}
       <TouchableOpacity style={styles.aiFloatingBtn}>
@@ -528,10 +505,12 @@ const EngageScreen = ({ navigation }) => {
         <Text style={styles.aiFloatingText}>Rewrite with AI</Text>
       </TouchableOpacity>
 
-      {/* FAB */}
-      <TouchableOpacity style={styles.fab} onPress={() => setActionSheetVisible(true)}>
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
+      {/* FAB - Hide on desktop since we added inline post box */}
+      {!isDesktop && (
+        <TouchableOpacity style={styles.fab} onPress={() => setActionSheetVisible(true)}>
+          <Ionicons name="add" size={28} color="#FFFFFF" />
+        </TouchableOpacity>
+      )}
 
       {/* Action Sheet Modal */}
       <Modal visible={actionSheetVisible} transparent animationType="slide">
@@ -578,60 +557,30 @@ const EngageScreen = ({ navigation }) => {
               <View key={post.id} style={styles.reshareRow}>
                 <View style={styles.resharePostPreview}>
                   <View style={styles.smallAvatar}><Text style={styles.smallAvatarText}>{post.avatar}</Text></View>
-                  <View style={{ flex: 1, marginLeft: 8 }}>
-                    <Text style={styles.reshareUser} numberOfLines={1}>{post.user}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.reshareUser}>{post.user}</Text>
                     <Text style={styles.reshareContent} numberOfLines={1}>{post.content}</Text>
                   </View>
                 </View>
-                <TouchableOpacity 
-                  style={styles.reshareBtn}
-                  onPress={() => {
-                    setReshareModalVisible(false);
-                    const resharedPost = {
-                      id: Date.now().toString(),
-                      user: 'Abhishek Jaiswal',
-                      subtitle: `Reshared from ${post.user}`,
-                      avatar: 'AJ',
-                      image: post.image,
-                      likes: 0,
-                      time: 'Just now',
-                      content: `🔄 Reshared: "${post.content}"`,
-                    };
-                    setPostsList([resharedPost, ...postsList]);
-                    Alert.alert('Success', 'Post reshared to your feed successfully!');
-                  }}
-                >
+                <TouchableOpacity style={styles.reshareBtn}>
                   <Text style={styles.reshareBtnText}>Reshare</Text>
                 </TouchableOpacity>
               </View>
             ))}
 
-            {/* Simulated DM connection list */}
-            <Text style={styles.reshareSectionHeader}>Send to Connections</Text>
+            {/* List of connections to DM */}
+            <Text style={styles.reshareSectionHeader}>Send in Message</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dmScroll}>
-              {[
-                { id: '1', name: 'Rohan K.', avatar: 'RK' },
-                { id: '2', name: 'Priya S.', avatar: 'PS' },
-                { id: '3', name: 'Rahul M.', avatar: 'RM' },
-                { id: '4', name: 'Karan G.', avatar: 'KG' },
-              ].map(connection => (
-                <TouchableOpacity 
-                  key={connection.id} 
-                  style={styles.dmCard}
-                  onPress={() => {
-                    setReshareModalVisible(false);
-                    Alert.alert('Sent', `Post sent to ${connection.name}`);
-                  }}
-                >
-                  <View style={[styles.suggestionAvatar, { marginBottom: 4 }]}><Text style={styles.suggestionAvatarText}>{connection.avatar}</Text></View>
-                  <Text style={styles.dmName}>{connection.name}</Text>
-                </TouchableOpacity>
+              {[{id: 's1', name: 'Alok Nath', avatar: 'AN'}, {id: 's2', name: 'Shruti V', avatar: 'SV'}, {id: 's3', name: 'Ritika M', avatar: 'RM'}].map(s => (
+                <View key={s.id} style={styles.dmCard}>
+                  <View style={styles.suggestionAvatar}><Text style={styles.suggestionAvatarText}>{s.avatar}</Text></View>
+                  <Text style={styles.dmName} numberOfLines={1}>{s.name}</Text>
+                </View>
               ))}
             </ScrollView>
           </View>
         </View>
       </Modal>
-    </View>
     </SafeAreaView>
   );
 };

@@ -15,7 +15,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const connectionRequests = [
-  { id: '1', name: 'Ananya Joshi', subtitle: 'CSE \'18 • Product Manager at Microsoft', initials: 'AJ', color: theme.primary },
+  { id: '1', name: 'Ananya Joshi', subtitle: 'CSE \'18 • Product Manager at Microsoft', initials: 'AJ', color: '#4F46E5' },
   { id: '2', name: 'Rahul Verma', subtitle: 'ECE \'20 • Software Engineer at Apple', initials: 'RV', color: '#1E40AF' },
   { id: '3', name: 'Priya Sharma', subtitle: 'ISE \'15 • Staff Engineer at Google', initials: 'PS', color: '#7C3AED' },
   { id: '4', name: 'Vikram Singh', subtitle: 'ME \'12 • Engineering Lead at Tesla', initials: 'VS', color: '#0E7490' },
@@ -24,7 +24,7 @@ const connectionRequests = [
 ];
 
 const directoryAlumni = [
-  { id: 'da1', name: 'Priya Sharma', branch: 'CSE \'20', title: 'Product Manager at Microsoft', institution: 'RVCE', initials: 'PS', color: theme.primary },
+  { id: 'da1', name: 'Priya Sharma', branch: 'CSE \'20', title: 'Product Manager at Microsoft', institution: 'RVCE', initials: 'PS', color: '#4F46E5' },
   { id: 'da2', name: 'Rahul Verma', branch: 'ECE \'19', title: 'Software Engineer at Apple', institution: 'RVCE', initials: 'RV', color: '#1E40AF' },
   { id: 'da3', name: 'Sneha Patel', branch: 'ISE \'21', title: 'Frontend Engineer at Meta', institution: 'RVITM', initials: 'SP', color: '#7C3AED' },
   { id: 'da4', name: 'Arjun Reddy', branch: 'ME \'18', title: 'Mechanical Lead at Tesla', institution: 'RVITM', initials: 'AR', color: '#0E7490' },
@@ -38,7 +38,7 @@ const DirectoryScreen = ({ navigation }) => {
   const { theme, isDarkMode } = useTheme();
   const styles = getStyles(theme);
 
-  const [activeTab, setActiveTab] = useState('request');
+  const [activeTab, setActiveTab] = useState('directory');
   const [searchQuery, setSearchQuery] = useState('');
   const [requests, setRequests] = useState(connectionRequests);
 
@@ -327,7 +327,7 @@ const DirectoryScreen = ({ navigation }) => {
   };
 
     const isWeb = Platform.OS === 'web';
-  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800, flex: 1 } : { flex: 1 };
+  const webContainerStyle = isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 1024, flex: 1 } : { flex: 1 };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -369,12 +369,21 @@ const DirectoryScreen = ({ navigation }) => {
       {/* ───── Tab Bar ───── */}
       <View style={styles.tabBar}>
         <TouchableOpacity
+          style={[styles.tab, activeTab === 'directory' && styles.activeTab]}
+          onPress={() => setActiveTab('directory')}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.tabText, activeTab === 'directory' && styles.activeTabText]}>
+            Directory
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={[styles.tab, activeTab === 'request' && styles.activeTab]}
           onPress={() => setActiveTab('request')}
           activeOpacity={0.7}
         >
           <Text style={[styles.tabText, activeTab === 'request' && styles.activeTabText]}>
-            Request
+            Requests
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -383,13 +392,15 @@ const DirectoryScreen = ({ navigation }) => {
           activeOpacity={0.7}
         >
           <Text style={[styles.tabText, activeTab === 'community' && styles.activeTabText]}>
-            Community
+            Communities
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* ───── Tab Content ───── */}
-      {activeTab === 'request' ? (
+      {activeTab === 'directory' ? (
+        renderDirectoryTab()
+      ) : activeTab === 'request' ? (
         renderRequestTab()
       ) : (
         renderCommunityTab()

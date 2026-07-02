@@ -28,7 +28,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // ==========================================
 
 const INSTITUTIONS = [
-  { id: '1', name: 'RV College of Engineering', shortName: 'RVCE', location: 'Bengaluru, Karnataka', established: 1963, totalAlumni: 9755, registeredUsers: 3420, admins: 5, status: 'Active', color: theme.primary },
+  { id: '1', name: 'RV College of Engineering', shortName: 'RVCE', location: 'Bengaluru, Karnataka', established: 1963, totalAlumni: 9755, registeredUsers: 3420, admins: 5, status: 'Active', color: '#4F46E5' },
   { id: '2', name: 'Institute of Technology', shortName: 'Institution', location: 'Bengaluru, Karnataka', established: 2019, totalAlumni: 4230, registeredUsers: 1580, admins: 3, status: 'Active', color: '#1E3A5F' },
   { id: '3', name: 'RV PU College', shortName: 'RVPU', location: 'Bengaluru, Karnataka', established: 1970, totalAlumni: 6800, registeredUsers: 890, admins: 2, status: 'Active', color: '#7C3AED' },
   { id: '4', name: 'RV International School', shortName: 'RVIS', location: 'Bengaluru, Karnataka', established: 1999, totalAlumni: 2100, registeredUsers: 560, admins: 2, status: 'Active', color: '#059669' },
@@ -40,7 +40,7 @@ const INSTITUTIONS = [
   { id: '10', name: 'RV College of Nursing', shortName: 'RVCN', location: 'Bengaluru, Karnataka', established: 2003, totalAlumni: 1500, registeredUsers: 490, admins: 2, status: 'Active', color: '#0D9488' },
   { id: '11', name: 'RV College of Physiotherapy', shortName: 'RVCP', location: 'Bengaluru, Karnataka', established: 2003, totalAlumni: 1700, registeredUsers: 580, admins: 2, status: 'Active', color: '#BE185D' },
   { id: '12', name: 'RV Teachers College', shortName: 'RVTC', location: 'Bengaluru, Karnataka', established: 1954, totalAlumni: 3200, registeredUsers: 640, admins: 2, status: 'Active', color: '#8B5CF6' },
-  { id: '13', name: 'RV Teachers Training Institute', shortName: 'RVTTI', location: 'Bengaluru, Karnataka', established: 1940, totalAlumni: 4000, registeredUsers: 510, admins: 1, status: 'Active', color: theme.success },
+  { id: '13', name: 'RV Teachers Training Institute', shortName: 'RVTTI', location: 'Bengaluru, Karnataka', established: 1940, totalAlumni: 4000, registeredUsers: 510, admins: 1, status: 'Active', color: '#10B981' },
   { id: '14', name: 'NMKRV College for Women', shortName: 'NMKRV', location: 'Bengaluru, Karnataka', established: 1973, totalAlumni: 8900, registeredUsers: 2100, admins: 4, status: 'Active', color: '#EC4899' },
   { id: '15', name: 'SSMRV College', shortName: 'SSMRV', location: 'Bengaluru, Karnataka', established: 1982, totalAlumni: 7200, registeredUsers: 1840, admins: 3, status: 'Active', color: '#3B82F6' },
   { id: '16', name: 'RV Public School', shortName: 'RVPS', location: 'Bengaluru, Karnataka', established: 1992, totalAlumni: 1900, registeredUsers: 420, admins: 1, status: 'Active', color: '#6B7280' },
@@ -101,11 +101,11 @@ const INITIAL_IMPORTS = [
 ];
 
 const INITIAL_NETWORK_SETTINGS = {
-  'RVCE': { institutionName: 'RV College of Engineering', shortTitle: 'RVCE', website: 'https://rvce.edu.in', established: '1963', location: 'Bengaluru, Karnataka', primaryColor: theme.primary, secondaryColor: '#00a99c', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
+  'RVCE': { institutionName: 'RV College of Engineering', shortTitle: 'RVCE', website: 'https://rvce.edu.in', established: '1963', location: 'Bengaluru, Karnataka', primaryColor: '#4F46E5', secondaryColor: '#00a99c', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'Institution': { institutionName: 'Institute of Technology', shortTitle: 'Institution', website: 'https://institution.edu.in', established: '2019', location: 'Bengaluru, Karnataka', primaryColor: '#1a5276', secondaryColor: '#2ecc71', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Classmates', manualApproval: true, emailVouching: true, allowUnverified: false, displayJobs: true, displayEvents: true, displayGroups: false, displayMemories: true, displayDonations: true, displayMentorship: true, displayAlumniCard: true, welcomeEmailEnabled: true, whatsappEnabled: true },
   'RVPU': { institutionName: 'RV PU College', shortTitle: 'RVPU', website: 'https://rvpucollege.edu.in', established: '1970', location: 'Bengaluru, Karnataka', primaryColor: '#8e44ad', secondaryColor: '#e74c3c', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Teachers', batchmatesText: 'Batchmates', manualApproval: false, emailVouching: false, allowUnverified: true, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: false, displayAlumniCard: false, welcomeEmailEnabled: false, whatsappEnabled: false },
   'RVIS': { institutionName: 'RV International School', shortTitle: 'RVIS', website: 'https://rvis.edu.in', established: '1999', location: 'Bengaluru, Karnataka', primaryColor: '#e67e22', secondaryColor: '#f39c12', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Teachers', batchmatesText: 'Schoolmates', manualApproval: true, emailVouching: false, allowUnverified: false, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: true, displayMentorship: false, displayAlumniCard: true, welcomeEmailEnabled: true, whatsappEnabled: false },
-  'RVU': { institutionName: 'RV University', shortTitle: 'RVU', website: 'https://rvu.edu.in', established: '2021', location: 'Bengaluru, Karnataka', primaryColor: '#B45309', secondaryColor: theme.warning, alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Classmates', manualApproval: true, emailVouching: true, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: true, displayMentorship: true, displayAlumniCard: true, welcomeEmailEnabled: true, whatsappEnabled: true },
+  'RVU': { institutionName: 'RV University', shortTitle: 'RVU', website: 'https://rvu.edu.in', established: '2021', location: 'Bengaluru, Karnataka', primaryColor: '#B45309', secondaryColor: '#F59E0B', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Classmates', manualApproval: true, emailVouching: true, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: true, displayMentorship: true, displayAlumniCard: true, welcomeEmailEnabled: true, whatsappEnabled: true },
   'RVCA': { institutionName: 'RV College of Architecture', shortTitle: 'RVCA', website: 'https://rvca.edu.in', established: '1992', location: 'Bengaluru, Karnataka', primaryColor: '#4F46E5', secondaryColor: '#818CF8', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'RVIM': { institutionName: 'RV Institute of Management', shortTitle: 'RVIM', website: 'https://rvim.edu.in', established: '1999', location: 'Bengaluru, Karnataka', primaryColor: '#0891B2', secondaryColor: '#22D3EE', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Classmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: true, displayMentorship: true, displayAlumniCard: true, welcomeEmailEnabled: true, whatsappEnabled: false },
   'RVILS': { institutionName: 'RV Institute of Legal Studies', shortTitle: 'RVILS', website: 'https://rvils.edu.in', established: '2018', location: 'Bengaluru, Karnataka', primaryColor: '#DC2626', secondaryColor: '#F87171', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: false, displayJobs: true, displayEvents: true, displayGroups: false, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
@@ -113,7 +113,7 @@ const INITIAL_NETWORK_SETTINGS = {
   'RVCN': { institutionName: 'RV College of Nursing', shortTitle: 'RVCN', website: 'https://rvnursing.edu.in', established: '2003', location: 'Bengaluru, Karnataka', primaryColor: '#0D9488', secondaryColor: '#2DD4BF', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: false, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'RVCP': { institutionName: 'RV College of Physiotherapy', shortTitle: 'RVCP', website: 'https://rvphysiotherapy.edu.in', established: '2003', location: 'Bengaluru, Karnataka', primaryColor: '#BE185D', secondaryColor: '#F472B6', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: false, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'RVTC': { institutionName: 'RV Teachers College', shortTitle: 'RVTC', website: 'https://rvtc.edu.in', established: '1954', location: 'Bengaluru, Karnataka', primaryColor: '#8B5CF6', secondaryColor: '#A78BFA', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: false, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
-  'RVTTI': { institutionName: 'RV Teachers Training Institute', shortTitle: 'RVTTI', website: 'https://rvtti.edu.in', established: '1940', location: 'Bengaluru, Karnataka', primaryColor: theme.success, secondaryColor: '#34D399', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: false, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
+  'RVTTI': { institutionName: 'RV Teachers Training Institute', shortTitle: 'RVTTI', website: 'https://rvtti.edu.in', established: '1940', location: 'Bengaluru, Karnataka', primaryColor: '#10B981', secondaryColor: '#34D399', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: false, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'NMKRV': { institutionName: 'NMKRV College for Women', shortTitle: 'NMKRV', website: 'https://nmkrv.edu.in', established: '1973', location: 'Bengaluru, Karnataka', primaryColor: '#EC4899', secondaryColor: '#F472B6', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'SSMRV': { institutionName: 'SSMRV College', shortTitle: 'SSMRV', website: 'https://ssmrv.edu.in', established: '1982', location: 'Bengaluru, Karnataka', primaryColor: '#3B82F6', secondaryColor: '#60A5FA', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Faculty', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: true, displayJobs: true, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: true, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
   'RVPS': { institutionName: 'RV Public School', shortTitle: 'RVPS', website: 'https://rvps.edu.in', established: '1992', location: 'Bengaluru, Karnataka', primaryColor: '#6B7280', secondaryColor: '#9CA3AF', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Teachers', batchmatesText: 'Schoolmates', manualApproval: true, emailVouching: false, allowUnverified: false, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: false, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
@@ -343,7 +343,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
     if (score <= 2) return { score, text: 'Weak', color: theme.danger };
     if (score <= 4) return { score, text: 'Medium', color: theme.warning };
-    return { score, text: 'Strong', color: theme.success };
+    return { score, text: 'Strong', color: '#10B981' };
   };
 
   // Helper function to get rich institution metadata
@@ -354,7 +354,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
           fullName: 'RV College of Engineering',
           subtitle: 'Bengaluru, Karnataka • Est. 1963',
           logo: 'CE',
-          color: theme.primary,
+          color: '#4F46E5',
         };
       case 'Institution':
         return {
@@ -438,7 +438,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
           fullName: 'RV Teachers Training Institute',
           subtitle: 'Bengaluru, Karnataka • Est. 1940',
           logo: 'TT',
-          color: theme.success,
+          color: '#10B981',
         };
       case 'NMKRV':
         return {
@@ -1869,7 +1869,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               </View>
               <View style={styles.historyStatsRow}>
                 <Text style={styles.historyStatText}>Records: {item.records}</Text>
-                <Text style={[styles.historyStatText, { color: theme.success }]}>Success: {item.successful}</Text>
+                <Text style={[styles.historyStatText, { color: '#10B981' }]}>Success: {item.successful}</Text>
                 <Text style={[styles.historyStatText, { color: theme.danger }]}>Failed: {item.failed}</Text>
               </View>
             </View>
@@ -2640,7 +2640,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
           </TouchableOpacity>
           
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text style={{ fontSize: 18, fontWeight: '800', color: theme.primary }}>{currentModuleData?.title}</Text>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: '#4F46E5' }}>{currentModuleData?.title}</Text>
             <Text style={{ fontSize: 11, color: theme.textSecondary, fontWeight: '500' }}>Super Admin Panel</Text>
           </View>
 
@@ -2673,7 +2673,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
           {activeModule === 'dashboard_home' ? (
             <View style={{ flex: 1, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18, fontWeight: '800', color: theme.primary }}>Super Admin Dashboard</Text>
+              <Text style={{ fontSize: 18, fontWeight: '800', color: '#4F46E5' }}>Super Admin Dashboard</Text>
               <Text style={{ fontSize: 11, color: theme.textSecondary, fontWeight: '500' }}>System Status Overview</Text>
             </View>
           ) : (
@@ -2862,7 +2862,7 @@ const getStyles = (theme) => StyleSheet.create({
   avatarText: {
     fontSize: 13,
     fontWeight: '800',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   panelContainer: {
     padding: 16,
@@ -2956,7 +2956,7 @@ const getStyles = (theme) => StyleSheet.create({
   cardPrimaryVal: {
     fontSize: 16,
     fontWeight: '800',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -2974,7 +2974,7 @@ const getStyles = (theme) => StyleSheet.create({
   avatarMiniText: {
     fontSize: 14,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   instChip: {
     backgroundColor: '#EFF6FF',
@@ -3087,7 +3087,7 @@ const getStyles = (theme) => StyleSheet.create({
     color: theme.textMuted,
   },
   subTabTextActive: {
-    color: theme.primary,
+    color: '#4F46E5',
     fontWeight: '700',
   },
   // Search
@@ -3166,7 +3166,7 @@ const getStyles = (theme) => StyleSheet.create({
   },
   healthText: {
     fontSize: 10,
-    color: theme.success,
+    color: '#10B981',
     fontWeight: '800',
   },
   summaryGrid: {
@@ -3420,7 +3420,7 @@ const getStyles = (theme) => StyleSheet.create({
   btnGenerateText: {
     fontSize: 11,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   // Settings Branding Color Box
   colorBox: {
@@ -3610,7 +3610,7 @@ const getStyles = (theme) => StyleSheet.create({
   btnOutlineText: {
     fontSize: 12.5,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   uploadArea: {
     borderWidth: 1.5,
@@ -3967,7 +3967,7 @@ const getStyles = (theme) => StyleSheet.create({
     color: theme.inputBackground,
   },
   dropdownOptionTextActive: {
-    color: theme.primary,
+    color: '#4F46E5',
     fontWeight: '800',
   },
   dropdownOptionSub: {
@@ -4017,7 +4017,7 @@ const getStyles = (theme) => StyleSheet.create({
   postAvatarText: {
     fontSize: 14,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   postUserInfo: {
     flex: 1,
@@ -4045,7 +4045,7 @@ const getStyles = (theme) => StyleSheet.create({
   followBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   followBtnTextActive: {
     color: theme.card,
@@ -4118,7 +4118,7 @@ const getStyles = (theme) => StyleSheet.create({
   detailsLinkText: {
     fontSize: 14,
     fontWeight: '600',
-    color: theme.primary,
+    color: '#4F46E5',
     textDecorationLine: 'underline',
   },
   detailsSectionHeader: {
@@ -4209,7 +4209,7 @@ const getStyles = (theme) => StyleSheet.create({
   placementCountText: {
     fontSize: 12,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
   },
   emptyDetailsText: {
     fontSize: 13,
@@ -4253,7 +4253,7 @@ const getStyles = (theme) => StyleSheet.create({
   broadcastCardTitle: {
     fontSize: 14.5,
     fontWeight: '800',
-    color: theme.primary,
+    color: '#4F46E5',
     marginBottom: 10,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -4317,7 +4317,7 @@ const getStyles = (theme) => StyleSheet.create({
   sheetTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: theme.primary,
+    color: '#4F46E5',
     marginBottom: 12,
   },
   sheetHeaderRow: {
@@ -4368,7 +4368,7 @@ const getStyles = (theme) => StyleSheet.create({
   sheetAddBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: theme.primary,
+    color: '#4F46E5',
     marginLeft: 4,
   },
   sheetClearBtn: {
