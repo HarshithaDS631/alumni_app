@@ -21,7 +21,6 @@ import {
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ==========================================
 // DUMMY DATABASE / SEED DATA
@@ -1290,7 +1289,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{editingAdminId ? 'Edit Institution Admin' : 'New Institution Admin'}</Text>
                 <TouchableOpacity onPress={handleCloseAdminModal}>
-                  <Ionicons name="close" size={24} color="#0F172A" />
+                  <Ionicons name="close" size={24} color={theme.text} />
                 </TouchableOpacity>
               </View>
               <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -1486,7 +1485,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
                 <View style={styles.modalHeader}>
                   <Text style={styles.modalTitle}>Alumni Detailed Profile</Text>
                   <TouchableOpacity onPress={() => setAlumniDetailModal(null)}>
-                    <Ionicons name="close" size={24} color="#0F172A" />
+                    <Ionicons name="close" size={24} color={theme.text} />
                   </TouchableOpacity>
                 </View>
                 <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -1992,7 +1991,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{editingPlacementId ? 'Edit Corporate Placement' : 'Add Corporate Placement'}</Text>
                 <TouchableOpacity onPress={handleClosePlacementModal}>
-                  <Ionicons name="close" size={24} color="#0F172A" />
+                  <Ionicons name="close" size={24} color={theme.text} />
                 </TouchableOpacity>
               </View>
               <ScrollView contentContainerStyle={{ padding: 20 }}>

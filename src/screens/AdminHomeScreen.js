@@ -100,7 +100,7 @@ export default function AdminHomeScreen({ navigation }) {
   const [bookmarkedPosts, setBookmarkedPosts] = useState({});
   const [followedUsers, setFollowedUsers] = useState({});
   const [searchText, setSearchText] = useState('');
-  const [postsList, setPostsList] = useState(FEED_POSTS);
+  const [postsList] = useState(FEED_POSTS);
 
   // Modal States
   const [activeModal, setActiveModal] = useState(null);
@@ -182,13 +182,13 @@ export default function AdminHomeScreen({ navigation }) {
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} activeOpacity={0.6} onPress={() => openModal('comments', post)}>
-            <Ionicons name="chatbubble-outline" size={24} color="#0F172A" />
+            <Ionicons name="chatbubble-outline" size={24} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} activeOpacity={0.6} onPress={() => openModal('reshare', post)}>
-            <Ionicons name="repeat-outline" size={26} color="#0F172A" />
+            <Ionicons name="repeat-outline" size={26} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} activeOpacity={0.6} onPress={() => openModal('share', post)}>
-            <Ionicons name="paper-plane-outline" size={24} color="#0F172A" />
+            <Ionicons name="paper-plane-outline" size={24} color={theme.text} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => toggleBookmark(post.id)} activeOpacity={0.6}>
@@ -254,14 +254,14 @@ export default function AdminHomeScreen({ navigation }) {
             style={styles.headerIconBtn}
             onPress={() => navigation && navigation.navigate('Messages')}
           >
-            <Ionicons name="chatbubble-ellipses-outline" size={24} color="#003366" />
+            <Ionicons name="chatbubble-ellipses-outline" size={24} color={theme.primary} />
             <View style={styles.dot} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerIconBtn}
             onPress={() => navigation && navigation.navigate('Notifications')}
           >
-            <Ionicons name="notifications-outline" size={24} color="#003366" />
+            <Ionicons name="notifications-outline" size={24} color={theme.primary} />
             <View style={styles.dot} />
           </TouchableOpacity>
         </View>
@@ -371,7 +371,7 @@ export default function AdminHomeScreen({ navigation }) {
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>Comments</Text>
               <TouchableOpacity onPress={closeModal}>
-                <Ionicons name="close" size={24} color="#0F172A" />
+                <Ionicons name="close" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
             <FlatList
@@ -390,7 +390,7 @@ export default function AdminHomeScreen({ navigation }) {
               <TextInput
                 style={styles.commentInput}
                 placeholder="Add a comment..."
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.textMuted}
                 value={commentText}
                 onChangeText={setCommentText}
               />
@@ -409,15 +409,15 @@ export default function AdminHomeScreen({ navigation }) {
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>Repost</Text>
               <TouchableOpacity onPress={closeModal}>
-                <Ionicons name="close" size={24} color="#0F172A" />
+                <Ionicons name="close" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.sheetActionRow} onPress={() => { closeModal(); Alert.alert('Success', 'Reposted successfully!'); }}>
-              <Ionicons name="repeat" size={24} color="#0F172A" />
+              <Ionicons name="repeat" size={24} color={theme.text} />
               <Text style={styles.sheetActionText}>Repost</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.sheetActionRow} onPress={() => { closeModal(); Alert.alert('Success', 'Quoted successfully!'); }}>
-              <Ionicons name="pencil" size={24} color="#0F172A" />
+              <Ionicons name="pencil" size={24} color={theme.text} />
               <Text style={styles.sheetActionText}>Quote Post</Text>
             </TouchableOpacity>
           </View>
@@ -431,7 +431,7 @@ export default function AdminHomeScreen({ navigation }) {
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>Share</Text>
               <TouchableOpacity onPress={closeModal}>
-                <Ionicons name="close" size={24} color="#0F172A" />
+                <Ionicons name="close" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
 
@@ -460,7 +460,7 @@ export default function AdminHomeScreen({ navigation }) {
                 if (post) handleShare(post);
               }}
             >
-              <Ionicons name="share-social-outline" size={20} color="#0F172A" style={{ marginRight: 8 }} />
+              <Ionicons name="share-social-outline" size={20} color={theme.text} style={{ marginRight: 8 }} />
               <Text style={styles.systemShareText}>Share via...</Text>
             </TouchableOpacity>
           </View>
@@ -506,7 +506,7 @@ const getStyles = (theme) => StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.inputBackground,
     borderRadius: 24,
     paddingHorizontal: 14,
     height: 38,
@@ -818,7 +818,7 @@ const getStyles = (theme) => StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: theme.border,
   },
   sheetTitle: {
     fontSize: 16,
@@ -841,7 +841,7 @@ const getStyles = (theme) => StyleSheet.create({
   commentText: {
     flex: 1,
     fontSize: 13,
-    color: theme.inputBackground,
+    color: theme.text,
   },
   commentTime: {
     fontSize: 11,
@@ -853,11 +853,11 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: theme.border,
   },
   commentInput: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.inputBackground,
     borderRadius: 20,
     paddingHorizontal: 16,
     height: 40,
@@ -915,7 +915,7 @@ const getStyles = (theme) => StyleSheet.create({
     padding: 14,
     marginHorizontal: 16,
     marginTop: 10,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.border,
     borderRadius: 8,
   },
   systemShareText: {

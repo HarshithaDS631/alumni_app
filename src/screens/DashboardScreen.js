@@ -200,17 +200,17 @@ const DashboardScreen = ({ navigation }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} activeOpacity={0.6} onPress={() => openModal('comments', post)}>
-            <Ionicons name="chatbubble-outline" size={24} color="#0F172A" />
+            <Ionicons name="chatbubble-outline" size={24} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} activeOpacity={0.6} onPress={() => openModal('reshare', post)}>
-            <Ionicons name="repeat-outline" size={26} color="#0F172A" />
+            <Ionicons name="repeat-outline" size={26} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={() => openModal('share', post)}
             activeOpacity={0.6}
           >
-            <Ionicons name="paper-plane-outline" size={24} color="#0F172A" />
+            <Ionicons name="paper-plane-outline" size={24} color={theme.text} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => toggleBookmark(post.id)} activeOpacity={0.6}>
@@ -277,14 +277,14 @@ const DashboardScreen = ({ navigation }) => {
               style={styles.headerIconBtn}
               onPress={() => navigation.navigate('Messages')}
             >
-              <Ionicons name="chatbubble-ellipses-outline" size={22} color="#003366" />
+              <Ionicons name="chatbubble-ellipses-outline" size={22} color={theme.primary} />
               <View style={styles.dot} />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.headerIconBtn}
               onPress={() => navigation.navigate('Notifications')}
             >
-              <Ionicons name="notifications-outline" size={22} color="#003366" />
+              <Ionicons name="notifications-outline" size={22} color={theme.primary} />
               <View style={styles.dot} />
             </TouchableOpacity>
           </View>
@@ -295,9 +295,9 @@ const DashboardScreen = ({ navigation }) => {
           <View style={{ flex: 1, padding: 24, flexDirection: 'row', gap: 24 }}>
             {/* Left Column: Feed */}
             <View style={{ flex: 7 }}>
-              <View style={{ backgroundColor: '#F8FAFC', padding: 24, borderRadius: 16, marginBottom: 24 }}>
-                <Text style={{ fontSize: 24, fontWeight: '800', color: '#0F172A' }}>Welcome back, {userInstitution} Alumni!</Text>
-                <Text style={{ fontSize: 16, color: '#64748B', marginTop: 8 }}>Here&apos;s what&apos;s happening in your network today.</Text>
+              <View style={{ backgroundColor: theme.card, borderElevation: 1, borderWidth: 1, borderColor: theme.border, padding: 24, borderRadius: 16, marginBottom: 24 }}>
+                <Text style={{ fontSize: 24, fontWeight: '800', color: theme.text }}>Welcome back, {userInstitution} Alumni!</Text>
+                <Text style={{ fontSize: 16, color: theme.textSecondary, marginTop: 8 }}>Here&apos;s what&apos;s happening in your network today.</Text>
               </View>
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
                 {posts.map(post => renderPostCard(post))}
@@ -307,19 +307,19 @@ const DashboardScreen = ({ navigation }) => {
             {/* Right Column: Widgets */}
             <View style={{ flex: 4 }}>
               {/* Suggestions Widget */}
-              <View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 24, elevation: 2, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
+              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, marginBottom: 24, elevation: 2, borderWidth: 1, borderColor: theme.border, shadowColor: theme.text, shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A' }}>People you may know</Text>
-                  <Text style={{ fontSize: 13, color: '#003366', fontWeight: '600' }}>See all</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text }}>People you may know</Text>
+                  <Text style={{ fontSize: 13, color: theme.primary, fontWeight: '600' }}>See all</Text>
                 </View>
                 {suggestions.map(s => (
                   <View key={s.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                    <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#E2E8F0', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
-                      <Text style={{ fontWeight: '700', color: '#64748B' }}>{s.avatar}</Text>
+                    <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.border, justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                      <Text style={{ fontWeight: '700', color: theme.textSecondary }}>{s.avatar}</Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A' }}>{s.name}</Text>
-                      <Text style={{ fontSize: 12, color: '#64748B' }}>{s.subtitle}</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: theme.text }}>{s.name}</Text>
+                      <Text style={{ fontSize: 12, color: theme.textSecondary }}>{s.subtitle}</Text>
                     </View>
                     <TouchableOpacity 
                       style={[styles.suggestionFollowBtn, followedSuggestions[s.id] && styles.suggestionFollowBtnActive, { paddingHorizontal: 12, paddingVertical: 6 }]}
@@ -332,19 +332,19 @@ const DashboardScreen = ({ navigation }) => {
               </View>
 
               {/* Events & Jobs Widget */}
-              <View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, elevation: 2, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
+              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, elevation: 2, borderWidth: 1, borderColor: theme.border, shadowColor: theme.text, shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A' }}>Upcoming & Opportunities</Text>
-                  <Text style={{ fontSize: 13, color: '#003366', fontWeight: '600' }}>See all</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text }}>Upcoming & Opportunities</Text>
+                  <Text style={{ fontSize: 13, color: theme.primary, fontWeight: '600' }}>See all</Text>
                 </View>
                 {eventsAndJobs.map(ev => (
-                  <View key={ev.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
+                  <View key={ev.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: theme.border }}>
                     <Image source={{ uri: ev.image }} style={{ width: 60, height: 60, borderRadius: 8, marginRight: 12 }} />
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A', marginBottom: 2 }}>{ev.title}</Text>
-                      <Text style={{ fontSize: 12, color: '#64748B', marginBottom: 6 }}>{ev.subtitle}</Text>
-                      <TouchableOpacity style={{ backgroundColor: '#F1F5F9', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
-                        <Text style={{ fontSize: 11, fontWeight: '600', color: '#003366' }}>{ev.btnText}</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: theme.text, marginBottom: 2 }}>{ev.title}</Text>
+                      <Text style={{ fontSize: 12, color: theme.textSecondary, marginBottom: 6 }}>{ev.subtitle}</Text>
+                      <TouchableOpacity style={{ backgroundColor: theme.background, alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+                        <Text style={{ fontSize: 11, fontWeight: '600', color: theme.primary }}>{ev.btnText}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -412,7 +412,7 @@ const DashboardScreen = ({ navigation }) => {
           <View style={isWeb ? styles.webModalContainer : styles.bottomSheet}>
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>Comments</Text>
-              <TouchableOpacity onPress={closeModal}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
+              <TouchableOpacity onPress={closeModal}><Ionicons name="close" size={24} color={theme.text} /></TouchableOpacity>
             </View>
             <FlatList
               data={mockComments}
@@ -427,7 +427,7 @@ const DashboardScreen = ({ navigation }) => {
               contentContainerStyle={{ paddingHorizontal: 16 }}
             />
             <View style={styles.commentInputRow}>
-              <TextInput style={styles.commentInput} placeholder="Add a comment..." value={commentText} onChangeText={setCommentText} />
+              <TextInput style={styles.commentInput} placeholder="Add a comment..." placeholderTextColor={theme.textMuted} value={commentText} onChangeText={setCommentText} />
               <TouchableOpacity onPress={() => setCommentText('')}><Text style={styles.commentPostBtn}>Post</Text></TouchableOpacity>
             </View>
           </View>
@@ -440,7 +440,7 @@ const DashboardScreen = ({ navigation }) => {
           <View style={isWeb ? styles.webModalContainer : styles.bottomSheet}>
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>Share to...</Text>
-              <TouchableOpacity onPress={closeModal}><Ionicons name="close" size={24} color="#0F172A" /></TouchableOpacity>
+              <TouchableOpacity onPress={closeModal}><Ionicons name="close" size={24} color={theme.text} /></TouchableOpacity>
             </View>
             <View style={styles.shareGrid}>
               <TouchableOpacity style={styles.shareItem} onPress={() => handleShare(selectedPost)}>
@@ -456,7 +456,7 @@ const DashboardScreen = ({ navigation }) => {
                 <Text style={styles.shareText}>Twitter</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.shareItem} onPress={() => handleShare(selectedPost)}>
-                <View style={[styles.shareIconWrap, {backgroundColor:'#E2E8F0'}]}><Ionicons name="copy-outline" size={24} color="#0F172A"/></View>
+                <View style={[styles.shareIconWrap, {backgroundColor: theme.border}]}><Ionicons name="copy-outline" size={24} color={theme.text}/></View>
                 <Text style={styles.shareText}>Copy Link</Text>
               </TouchableOpacity>
             </View>
@@ -506,7 +506,7 @@ const getStyles = (theme) => StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.inputBackground,
     borderRadius: 24,
     paddingHorizontal: 14,
     height: 38,
@@ -822,7 +822,7 @@ const getStyles = (theme) => StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: theme.border,
   },
   sheetTitle: {
     fontSize: 16,
@@ -844,7 +844,7 @@ const getStyles = (theme) => StyleSheet.create({
   commentText: {
     flex: 1,
     fontSize: 13,
-    color: theme.inputBackground,
+    color: theme.text,
   },
   commentTime: {
     fontSize: 11,
@@ -856,11 +856,12 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: theme.border,
   },
   commentInput: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.inputBackground,
+    color: theme.text,
     borderRadius: 20,
     paddingHorizontal: 16,
     height: 40,
