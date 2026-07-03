@@ -131,28 +131,34 @@ const DashboardScreen = ({ navigation }) => {
   ];
 
   const suggestions = [
-    { id: 's1', name: 'Rohan K.', avatar: 'RK' },
-    { id: 's2', name: 'Priya S.', avatar: 'PS' },
-    { id: 's3', name: 'Rahul M.', avatar: 'RM' },
-    { id: 's4', name: 'Karan G.', avatar: 'KG' },
+    { id: 's1', name: 'Rohan K.', avatar: 'RK', subtitle: 'Batch of 2021 • CSE' },
+    { id: 's2', name: 'Priya S.', avatar: 'PS', subtitle: 'Software Dev @ Google' },
+    { id: 's3', name: 'Rahul M.', avatar: 'RM', subtitle: 'Batch of 2018 • ME' },
+    { id: 's4', name: 'Karan G.', avatar: 'KG', subtitle: 'Product Manager @ MSFT' },
   ];
 
   const eventsAndJobs = [
     {
       id: 'e1',
       title: 'Alumni Gala Night 2026',
+      subtitle: 'Date: Nov 28, 2026 • 6 PM',
+      btnText: 'RSVP Now',
       image:
         'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=400&h=260&q=80',
     },
     {
       id: 'e2',
       title: 'SDE Intern @ Amazon',
+      subtitle: 'Location: Bengaluru • 6 Months',
+      btnText: 'Apply Now',
       image:
         'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=400&h=260&q=80',
     },
     {
       id: 'e3',
       title: 'Tech Talk: AI in 2026',
+      subtitle: 'Online • Speaker: Dr. Sen',
+      btnText: 'Join Stream',
       image:
         'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=400&h=260&q=80',
     },
@@ -341,7 +347,7 @@ const DashboardScreen = ({ navigation }) => {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A' }}>{s.name}</Text>
-                      <Text style={{ fontSize: 12, color: '#64748B' }}>Alumni</Text>
+                      <Text style={{ fontSize: 12, color: '#64748B' }}>{s.subtitle}</Text>
                     </View>
                     <TouchableOpacity 
                       style={[styles.suggestionFollowBtn, followedSuggestions[s.id] && styles.suggestionFollowBtnActive, { paddingHorizontal: 12, paddingVertical: 6 }]}
@@ -363,9 +369,10 @@ const DashboardScreen = ({ navigation }) => {
                   <View key={ev.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
                     <Image source={{ uri: ev.image }} style={{ width: 60, height: 60, borderRadius: 8, marginRight: 12 }} />
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A', marginBottom: 4 }}>{ev.title}</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0F172A', marginBottom: 2 }}>{ev.title}</Text>
+                      <Text style={{ fontSize: 12, color: '#64748B', marginBottom: 6 }}>{ev.subtitle}</Text>
                       <TouchableOpacity style={{ backgroundColor: '#F1F5F9', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
-                        <Text style={{ fontSize: 11, fontWeight: '600', color: '#003366' }}>View Details</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '600', color: '#003366' }}>{ev.btnText}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -388,7 +395,7 @@ const DashboardScreen = ({ navigation }) => {
                     <TouchableOpacity style={styles.suggestionRemove}><Ionicons name="close" size={14} color="#94A3B8" /></TouchableOpacity>
                     <View style={styles.suggestionAvatar}><Text style={styles.avatarText}>{s.avatar}</Text></View>
                     <Text style={styles.suggestionName} numberOfLines={1}>{s.name}</Text>
-                    <Text style={styles.suggestSubText}>Lorem Ipsum</Text>
+                    <Text style={styles.suggestSubText}>{s.subtitle}</Text>
                     <TouchableOpacity
                       style={[styles.suggestionFollowBtn, followedSuggestions[s.id] && styles.suggestionFollowBtnActive]}
                       onPress={() => toggleSuggestionFollow(s.id)}
@@ -413,8 +420,8 @@ const DashboardScreen = ({ navigation }) => {
                     <Image source={{ uri: ev.image }} style={styles.eventRowImage} />
                     <View style={styles.eventRowContent}>
                       <Text style={styles.eventRowTitle} numberOfLines={1}>{ev.title}</Text>
-                      <Text style={styles.eventRowSub} numberOfLines={1}>Lorem Ipsum</Text>
-                      <TouchableOpacity style={styles.eventRowBtn}><Text style={styles.eventRowBtnText}>Lorem Ipsum</Text></TouchableOpacity>
+                      <Text style={styles.eventRowSub} numberOfLines={1}>{ev.subtitle}</Text>
+                      <TouchableOpacity style={styles.eventRowBtn}><Text style={styles.eventRowBtnText}>{ev.btnText}</Text></TouchableOpacity>
                     </View>
                     <TouchableOpacity style={styles.eventRowClose}><Ionicons name="close" size={14} color="#94A3B8" /></TouchableOpacity>
                   </View>

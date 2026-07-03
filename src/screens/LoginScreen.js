@@ -65,9 +65,22 @@ const LoginScreen = ({ navigation }) => {
     }
     setLoading(true);
 
+    const emailClean = email.toLowerCase().trim();
+    if (emailClean === 'alumni@institution.edu' && password === 'alumni123') {
+      await AsyncStorage.setItem('userInfo', JSON.stringify({ 
+        name: 'Alumni User', 
+        email: 'alumni@institution.edu',
+        institution: 'RVITM',
+        role: 'Alumni'
+      }));
+      setLoading(false);
+      navigation.navigate('Main');
+      return;
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase().trim(),
+        email: emailClean,
         password,
       });
 
@@ -193,26 +206,14 @@ const LoginScreen = ({ navigation }) => {
 
           <View style={styles.infoBox}>
             <Ionicons name="information-circle-outline" size={20} color="#64748B" />
-            <Text style={styles.infoText}>Use any of the demo credentials listed below for quick access.</Text>
+            <Text style={styles.infoText}>Use the demo credential listed below for quick access.</Text>
           </View>
 
           <View style={styles.credentialsBox}>
-            <Text style={styles.credentialsTitle}>Demo Credentials</Text>
+            <Text style={styles.credentialsTitle}>Demo Credential</Text>
             <View style={styles.credentialRow}>
-              <Text style={styles.credentialLabel}>Alumni (RVCE)</Text>
-              <Text style={styles.credentialValue}>alumni@rvce.edu / alumni123</Text>
-            </View>
-            <View style={styles.credentialRow}>
-              <Text style={styles.credentialLabel}>Alumni (Institution)</Text>
-              <Text style={styles.credentialValue}>alumni@institution.edu.in / alumni123</Text>
-            </View>
-            <View style={styles.credentialRow}>
-              <Text style={styles.credentialLabel}>Alumni (RVPU)</Text>
-              <Text style={styles.credentialValue}>alumni@rvpu.edu / alumni123</Text>
-            </View>
-            <View style={styles.credentialRow}>
-              <Text style={styles.credentialLabel}>Alumni (RVIS)</Text>
-              <Text style={styles.credentialValue}>alumni@rvis.edu / alumni123</Text>
+              <Text style={styles.credentialLabel}>Alumni Account</Text>
+              <Text style={styles.credentialValue}>alumni@institution.edu / alumni123</Text>
             </View>
           </View>
         </ScrollView>

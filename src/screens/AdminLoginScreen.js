@@ -6,10 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CREDENTIALS = [
   { email: 'superadmin@institution.edu', password: 'super123', role: 'superadmin', label: 'Super Admin' },
-  { email: 'admin@rvce.edu', password: 'admin123', role: 'admin', label: 'Admin (RVCE)' },
-  { email: 'admin@institution.edu', password: 'admin456', role: 'admin', label: 'Admin (Institution)' },
-  { email: 'admin@rvpu.edu', password: 'admin789', role: 'admin', label: 'Admin (RVPU)' },
-  { email: 'admin@rvis.edu', password: 'admin012', role: 'admin', label: 'Admin (RVIS)' },
+  { email: 'admin@institution.edu', password: 'admin123', role: 'admin', label: 'Admin (Institution)' },
 ];
 
 const AdminLoginScreen = ({ navigation }) => {
