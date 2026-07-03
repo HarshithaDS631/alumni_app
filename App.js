@@ -305,10 +305,69 @@ function SuperAdminTabs() {
   );
 }
 
+const linking = {
+  prefixes: [
+    'http://localhost:19006',
+    'https://alumni-app-nine.vercel.app',
+    'alumni://'
+  ],
+  config: {
+    screens: {
+      Splash: '',
+      Welcome: 'welcome',
+      Login: 'login',
+      Signup: 'signup',
+      OTPVerification: 'otp-verification',
+      ProfileSetup: 'profile-setup',
+      SelectInstitution: 'select-institution',
+      DemoCarousel: 'demo-carousel',
+      Main: {
+        path: 'main',
+        screens: {
+          Home: 'home',
+          Engage: 'directory',
+          Post: 'engage',
+          Jobs: 'jobs',
+          Contribute: 'contribute',
+        }
+      },
+      AdminLogin: 'admin-login',
+      AdminOTP: 'admin-otp',
+      AdminMain: {
+        path: 'admin',
+        screens: {
+          AdminHome: 'home',
+          AdminUsers: 'users',
+          AdminJobs: 'jobs',
+          AdminEvents: 'events',
+          AdminPanel: 'panel',
+        }
+      },
+      SuperAdminMain: {
+        path: 'super-admin',
+        screens: {
+          SADashboard: 'dashboard',
+          SAUsers: 'users',
+          SAJobs: 'jobs',
+          SAEvents: 'events',
+          SAPanel: 'panel',
+        }
+      },
+      Messages: 'messages',
+      Chat: 'chat',
+      Notifications: 'notifications',
+      PostCreation: 'create-post',
+      Profile: 'profile',
+      AdminProfile: 'admin-profile',
+      AdminPlacementDetails: 'placement-details',
+    },
+  },
+};
+
 function RootNavigator() {
   const { theme } = useTheme();
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator 
         initialRouteName="Splash"
         screenOptions={{
