@@ -48,13 +48,6 @@ const DashboardScreen = ({ navigation }) => {
     { id: '2', user: 'Priya S.', text: 'Absolutely loved it.', time: '2h' }
   ];
 
-  const mockUsers = [
-    { id: 'u1', name: 'Rohan K.', avatar: 'RK' },
-    { id: 'u2', name: 'Priya S.', avatar: 'PS' },
-    { id: 'u3', name: 'Rahul M.', avatar: 'RM' },
-    { id: 'u4', name: 'Amit Shah', avatar: 'AS' },
-  ];
-
   const openModal = (type, post) => {
     setSelectedPost(post);
     setActiveModal(type);
@@ -64,27 +57,6 @@ const DashboardScreen = ({ navigation }) => {
     setActiveModal(null);
     setSelectedPost(null);
     setCommentText('');
-  };
-
-  const handleLogout = () => {
-    if (Platform.OS === 'web') {
-      if (window.confirm('Are you sure you want to logout?')) {
-        AsyncStorage.removeItem('userInfo');
-        navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-      }
-    } else {
-      Alert.alert('Logout', 'Are you sure you want to logout?', [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Logout', 
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('userInfo');
-            navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-          }
-        }
-      ]);
-    }
   };
 
   useEffect(() => {

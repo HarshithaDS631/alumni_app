@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, useWindowDimensions, Image, StatusBar, Modal, TextInput, FlatList, Alert , Platform} from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,7 +33,7 @@ const EngageScreen = ({ navigation }) => {
   const [blockedUsers, setBlockedUsers] = useState(new Set());
   const [currentUser, setCurrentUser] = useState(null);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('posts')
@@ -70,7 +70,7 @@ const EngageScreen = ({ navigation }) => {
     } catch (err) {
       console.error('Error fetching posts:', err.message);
     }
-  };
+  }, [blockedUsers]);
 
   useEffect(() => {
     const init = async () => {
@@ -88,7 +88,7 @@ const EngageScreen = ({ navigation }) => {
     });
     init();
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, fetchPosts]);
 
   const handleDismiss = () => {
     setActionSheetVisible(false);
