@@ -717,6 +717,60 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   // ==========================================
 
   // 1. Dashboard Home (Grid & summary, specific institution details, news feed)
+  const renderInstitutionPerformance = () => {
+    return (
+      <View style={{ width: '100%', marginTop: 8, marginBottom: 16 }}>
+        <Text style={styles.sectionHeaderTitle}>Institution Performance</Text>
+        {INSTITUTIONS.map((inst) => {
+          const instAdmins = admins.filter(a => a.institution === inst.shortName).length;
+          const instSpam = spamReports.filter(s => s.institution === inst.shortName).length;
+
+          return (
+            <TouchableOpacity
+              key={inst.id}
+              style={styles.instMetricCard}
+              onPress={() => {
+                setSelectedInstitution(inst.shortName);
+                global.selectedInstitution = inst.shortName;
+                Alert.alert('Campus Selected', `Switched active campus view to ${inst.name}.`);
+              }}
+            >
+              <View style={styles.instMetricHeader}>
+                <View style={styles.instTitleWrap}>
+                  <View style={[styles.instBadgeCircle, { backgroundColor: inst.color }]}>
+                    <Text style={styles.instBadgeCircleText}>{inst.shortName.substring(0,2)}</Text>
+                  </View>
+                  <View style={{ marginLeft: 12 }}>
+                    <Text style={styles.instCardTitle}>{inst.name}</Text>
+                    <Text style={styles.instCardLoc}>{inst.location}</Text>
+                  </View>
+                </View>
+                <View style={[styles.statusTag, inst.status === 'Active' ? styles.statusActive : styles.statusPending]}>
+                  <Text style={inst.status === 'Active' ? styles.statusActiveText : styles.statusPendingText}>{inst.status}</Text>
+                </View>
+              </View>
+
+              <View style={styles.instMetricsRow}>
+                <View style={styles.metricItem}>
+                  <Text style={styles.metricVal}>{inst.totalAlumni}</Text>
+                  <Text style={styles.metricLbl}>Total Alumni</Text>
+                </View>
+                <View style={styles.metricItem}>
+                  <Text style={styles.metricVal}>{instAdmins}</Text>
+                  <Text style={styles.metricLbl}>Admins</Text>
+                </View>
+                <View style={styles.metricItem}>
+                  <Text style={[styles.metricVal, instSpam > 0 && { color: theme.danger }]}>{instSpam}</Text>
+                  <Text style={styles.metricLbl}>Reports</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  };
+
   const renderDashboardHome = () => {
     const totalAlumniAgg = INSTITUTIONS.reduce((sum, item) => sum + item.totalAlumni, 0);
     const registeredUsersAgg = INSTITUTIONS.reduce((sum, item) => sum + item.registeredUsers, 0);
@@ -730,85 +784,30 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
 
     return (
       <View style={styles.dashboardHomeView}>
-        {/* Custom Institution Dropdown at the top */}
-        <InstitutionSelector />
-
         {selectedInstitution === 'All' && (
-          <>
-            {/* Aggregate Stats Card */}
-            <View style={styles.summaryCard}>
-              <View style={styles.summaryHeaderRow}>
-                <Text style={styles.summaryTitle}>SYSTEM STATUS & HEALTH</Text>
-                <View style={styles.healthStatusBadge}>
-                  <View style={styles.healthDot} />
-                  <Text style={styles.healthText}>All Services Online</Text>
-                </View>
-              </View>
-              <View style={styles.summaryGrid}>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryValue}>{totalAlumniAgg.toLocaleString()}</Text>
-                  <Text style={styles.summaryLabel}>Total Alumni</Text>
-                </View>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryValue}>{registeredUsersAgg.toLocaleString()}</Text>
-                  <Text style={styles.summaryLabel}>Registered Users</Text>
-                </View>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryValue}>{activeAdminsAgg}</Text>
-                  <Text style={styles.summaryLabel}>Active Admins</Text>
-                </View>
+          <View style={styles.summaryCard}>
+            <View style={styles.summaryHeaderRow}>
+              <Text style={styles.summaryTitle}>SYSTEM STATUS & HEALTH</Text>
+              <View style={styles.healthStatusBadge}>
+                <View style={styles.healthDot} />
+                <Text style={styles.healthText}>All Services Online</Text>
               </View>
             </View>
-
-            {/* Institution Performance Cards List */}
-            <Text style={styles.sectionHeaderTitle}>Institution Performance</Text>
-            {INSTITUTIONS.map((inst) => {
-              const instAdmins = admins.filter(a => a.institution === inst.shortName).length;
-              const instSpam = spamReports.filter(s => s.institution === inst.shortName).length;
-
-              return (
-                <TouchableOpacity
-                  key={inst.id}
-                  style={styles.instMetricCard}
-                  onPress={() => {
-                    setSelectedInstitution(inst.shortName);
-                    global.selectedInstitution = inst.shortName;
-                    Alert.alert('Campus Selected', `Switched active campus view to ${inst.name}.`);
-                  }}
-                >
-                  <View style={styles.instMetricHeader}>
-                    <View style={styles.instTitleWrap}>
-                      <View style={[styles.instBadgeCircle, { backgroundColor: inst.color }]}>
-                        <Text style={styles.instBadgeCircleText}>{inst.shortName.substring(0,2)}</Text>
-                      </View>
-                      <View style={{ marginLeft: 12 }}>
-                        <Text style={styles.instCardTitle}>{inst.name}</Text>
-                        <Text style={styles.instCardLoc}>{inst.location}</Text>
-                      </View>
-                    </View>
-                    <View style={[styles.statusTag, inst.status === 'Active' ? styles.statusActive : styles.statusPending]}>
-                      <Text style={inst.status === 'Active' ? styles.statusActiveText : styles.statusPendingText}>{inst.status}</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.instMetricsRow}>
-                    <View style={styles.metricItem}>
-                      <Text style={styles.metricVal}>{inst.totalAlumni}</Text>
-                      <Text style={styles.metricLbl}>Total Alumni</Text>
-                    </View>
-                    <View style={styles.metricItem}>
-                      <Text style={styles.metricVal}>{instAdmins}</Text>
-                      <Text style={styles.metricLbl}>Admins</Text>
-                    </View>
-                    <View style={styles.metricItem}>
-                      <Text style={[styles.metricVal, instSpam > 0 && { color: theme.danger }]}>{instSpam}</Text>
-                      <Text style={styles.metricLbl}>Reports</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </>
+            <View style={styles.summaryGrid}>
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryValue}>{totalAlumniAgg.toLocaleString()}</Text>
+                <Text style={styles.summaryLabel}>Total Alumni</Text>
+              </View>
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryValue}>{registeredUsersAgg.toLocaleString()}</Text>
+                <Text style={styles.summaryLabel}>Registered Users</Text>
+              </View>
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryValue}>{activeAdminsAgg}</Text>
+                <Text style={styles.summaryLabel}>Active Admins</Text>
+              </View>
+            </View>
+          </View>
         )}
 
         {/* Broadcast Widget */}
@@ -2711,9 +2710,10 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
       {/* Main Content Area */}
       {activeModule === null ? (
         <ScrollView contentContainerStyle={styles.panelContainer} showsVerticalScrollIndicator={false}>
-          {/* Default Dashboard Home */}
-          {renderDashboardHome()}
+          {/* Active Campus Selector at the top */}
+          <InstitutionSelector />
 
+          {/* 1st Scroll: Administration Modules */}
           <Text style={styles.sectionHeaderTitle}>Administration Modules</Text>
           {/* Main Grid Options */}
           <View style={styles.gridContainer}>
@@ -2741,6 +2741,12 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Institution Performance is now part of the Administration Modules area */}
+          {selectedInstitution === 'All' && renderInstitutionPerformance()}
+
+          {/* Default Dashboard Home details */}
+          {renderDashboardHome()}
         </ScrollView>
       ) : (
         <View style={styles.flexContainer}>
