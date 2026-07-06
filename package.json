@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "lint": "expo lint",
-    "build": "expo export",
+    "build": "expo export && node copy-vercel-config.js",
     "build:android": "eas build -p android --profile production",
     "build:ios": "eas build -p ios --profile production",
     "build:all": "eas build -p all --profile production"
