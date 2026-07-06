@@ -20,77 +20,11 @@ import {
 import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const SELECTED_STUDENTS = [
-  { id: 'ss1', name: 'Sarthak Banka', placement: 'Qualcomm', branch: 'CSE', batch: '2023', avatar: 'SB' },
-  { id: 'ss2', name: 'Manjunath N', placement: 'Maverik', branch: 'MBA', batch: '2015', avatar: 'MN' },
-  { id: 'ss3', name: 'Priya Sharma', placement: 'Google', branch: 'CSE', batch: '2020', avatar: 'PS' },
-  { id: 'ss4', name: 'Rahul Verma', placement: 'Apple', branch: 'ECE', batch: '2019', avatar: 'RV' },
-];
-
-const FEED_POSTS = [
-  {
-    id: '1',
-    user: 'Dr. Satish Kumar',
-    role: 'Dean of Academics @ Institution',
-    avatar: 'SK',
-    content:
-      'Truly honored to be back on campus for the Institution Alumni Gala. The growth of our network is incredible! Inspiring to see the next generation of leaders. #Institution #AlumniMeet',
-    image:
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&h=400&q=80',
-    likes: 124,
-    commentsCount: 12,
-    time: '2 hours ago',
-  },
-  {
-    id: '2',
-    user: 'Ananya Joshi',
-    role: 'SDE-2 @ Microsoft (Alumni)',
-    avatar: 'AJ',
-    content:
-      'Our Silicon Valley Institution chapter is hosting a meetup next month. Anyone in the Bay Area, please join us for coffee and mentorship talks! ☕️ #Mentorship #BayArea',
-    image:
-      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=600&h=400&q=80',
-    likes: 89,
-    commentsCount: 5,
-    time: '5 hours ago',
-  },
-];
-
-const EVENTS_AND_JOBS = [
-  {
-    id: 'ej1',
-    title: 'Alumni Gala Night 2026',
-    image:
-      'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=400&h=260&q=80',
-    type: 'Event',
-  },
-  {
-    id: 'ej2',
-    title: 'SDE Intern @ Amazon',
-    image:
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=400&h=260&q=80',
-    type: 'Job',
-  },
-  {
-    id: 'ej3',
-    title: 'Tech Talk: AI in 2026',
-    image:
-      'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=400&h=260&q=80',
-    type: 'Event',
-  },
-];
-
-const MOCK_COMMENTS = [
-  { id: '1', user: 'Rohan K.', text: 'Outstanding! Proud of the continuous growth.', time: '1h' },
-  { id: '2', user: 'Priya S.', text: 'Will definitely attend the Bay Area meetup.', time: '2h' }
-];
-
-const MOCK_USERS = [
-  { id: 'u1', name: 'Rohan K.', avatar: 'RK' },
-  { id: 'u2', name: 'Priya S.', avatar: 'PS' },
-  { id: 'u3', name: 'Rahul M.', avatar: 'RM' },
-  { id: 'u4', name: 'Amit Shah', avatar: 'AS' },
-];
+const SELECTED_STUDENTS = [];
+const FEED_POSTS = [];
+const EVENTS_AND_JOBS = [];
+const MOCK_COMMENTS = [];
+const MOCK_USERS = [];
 
 export default function AdminHomeScreen({ navigation }) {
   const { theme, isDarkMode } = useTheme();

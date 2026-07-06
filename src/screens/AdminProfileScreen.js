@@ -160,38 +160,11 @@ const AdminProfileScreen = ({ navigation }) => {
     loadProfile();
   }, []);
 
-  const posts = [
-    { id: '1', uri: 'https://images.unsplash.com/photo-1523050854058-8df90110c476?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: '2', uri: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: '3', uri: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: '4', uri: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: '5', uri: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: '6', uri: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=300&h=300&q=80' },
-  ];
-
-  const mockReshares = [
-    { id: 'r1', user: 'Priya Sharma', content: 'Institution ranked among top 50 engineering colleges in India! Proud to be an alumnus 🎓', date: '2 days ago' },
-    { id: 'r2', user: 'Rahul Verma', content: 'Great placement season results for Institution 2026 batch!', date: '5 days ago' },
-  ];
-
-  const mockSaved = [
-    { id: 's1', uri: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: 's2', uri: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: 's3', uri: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=300&h=300&q=80' },
-  ];
-
-  const mockTags = [
-    { id: 't1', uri: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=300&h=300&q=80' },
-    { id: 't2', uri: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=300&h=300&q=80' },
-  ];
-
-  const mockConnections = [
-    { id: '1', name: 'Priya Sharma', username: 'priya.s', avatar: 'PS' },
-    { id: '2', name: 'Rahul Verma', username: 'rahul_v', avatar: 'RV' },
-    { id: '3', name: 'Sneha Patel', username: 'sneha.p', avatar: 'SP' },
-    { id: '4', name: 'Arjun Reddy', username: 'arjun.r', avatar: 'AR' },
-    { id: '5', name: 'Kavitha Nair', username: 'kavitha.n', avatar: 'KN' },
-  ];
+  const posts = [];
+  const mockReshares = [];
+  const mockSaved = [];
+  const mockTags = [];
+  const mockConnections = [];
 
   const handleLogout = () => {
     const performLogout = async () => {

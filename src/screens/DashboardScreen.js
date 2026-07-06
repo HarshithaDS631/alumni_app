@@ -43,10 +43,7 @@ const DashboardScreen = ({ navigation }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [commentText, setCommentText] = useState('');
 
-  const mockComments = [
-    { id: '1', user: 'Rohan K.', text: 'Great event! Looking forward to the next one.', time: '1h' },
-    { id: '2', user: 'Priya S.', text: 'Absolutely loved it.', time: '2h' }
-  ];
+  const mockComments = [];
 
   const openModal = (type, post) => {
     setSelectedPost(post);
