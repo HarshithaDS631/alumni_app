@@ -1,6 +1,5 @@
 {
   "cleanUrls": false,
-  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
