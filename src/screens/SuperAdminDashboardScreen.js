@@ -716,59 +716,7 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
   // ==========================================
 
   // 1. Dashboard Home (Grid & summary, specific institution details, news feed)
-  const renderInstitutionPerformance = () => {
-    return (
-      <View style={{ width: '100%', marginTop: 8, marginBottom: 16 }}>
-        <Text style={styles.sectionHeaderTitle}>Institution Performance</Text>
-        {INSTITUTIONS.map((inst) => {
-          const instAdmins = admins.filter(a => a.institution === inst.shortName).length;
-          const instSpam = spamReports.filter(s => s.institution === inst.shortName).length;
 
-          return (
-            <TouchableOpacity
-              key={inst.id}
-              style={styles.instMetricCard}
-              onPress={() => {
-                setSelectedInstitution(inst.shortName);
-                global.selectedInstitution = inst.shortName;
-                Alert.alert('Campus Selected', `Switched active campus view to ${inst.name}.`);
-              }}
-            >
-              <View style={styles.instMetricHeader}>
-                <View style={styles.instTitleWrap}>
-                  <View style={[styles.instBadgeCircle, { backgroundColor: inst.color }]}>
-                    <Text style={styles.instBadgeCircleText}>{inst.shortName.substring(0,2)}</Text>
-                  </View>
-                  <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.instCardTitle}>{inst.name}</Text>
-                    <Text style={styles.instCardLoc}>{inst.location}</Text>
-                  </View>
-                </View>
-                <View style={[styles.statusTag, inst.status === 'Active' ? styles.statusActive : styles.statusPending]}>
-                  <Text style={inst.status === 'Active' ? styles.statusActiveText : styles.statusPendingText}>{inst.status}</Text>
-                </View>
-              </View>
-
-              <View style={styles.instMetricsRow}>
-                <View style={styles.metricItem}>
-                  <Text style={styles.metricVal}>{inst.totalAlumni}</Text>
-                  <Text style={styles.metricLbl}>Total Alumni</Text>
-                </View>
-                <View style={styles.metricItem}>
-                  <Text style={styles.metricVal}>{instAdmins}</Text>
-                  <Text style={styles.metricLbl}>Admins</Text>
-                </View>
-                <View style={styles.metricItem}>
-                  <Text style={[styles.metricVal, instSpam > 0 && { color: theme.danger }]}>{instSpam}</Text>
-                  <Text style={styles.metricLbl}>Reports</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    );
-  };
 
   const renderDashboardHome = () => {
     const totalAlumniAgg = INSTITUTIONS.reduce((sum, item) => sum + item.totalAlumni, 0);
@@ -2740,12 +2688,6 @@ const SuperAdminDashboardScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             ))}
           </View>
-
-          {/* Institution Performance is now part of the Administration Modules area */}
-          {selectedInstitution === 'All' && renderInstitutionPerformance()}
-
-          {/* Default Dashboard Home details */}
-          {renderDashboardHome()}
         </ScrollView>
       ) : (
         <View style={styles.flexContainer}>
