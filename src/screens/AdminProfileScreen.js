@@ -66,6 +66,25 @@ const INITIAL_NETWORK_SETTINGS = {
   'RVLH': { institutionName: 'RV Learning Hub', shortTitle: 'RVLH', website: 'https://rvlearninghub.com', established: '2020', location: 'Bengaluru, Karnataka', primaryColor: '#111827', secondaryColor: '#374151', alumniText: 'Alumni', studentsText: 'Students', facultyText: 'Teachers', batchmatesText: 'Batchmates', manualApproval: true, emailVouching: false, allowUnverified: false, displayJobs: false, displayEvents: true, displayGroups: true, displayMemories: true, displayDonations: false, displayMentorship: false, displayAlumniCard: false, welcomeEmailEnabled: true, whatsappEnabled: false },
 };
 
+const validatePasswordStrength = (password) => {
+  if (password.length < 8) {
+    return { valid: false, reason: 'Password must be at least 8 characters long.' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one uppercase letter.' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one lowercase letter.' };
+  }
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one number.' };
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one special character.' };
+  }
+  return { valid: true };
+};
+
 const AdminProfileScreen = ({ navigation }) => {
   const { theme, isDarkMode } = useTheme();
   const styles = getStyles(theme);
@@ -78,6 +97,9 @@ const AdminProfileScreen = ({ navigation }) => {
   const [activeInst, setActiveInst] = useState('RVCE');
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [settingsSubView, setSettingsSubView] = useState('menu');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [profileData, setProfileData] = useState({
     name: 'Institution Admin',
@@ -642,10 +664,96 @@ const AdminProfileScreen = ({ navigation }) => {
                 {settingsSubView === 'security' && (
                   <View>
                     <Text style={styles.editLabel}>Current Password</Text>
-                    <TextInput style={styles.editInput} placeholder="••••••••" placeholderTextColor="#94A3B8" secureTextEntry />
+                    <TextInput 
+                      style={styles.editInput} 
+                      placeholder="••••••••" 
+                      placeholderTextColor="#94A3B8" 
+                      secureTextEntry 
+                      value={currentPassword}
+                      onChangeText={setCurrentPassword}
+                    />
                     <Text style={styles.editLabel}>New Password</Text>
-                    <TextInput style={styles.editInput} placeholder="••••••••" placeholderTextColor="#94A3B8" secureTextEntry />
-                    <TouchableOpacity style={[styles.saveBtn, { backgroundColor: theme.text }]} onPress={() => Alert.alert('Updated', 'Password changed.')}>
+                    <TextInput 
+                      style={styles.editInput} 
+                      placeholder="••••••••" 
+                      placeholderTextColor="#94A3B8" 
+                      secureTextEntry 
+                      value={newPassword}
+                      onChangeText={setNewPassword}
+                    />
+                    <Text style={styles.editLabel}>Confirm New Password</Text>
+                    <TextInput 
+                      style={styles.editInput} 
+                      placeholder="••••••••" 
+                      placeholderTextColor="#94A3B8" 
+                      secureTextEntry 
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                    />
+                    <TouchableOpacity 
+                      style={[styles.saveBtn, { backgroundColor: theme.text }]} 
+                      onPress={async () => {
+                        if (!currentPassword || !newPassword || !confirmPassword) {
+                          Alert.alert('Error', 'Please fill in all password fields.');
+                          return;
+                        }
+                        if (newPassword !== confirmPassword) {
+                          Alert.alert('Error', 'New password and confirm password do not match.');
+                          return;
+                        }
+                        const pwdCheck = validatePasswordStrength(newPassword);
+                        if (!pwdCheck.valid) {
+                          Alert.alert('Error', pwdCheck.reason);
+                          return;
+                        }
+                        try {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) throw new Error('No user session found.');
+
+                          // 1. Fetch current password from public.users table
+                          const { data: dbUser, error: dbError } = await supabase
+                            .from('users')
+                            .select('password')
+                            .eq('id', user.id)
+                            .single();
+                          
+                          if (dbError) throw dbError;
+
+                          // 2. Validate current password match
+                          if (dbUser && dbUser.password && dbUser.password !== currentPassword) {
+                            Alert.alert('Error', 'Current password is incorrect.');
+                            return;
+                          }
+
+                          // 3. Prevent reuse
+                          if (dbUser && dbUser.password && dbUser.password === newPassword) {
+                            Alert.alert('Error', 'New password cannot be the same as your old password.');
+                            return;
+                          }
+
+                          // 4. Update in Supabase Auth
+                          const { error: authError } = await supabase.auth.updateUser({
+                            password: newPassword
+                          });
+                          if (authError) throw authError;
+
+                          // 5. Update in public.users table
+                          const { error: updateError } = await supabase
+                            .from('users')
+                            .update({ password: newPassword })
+                            .eq('id', user.id);
+                          if (updateError) throw updateError;
+
+                          setCurrentPassword('');
+                          setNewPassword('');
+                          setConfirmPassword('');
+                          setSettingsSubView('menu');
+                          Alert.alert('Success', 'Password updated successfully!');
+                        } catch (err) {
+                          Alert.alert('Error', err.message || 'Failed to update password.');
+                        }
+                      }}
+                    >
                       <Text style={styles.saveBtnText}>Change Password</Text>
                     </TouchableOpacity>
                   </View>

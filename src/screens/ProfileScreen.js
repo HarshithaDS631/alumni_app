@@ -5,6 +5,25 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 
+const validatePasswordStrength = (password) => {
+  if (password.length < 8) {
+    return { valid: false, reason: 'Password must be at least 8 characters long.' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one uppercase letter.' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one lowercase letter.' };
+  }
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one number.' };
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one special character.' };
+  }
+  return { valid: true };
+};
+
 const ProfileScreen = ({ navigation }) => {
   const { theme, isDarkMode } = useTheme();
   const styles = getStyles(theme);
@@ -22,6 +41,7 @@ const ProfileScreen = ({ navigation }) => {
     branch: 'Loading...',
     batch: 'Loading...',
     bio: '',
+    linkedin: '',
     posts: '0',
     followers: '0',
     following: '0',
@@ -46,7 +66,8 @@ const ProfileScreen = ({ navigation }) => {
               username: user.email.split('@')[0],
               branch: data.department || 'Not specified',
               batch: data.batch_year || 'Not specified',
-              bio: `Institution Class of ${data.batch_year || ''}`,
+              bio: data.bio || `Institution Class of ${data.batch_year || ''}`,
+              linkedin: data.linkedin || '',
               avatar: data.name ? data.name.substring(0, 2).toUpperCase() : 'UU'
             }));
           }
@@ -64,6 +85,7 @@ const ProfileScreen = ({ navigation }) => {
   const [editBranch, setEditBranch] = useState(profileData.branch);
   const [editBatch, setEditBatch] = useState(profileData.batch);
   const [editBio, setEditBio] = useState(profileData.bio);
+  const [editLinkedin, setEditLinkedin] = useState(profileData.linkedin);
 
   // Settings States
   const [privateAccount, setPrivateAccount] = useState(true);
@@ -120,6 +142,7 @@ const ProfileScreen = ({ navigation }) => {
     setEditBranch(profileData.branch);
     setEditBatch(profileData.batch);
     setEditBio(profileData.bio);
+    setEditLinkedin(profileData.linkedin || '');
     setSettingsSubView('profile_edit');
     setSettingsVisible(true);
   };
@@ -445,6 +468,15 @@ const ProfileScreen = ({ navigation }) => {
                   onChangeText={setEditBio}
                 />
 
+                <Text style={styles.editLabel}>LinkedIn Profile URL</Text>
+                <TextInput 
+                  style={styles.securityInput} 
+                  placeholder="https://linkedin.com/in/username" 
+                  placeholderTextColor="#94A3B8"
+                  value={editLinkedin}
+                  onChangeText={setEditLinkedin}
+                />
+
                 <TouchableOpacity 
                   style={styles.saveSettingsBtn}
                   onPress={() => {
@@ -459,8 +491,32 @@ const ProfileScreen = ({ navigation }) => {
                       branch: editBranch,
                       batch: editBatch,
                       bio: editBio,
+                      linkedin: editLinkedin,
                       avatar: editName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AJ'
                     });
+
+                    const updateProfileInSupabase = async () => {
+                      try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (user) {
+                          const { error } = await supabase
+                            .from('users')
+                            .update({
+                              name: editName,
+                              department: editBranch,
+                              batch_year: editBatch,
+                              bio: editBio,
+                              linkedin: editLinkedin
+                            })
+                            .eq('id', user.id);
+                          if (error) throw error;
+                        }
+                      } catch (err) {
+                        console.error('Error saving profile to Supabase:', err);
+                      }
+                    };
+                    updateProfileInSupabase();
+
                     setSettingsVisible(false);
                     setSettingsSubView('menu');
                     Alert.alert('Success', 'Profile updated successfully!');
@@ -560,7 +616,7 @@ const ProfileScreen = ({ navigation }) => {
 
                 <TouchableOpacity 
                   style={styles.changePasswordBtn}
-                  onPress={() => {
+                  onPress={async () => {
                     if (!currentPassword || !newPassword || !confirmPassword) {
                       Alert.alert('Error', 'Please fill in all password fields.');
                       return;
@@ -569,11 +625,53 @@ const ProfileScreen = ({ navigation }) => {
                       Alert.alert('Error', 'New password and confirm password do not match.');
                       return;
                     }
-                    setCurrentPassword('');
-                    setNewPassword('');
-                    setConfirmPassword('');
-                    setSettingsSubView('menu');
-                    Alert.alert('Success', 'Your password has been changed successfully!');
+                    const pwdCheck = validatePasswordStrength(newPassword);
+                    if (!pwdCheck.valid) {
+                      Alert.alert('Error', pwdCheck.reason);
+                      return;
+                    }
+                    try {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) throw new Error('No user session found.');
+
+                      const { data: dbUser, error: dbError } = await supabase
+                        .from('users')
+                        .select('password')
+                        .eq('id', user.id)
+                        .single();
+                      
+                      if (dbError) throw dbError;
+                      
+                      if (dbUser && dbUser.password && dbUser.password !== currentPassword) {
+                        Alert.alert('Error', 'Current password is incorrect.');
+                        return;
+                      }
+
+                      if (dbUser && dbUser.password && dbUser.password === newPassword) {
+                        Alert.alert('Error', 'New password cannot be the same as your old password.');
+                        return;
+                      }
+
+                      const { error: authError } = await supabase.auth.updateUser({
+                        password: newPassword
+                      });
+                      if (authError) throw authError;
+
+                      const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ password: newPassword })
+                        .eq('id', user.id);
+                      
+                      if (updateError) throw updateError;
+
+                      setCurrentPassword('');
+                      setNewPassword('');
+                      setConfirmPassword('');
+                      setSettingsSubView('menu');
+                      Alert.alert('Success', 'Your password has been changed successfully!');
+                    } catch (err) {
+                      Alert.alert('Error', err.message || 'Failed to update password.');
+                    }
                   }}
                 >
                   <Text style={styles.changePasswordBtnText}>Update Password</Text>

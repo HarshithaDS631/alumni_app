@@ -60,6 +60,25 @@ const defaultDepartments = ["General", "Other"];
 const currentYear = new Date().getFullYear();
 const batchYears = Array.from({ length: currentYear - 1963 + 1 }, (_, i) => (currentYear - i).toString());
 
+const validatePasswordStrength = (password) => {
+  if (password.length < 8) {
+    return { valid: false, reason: 'Password must be at least 8 characters long.' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one uppercase letter.' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one lowercase letter.' };
+  }
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one number.' };
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return { valid: false, reason: 'Password must contain at least one special character.' };
+  }
+  return { valid: true };
+};
+
 const RegisterScreen = ({ navigation }) => {
   const { theme, isDarkMode } = useTheme();
   const styles = getStyles(theme);
@@ -84,6 +103,11 @@ const RegisterScreen = ({ navigation }) => {
       alert('Please fill in all fields');
       return;
     }
+    const pwdCheck = validatePasswordStrength(password);
+    if (!pwdCheck.valid) {
+      alert(pwdCheck.reason);
+      return;
+    }
     if (!agreeEULA) {
       alert('You must agree to the Terms of Service and End User License Agreement (EULA) to continue.');
       return;
@@ -100,7 +124,8 @@ const RegisterScreen = ({ navigation }) => {
             institution,
             department: branch,
             batchYear,
-            joiningYear
+            joiningYear,
+            password
           }
         }
       });
