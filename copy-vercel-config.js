@@ -9,7 +9,7 @@ const vercelJsonConfig = {
   cleanUrls: false,
   rewrites: [
     {
-      source: "/(.*)",
+      source: "/((?!api|_expo|assets|favicon|index\\.html).*)",
       destination: "/index.html"
     }
   ]
@@ -29,7 +29,7 @@ const buildOutputConfig = {
   version: 3,
   routes: [
     { handle: "filesystem" },
-    { src: "/(.*)", dest: "/index.html" }
+    { src: "/((?!api|_expo|assets|favicon|index\\.html).*)", dest: "/index.html" }
   ]
 };
 
@@ -48,7 +48,6 @@ try {
       const srcPath = path.join(distDir, file);
       const destPath = path.join(__dirname, file);
       
-      // Avoid copying vercel.json if it conflicts, but copying it is fine.
       if (fs.statSync(srcPath).isDirectory()) {
         fs.cpSync(srcPath, destPath, { recursive: true, force: true });
       } else {
