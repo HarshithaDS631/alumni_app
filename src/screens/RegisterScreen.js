@@ -592,7 +592,7 @@ const getStyles = (theme) => StyleSheet.create({
   },
   modalItemText: {
     fontSize: 16,
-    color: theme.inputBackground,
+    color: theme.text,
   }
 });
 
