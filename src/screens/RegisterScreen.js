@@ -103,6 +103,14 @@ const RegisterScreen = ({ navigation }) => {
       alert('Please fill in all fields');
       return;
     }
+
+    const emailClean = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailClean)) {
+      alert('Email address is not valid');
+      return;
+    }
+
     const pwdCheck = validatePasswordStrength(password);
     if (!pwdCheck.valid) {
       alert(pwdCheck.reason);
@@ -116,7 +124,7 @@ const RegisterScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: emailClean,
         password,
         options: {
           data: {

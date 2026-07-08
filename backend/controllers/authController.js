@@ -11,8 +11,17 @@ const generateToken = (id) => {
 exports.registerUser = async (req, res) => {
     const { name, email, password, institution, branch, batchYear } = req.body;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email.trim())) {
+        return res.status(400).json({ message: 'Email address is not valid' });
+    }
+
+    if (!password || password.length < 8) {
+        return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
+    }
+
     try {
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email: email.trim().toLowerCase() });
 
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
@@ -20,7 +29,7 @@ exports.registerUser = async (req, res) => {
 
         const user = await User.create({
             name,
-            email,
+            email: email.trim().toLowerCase(),
             password,
             institution,
             branch,
