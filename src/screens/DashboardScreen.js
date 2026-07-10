@@ -288,23 +288,64 @@ const DashboardScreen = ({ navigation }) => {
         </View>
 
         {isDesktop ? (
-          // WEB GRID DASHBOARD
+          // WEB GRID DASHBOARD (3-Column Layout)
           <View style={{ flex: 1, padding: 24, flexDirection: 'row', gap: 24 }}>
-            {/* Left Column: Feed */}
-            <View style={{ flex: 7 }}>
-              <View style={{ backgroundColor: theme.card, borderElevation: 1, borderWidth: 1, borderColor: theme.border, padding: 24, borderRadius: 16, marginBottom: 24 }}>
-                <Text style={{ fontSize: 24, fontWeight: '800', color: theme.text }}>Welcome back, {userInstitution} Alumni!</Text>
-                <Text style={{ fontSize: 16, color: theme.textSecondary, marginTop: 8 }}>Here&apos;s what&apos;s happening in your network today.</Text>
+            
+            {/* 1. Left Column: Profile Context */}
+            <View style={{ flex: 3 }}>
+              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 20, elevation: 2, borderWidth: 1, borderColor: theme.border, marginBottom: 24, alignItems: 'center' }}>
+                <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: theme.primary, justifyContent: 'center', alignItems: 'center', marginBottom: 12, shadowColor: theme.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 }}>
+                  <Text style={{ fontSize: 24, fontWeight: '700', color: theme.card }}>AJ</Text>
+                </View>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: theme.text }}>Ananya Joshi</Text>
+                <Text style={{ fontSize: 13, color: theme.textSecondary, textAlign: 'center', marginTop: 6, lineHeight: 18 }}>Alumni Developer{'\n'}@ {userInstitution}</Text>
+                
+                <View style={{ width: '100%', height: 1, backgroundColor: theme.border, marginVertical: 16 }} />
+                
+                <View style={{ width: '100%', gap: 12 }}>
+                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <Ionicons name="bookmark-outline" size={18} color={theme.textSecondary} />
+                    <Text style={{ color: theme.text, fontWeight: '600', fontSize: 14 }}>Saved Items</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <Ionicons name="calendar-outline" size={18} color={theme.textSecondary} />
+                    <Text style={{ color: theme.text, fontWeight: '600', fontSize: 14 }}>My Events</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <Ionicons name="people-outline" size={18} color={theme.textSecondary} />
+                    <Text style={{ color: theme.text, fontWeight: '600', fontSize: 14 }}>My Network</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            </View>
+
+            {/* 2. Middle Column: Main Feed */}
+            <View style={{ flex: 6 }}>
+              {/* Create Post Widget */}
+              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, elevation: 2, borderWidth: 1, borderColor: theme.border, marginBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: theme.primary, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: theme.card }}>AJ</Text>
+                </View>
+                <TouchableOpacity 
+                  style={{ flex: 1, backgroundColor: theme.inputBackground, borderRadius: 24, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, borderColor: theme.border }}
+                  onPress={() => openModal('post', null)}
+                >
+                  <Text style={{ color: theme.textMuted, fontSize: 14 }}>Start a post or share an update...</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ padding: 8, backgroundColor: theme.background, borderRadius: 20 }}>
+                  <Ionicons name="image-outline" size={20} color={theme.primary} />
+                </TouchableOpacity>
+              </View>
+
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
                 {posts.map(post => renderPostCard(post))}
               </ScrollView>
             </View>
 
-            {/* Right Column: Widgets */}
-            <View style={{ flex: 4 }}>
+            {/* 3. Right Column: Widgets */}
+            <View style={{ flex: 3.5 }}>
               {/* Suggestions Widget */}
-              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, marginBottom: 24, elevation: 2, borderWidth: 1, borderColor: theme.border, shadowColor: theme.text, shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
+              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, marginBottom: 24, elevation: 2, borderWidth: 1, borderColor: theme.border }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text }}>People you may know</Text>
                   <Text style={{ fontSize: 13, color: theme.primary, fontWeight: '600' }}>See all</Text>
@@ -329,9 +370,9 @@ const DashboardScreen = ({ navigation }) => {
               </View>
 
               {/* Events & Jobs Widget */}
-              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, elevation: 2, borderWidth: 1, borderColor: theme.border, shadowColor: theme.text, shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 3 }}>
+              <View style={{ backgroundColor: theme.card, borderRadius: 12, padding: 16, elevation: 2, borderWidth: 1, borderColor: theme.border }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text }}>Upcoming & Opportunities</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text }}>Opportunities</Text>
                   <Text style={{ fontSize: 13, color: theme.primary, fontWeight: '600' }}>See all</Text>
                 </View>
                 {eventsAndJobs.map(ev => (

@@ -25,6 +25,13 @@ const LoginScreen = ({ navigation }) => {
     setLoading(true);
 
     const emailClean = email.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailClean)) {
+      alert('Please enter a valid email address');
+      setLoading(false);
+      return;
+    }
+
     if (emailClean === 'alumni@institution.edu' && password === 'alumni123') {
       await AsyncStorage.setItem('userInfo', JSON.stringify({ 
         name: 'Alumni User', 

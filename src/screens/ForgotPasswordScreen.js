@@ -19,6 +19,12 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     setLoading(true);
     const emailClean = email.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailClean)) {
+      alert('Please enter a valid email address');
+      setLoading(false);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(emailClean, {
