@@ -69,10 +69,10 @@ const LoginScreen = ({ navigation }) => {
         throw error;
       }
 
-      // Check if user is approved
+      // Check if user is approved and fetch role
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('is_approved')
+        .select('is_approved, role')
         .eq('id', data.user.id)
         .single();
 
@@ -84,15 +84,23 @@ const LoginScreen = ({ navigation }) => {
         return;
       }
 
+      const userRole = userData?.role || 'Alumni';
+
       // Successful login
       await AsyncStorage.setItem('userInfo', JSON.stringify({ 
         name: data.user.user_metadata?.name || 'Alumni User', 
         email: data.user.email,
         institution: data.user.user_metadata?.institution || 'Institution',
-        role: 'Alumni'
+        role: userRole
       }));
       
-      navigation.navigate('Main');
+      if (userRole === 'Super Admin') {
+        navigation.navigate('SuperAdminMain');
+      } else if (userRole === 'Admin') {
+        navigation.navigate('AdminMain');
+      } else {
+        navigation.navigate('Main');
+      }
     } catch (error) {
       alert(error.message || 'Login failed');
     } finally {

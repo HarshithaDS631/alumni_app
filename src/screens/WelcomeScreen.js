@@ -121,7 +121,7 @@ const WelcomeScreen = ({ navigation }) => {
         {/* Admin Login Link */}
         <TouchableOpacity 
           style={styles.adminLoginLink} 
-          onPress={() => navigation.navigate('AdminLogin')}
+          onPress={() => navigation.navigate('Login')}
           activeOpacity={0.7}
         >
           <Ionicons name="shield-checkmark-outline" size={16} color="#94A3B8" style={{ marginRight: 6 }} />
@@ -131,7 +131,7 @@ const WelcomeScreen = ({ navigation }) => {
         {/* Super Admin Login Link */}
         <TouchableOpacity 
           style={styles.superAdminLoginLink} 
-          onPress={() => navigation.navigate('AdminLogin', { role: 'superadmin' })}
+          onPress={() => navigation.navigate('Login')}
           activeOpacity={0.7}
         >
           <Ionicons name="star" size={16} color="#D97706" style={{ marginRight: 6 }} />
