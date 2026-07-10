@@ -209,7 +209,7 @@ export default function AdminHomeScreen({ navigation }) {
         </View>
 
         {/* First Post */}
-        {renderPostCard(postsList[0])}
+        {postsList.length > 0 && renderPostCard(postsList[0])}
 
         {/* Selected Students suggestions */}
         <View style={styles.sectionContainer}>
