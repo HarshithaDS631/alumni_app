@@ -22,11 +22,19 @@ import { supabase } from '../lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 const institutions = [
-  'RVCE', 'RVITM', 'RVPU', 'RVIS', 'RVU', 'RVCA', 'RVIM', 'RVILS', 'DAPMRV', 'RVCN', 'RVCP', 'RVTC', 'RVTTI', 'NMKRV', 'SSMRV', 'RVPS', 'RVS', 'RVLH', 'Other'
+  'RV School', 'RV Girls High School', 'RV Public School', 'RV Learning Hub', 
+  'SSMRV PU College', 'NMKRV PU College', 'RV PU College Jayanagar', 
+  'RV PU College North', 'RV PU College South', 'RV PU College, E-City', 
+  'RV PU College, Harohalli', 'RV PU College, Mysuru', 'RV College of Engineering', 
+  'RV Institute of Technology and Management', 'RV-Skills', 'RV College of Architecture', 
+  'RV Institute of Management', 'MKPM RV Institute of Legal Studies', 
+  'RV Teachers College', 'D.A. Pandu Memorial RV Dental College', 
+  'RV College of Physiotherapy', 'RV College of Nursing', 'NMKRV College', 
+  'SSMRV College', 'RV University, Bengaluru Campus', 'RV University, Mysuru Campus'
 ];
 
 const institutionDepartments = {
-  'RVCE': [
+  'RV College of Engineering': [
     "Aerospace Engineering",
     "Artificial Intelligence and Machine Learning",
     "Biotechnology",
@@ -40,19 +48,26 @@ const institutionDepartments = {
     "Industrial Engineering & Management",
     "Mechanical Engineering"
   ],
-  'RVITM': ["Computer Science & Engineering", "Information Science & Engineering", "Electronics & Communication Engineering", "Mechanical Engineering"],
-  'RVPU': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
-  'RVIM': ["MBA", "Executive Education"],
-  'RVU': ["School of Computer Science & Engineering", "School of Design", "School of Business", "School of Economics", "School of Liberal Arts & Sciences"],
-  'RVCA': ["Architecture (B.Arch)", "Architecture (M.Arch)", "Urban Design"],
-  'RVILS': ["BA LLB", "BBA LLB", "LLB"],
-  'DAPMRV': ["BDS", "MDS"],
-  'RVCN': ["B.Sc Nursing", "M.Sc Nursing"],
-  'RVCP': ["BPT", "MPT"],
-  'RVTC': ["B.Ed", "M.Ed"],
-  'SSMRV': ["B.Com", "BBA", "BCA", "M.Com"],
-  'NMKRV': ["BA", "B.Sc", "B.Com", "BBA", "MA", "M.Sc"],
-  'Other': ["General", "Not Applicable"]
+  'RV Institute of Technology and Management': ["Computer Science & Engineering", "Information Science & Engineering", "Electronics & Communication Engineering", "Mechanical Engineering"],
+  'RV PU College Jayanagar': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
+  'RV PU College North': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
+  'RV PU College South': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
+  'RV PU College, E-City': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
+  'RV PU College, Harohalli': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
+  'RV PU College, Mysuru': ["Science (PCMB)", "Science (PCMC)", "Commerce (CEBA)", "Commerce (SEBA)"],
+  'RV Institute of Management': ["MBA", "Executive Education"],
+  'RV University, Bengaluru Campus': ["School of Computer Science & Engineering", "School of Design", "School of Business", "School of Economics", "School of Liberal Arts & Sciences"],
+  'RV University, Mysuru Campus': ["School of Computer Science & Engineering", "School of Design", "School of Business", "School of Economics", "School of Liberal Arts & Sciences"],
+  'RV College of Architecture': ["Architecture (B.Arch)", "Architecture (M.Arch)", "Urban Design"],
+  'MKPM RV Institute of Legal Studies': ["BA LLB", "BBA LLB", "LLB"],
+  'D.A. Pandu Memorial RV Dental College': ["BDS", "MDS"],
+  'RV College of Nursing': ["B.Sc Nursing", "M.Sc Nursing"],
+  'RV College of Physiotherapy': ["BPT", "MPT"],
+  'RV Teachers College': ["B.Ed", "M.Ed"],
+  'SSMRV College': ["B.Com", "BBA", "BCA", "M.Com"],
+  'NMKRV College': ["BA", "B.Sc", "B.Com", "BBA", "MA", "M.Sc"],
+  'SSMRV PU College': ["Science (PCMB)", "Commerce (CEBA)"],
+  'NMKRV PU College': ["Science (PCMB)", "Commerce (CEBA)"],
 };
 
 const defaultDepartments = ["General", "Other"];
