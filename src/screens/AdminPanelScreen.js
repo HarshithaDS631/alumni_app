@@ -14,6 +14,7 @@ import {
   useWindowDimensions, Platform} from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import AdminMetricsScreen from './AdminMetricsScreen';
 
 // ==========================================
 // DUMMY DATA FOR THE NEW MODULES
@@ -67,6 +68,7 @@ const panelItems = [
   { id: '7', title: 'Mentor Application', icon: 'git-pull-request-outline', color: '#FFF7ED', iconColor: '#EA580C', moduleName: 'mentor_application', desc: 'Approve mentor and mentee requests' },
   { id: '8', title: 'Admin Activities', icon: 'time-outline', color: '#F1F5F9', iconColor: '#475569', moduleName: 'admin_activities', desc: 'Past interactions and task log' },
   { id: '9', title: 'Data Exports', icon: 'download-outline', color: '#EFF6FF', iconColor: '#3B82F6', moduleName: 'data_exports', desc: 'Export verified alumni directory to CSV' },
+  { id: '10', title: 'Dashboard Overview', icon: 'pie-chart-outline', color: '#EEF2FF', iconColor: '#4F46E5', moduleName: 'dashboard_overview', desc: 'High-level metrics and quick actions' },
 ];
 
 export default function AdminPanelScreen({ navigation }) {
@@ -849,6 +851,7 @@ export default function AdminPanelScreen({ navigation }) {
       case 'mentor_application': return renderMentorApplications();
       case 'admin_activities': return renderAdminActivities();
       case 'data_exports': return renderDataExports();
+      case 'dashboard_overview': return <AdminMetricsScreen navigation={navigation} isEmbedded={true} />;
       default:
         return (
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>

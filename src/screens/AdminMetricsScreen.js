@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
 
-export default function AdminMetricsScreen({ navigation }) {
+export default function AdminMetricsScreen({ navigation, isEmbedded = false }) {
   const { theme, isDarkMode } = useTheme();
   const { width } = useWindowDimensions();
   const isFocused = useIsFocused();
@@ -302,12 +302,12 @@ export default function AdminMetricsScreen({ navigation }) {
     </TouchableOpacity>
   );
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={webContainerStyle}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme.card} />
+  const content = (
+    <View style={webContainerStyle}>
+      {!isEmbedded && <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme.card} />}
 
-        {/* Top App Bar */}
+      {/* Top App Bar - Hide if embedded */}
+      {!isEmbedded && (
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Dashboard</Text>
           <View style={styles.headerIcons}>
@@ -316,8 +316,9 @@ export default function AdminMetricsScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
+      )}
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           
           {/* Welcome Section */}
           <View style={styles.welcomeContainer}>
@@ -416,8 +417,17 @@ export default function AdminMetricsScreen({ navigation }) {
             )}
           </View>
 
-        </ScrollView>
-      </View>
+      </ScrollView>
+    </View>
+  );
+
+  if (isEmbedded) {
+    return content;
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {content}
     </SafeAreaView>
   );
 }
