@@ -17,6 +17,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sendWelcomeEmail } from '../lib/sendgrid';
 
 const RVCE_VERIFICATION_DB = [
   { name: 'arjun menon', joining: '2008', leaving: '2011' },
@@ -132,8 +133,14 @@ const AdminUsersScreen = ({ navigation, route }) => {
         .update({ is_approved: true })
         .eq('id', userId);
       if (error) throw error;
+      
+      const approvedUser = pendingUsers.find(u => u.id === userId);
+      if (approvedUser && approvedUser.email) {
+        await sendWelcomeEmail(approvedUser.email, approvedUser.name || 'Alumnus');
+      }
+
       setPendingUsers(prev => prev.filter(u => u.id !== userId));
-      alert('User approved successfully.');
+      alert('User approved successfully. Welcome email triggered.');
     } catch (err) {
       alert('Error approving user: ' + err.message);
     }
