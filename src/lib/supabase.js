@@ -11,10 +11,10 @@ let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 let supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || supabaseUrl.trim() === '' || supabaseUrl.includes('placeholder') || supabaseUrl.includes('dummy') || supabaseUrl.includes('your_')) {
-  supabaseUrl = 'https://hdqpmawlhhvnioxkxvpj.supabase.co';
+  supabaseUrl = 'https://jtstzxcjxztmrsxsjovb.supabase.co';
 }
 if (!supabaseAnonKey || supabaseAnonKey.trim() === '' || supabaseAnonKey.includes('dummy') || supabaseAnonKey.includes('placeholder') || supabaseAnonKey.includes('your_')) {
-  supabaseAnonKey = 'sb_publishable_iBN9uFB_xdemug-BLp85-g_qBHO8YJj';
+  supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0c3R6eGNqeHp0bXJzeHNqb3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NzA4MzYsImV4cCI6MjA5OTI0NjgzNn0.lQ8u5N95HRECCDEZGFrQBie2dR1iXltLNXkuiszN3Uo';
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
