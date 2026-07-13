@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Imag
 import { useTheme } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { uploadFile } from '../services/uploadService';
 import { createPost } from '../services/postService';
 
@@ -16,6 +17,7 @@ const PostCreationScreen = ({ navigation }) => {
   const [audience, setAudience] = useState('All Alumni');
   const [localImageUri, setLocalImageUri] = useState(null);
   const [mimeType, setMimeType] = useState('image/jpeg');
+  const [fileName, setFileName] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const handlePost = async () => {
@@ -28,12 +30,14 @@ const PostCreationScreen = ({ navigation }) => {
     try {
       let imageUrl = null;
       if (localImageUri) {
-        imageUrl = await uploadFile(localImageUri, mimeType, 'post-image.jpg');
+        imageUrl = await uploadFile(localImageUri, mimeType, fileName || 'post-image.jpg');
       }
 
       await createPost({
         content: content.trim(),
-        image: imageUrl
+        image: imageUrl,
+        fileType: mimeType,
+        fileName: fileName
       });
 
       setIsUploading(false);
@@ -83,7 +87,41 @@ const PostCreationScreen = ({ navigation }) => {
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setLocalImageUri(result.assets[0].uri);
       setMimeType(result.assets[0].mimeType || 'image/jpeg');
+      setFileName(result.assets[0].fileName || 'image.jpg');
     }
+  };
+
+  const handleSelectDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const file = result.assets[0];
+        setLocalImageUri(file.uri);
+        setMimeType(file.mimeType || 'application/octet-stream');
+        setFileName(file.name);
+      }
+    } catch (err) {
+      console.error('Document picker error:', err);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      const url = URL.createObjectURL(file);
+      setLocalImageUri(url);
+      setMimeType(file.type);
+      setFileName(file.name);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
     const isWeb = Platform.OS === 'web';
@@ -96,6 +134,7 @@ const PostCreationScreen = ({ navigation }) => {
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
+        {...(isWeb ? { onDrop: handleDrop, onDragOver: handleDragOver } : {})}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -152,8 +191,15 @@ const PostCreationScreen = ({ navigation }) => {
           {/* Attached Image Preview */}
           {localImageUri ? (
             <View style={styles.previewContainer}>
-              <Image source={{ uri: localImageUri }} style={styles.previewImage} />
-              <TouchableOpacity style={styles.removeImageBtn} onPress={() => setLocalImageUri(null)}>
+              {mimeType && mimeType.startsWith('image/') ? (
+                <Image source={{ uri: localImageUri }} style={styles.previewImage} />
+              ) : (
+                <View style={styles.documentPreview}>
+                  <Ionicons name="document-text" size={48} color="#003366" />
+                  <Text style={styles.documentName} numberOfLines={2}>{fileName || 'Document'}</Text>
+                </View>
+              )}
+              <TouchableOpacity style={styles.removeImageBtn} onPress={() => { setLocalImageUri(null); setFileName(null); setMimeType('image/jpeg'); }}>
                 <Ionicons name="close-circle" size={26} color="rgba(15, 23, 42, 0.8)" />
               </TouchableOpacity>
             </View>
@@ -162,6 +208,10 @@ const PostCreationScreen = ({ navigation }) => {
               <TouchableOpacity style={styles.mediaPlaceholder} onPress={handleSelectMedia} activeOpacity={0.7}>
                 <Ionicons name="image-outline" size={28} color="#003366" />
                 <Text style={styles.mediaLabel}>Add Photo/Video to Post</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.mediaPlaceholder, {marginTop: 10}]} onPress={handleSelectDocument} activeOpacity={0.7}>
+                <Ionicons name="document-attach-outline" size={28} color="#003366" />
+                <Text style={styles.mediaLabel}>Attach Document / PDF (or Drag & Drop here)</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -188,8 +238,8 @@ const PostCreationScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.toolBtn} onPress={handleSelectMedia}>
               <Ionicons name="image" size={24} color="#003366" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.toolBtn} onPress={handleSelectMedia}>
-              <Ionicons name="videocam" size={24} color="#003366" />
+            <TouchableOpacity style={styles.toolBtn} onPress={handleSelectDocument}>
+              <Ionicons name="document-attach" size={24} color="#003366" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.toolBtn} onPress={handleToggleAudience}>
               <Ionicons name="people" size={24} color="#003366" />
@@ -327,6 +377,21 @@ const getStyles = (theme) => StyleSheet.create({
     width: '100%',
     height: 180,
     resizeMode: 'cover',
+  },
+  documentPreview: {
+    width: '100%',
+    height: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E2E8F0',
+  },
+  documentName: {
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#003366',
+    paddingHorizontal: 20,
+    textAlign: 'center',
   },
   removeImageBtn: {
     position: 'absolute',

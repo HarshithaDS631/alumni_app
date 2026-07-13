@@ -28,13 +28,15 @@ exports.getPosts = async (req, res) => {
 // @desc    Create a post
 // @route   POST /api/posts
 exports.createPost = async (req, res) => {
-    const { content, image } = req.body;
+    const { content, image, fileType, fileName } = req.body;
 
     try {
         const post = await Post.create({
             user: req.user._id,
             content,
-            image
+            image,
+            fileType,
+            fileName
         });
 
         const fullPost = await post.populate('user', 'name branch department batchYear avatar_url');
