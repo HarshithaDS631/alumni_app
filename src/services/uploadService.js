@@ -1,6 +1,8 @@
 import axios from 'axios';
 import api from './api';
 
+import { Platform } from 'react-native';
+
 /**
  * Uploads a file (like an image) to the backend.
  * @param {string} uri - The local file URI from expo-image-picker
@@ -11,11 +13,18 @@ import api from './api';
 export const uploadFile = async (uri, mimeType = 'image/jpeg', name = 'upload.jpg') => {
     try {
         const formData = new FormData();
-        formData.append('image', {
-            uri,
-            name,
-            type: mimeType
-        });
+        
+        if (Platform.OS === 'web') {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            formData.append('image', blob, name);
+        } else {
+            formData.append('image', {
+                uri,
+                name,
+                type: mimeType
+            });
+        }
 
         // Use custom multipart/form-data headers
         const response = await api.post('/upload', formData, {
