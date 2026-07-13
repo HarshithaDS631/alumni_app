@@ -41,6 +41,7 @@ const ResetPasswordScreen = ({ navigation }) => {
 
     setLoading(true);
 
+    try {
       // Call the custom backend reset password API
       await resetPassword(token, password);
 
